@@ -1,4 +1,4 @@
-<figure style="margin: 30px auto 0 !important; max-width: 320px;">
+<figure style="margin: 30px auto 30px !important; max-width: 640px;">
   <img src="../public/logoLinguaHorizzontal.svg" alt="Language selector in sidebar mode">
 </figure>
 
@@ -32,7 +32,7 @@ Lingua stores every translation in the database, in a single JSON column per row
 │  LinguaMiddleware  ◄──────── │ group │ key │ text   │   │
 │  app()->setLocale()          │ auth  │ … │ {"en":…} │   │
 │                              └──────────────────────┘   │
-│  __('auth.failed')  ────────────────────────────────────►│
+│  __('auth.failed')  ───────────────────────────────────►│
 │  (DB takes precedence over files)                       │
 └─────────────────────────────────────────────────────────┘
 ```

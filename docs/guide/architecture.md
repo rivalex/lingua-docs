@@ -9,21 +9,21 @@ Browser request
     │
     ▼
 ┌─────────────────────────────┐
-│      LinguaMiddleware        │  Reads 'locale' from session
-│  app()->setLocale($locale)   │  Falls back to DB default
+│      LinguaMiddleware       │  Reads 'locale' from session
+│  app()->setLocale($locale)  │  Falls back to DB default
 └──────────────┬──────────────┘
                │
     ▼
 ┌─────────────────────────────┐
-│        Your Controller       │
-│  __('auth.failed')           │  Standard Laravel helper
+│        Your Controller      │
+│  __('auth.failed')          │  Standard Laravel helper
 └──────────────┬──────────────┘
                │
     ▼
 ┌─────────────────────────────┐
-│       LinguaManager          │  Custom TranslationLoaderManager
-│  1. DB loader (Spatie)       │  DB always wins on overlap
-│  2. File loader (fallback)   │
+│       LinguaManager         │  Custom TranslationLoaderManager
+│  1. DB loader (Spatie)      │  DB always wins on overlap
+│  2. File loader (fallback)  │
 └──────────────┬──────────────┘
                │
     ▼
