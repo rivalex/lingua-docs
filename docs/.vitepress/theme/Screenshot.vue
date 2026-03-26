@@ -1,5 +1,5 @@
 <template>
-  <figure class="screenshot-figure">
+  <figure class="screenshot-figure" :style="{ ...(width ? { maxWidth: width } : {}), ...(center ? { marginLeft: 'auto', marginRight: 'auto' } : {}) }">
     <img :src="withBase(src)" :alt="alt" loading="lazy" />
     <figcaption v-if="caption">{{ caption }}</figcaption>
   </figure>
@@ -12,6 +12,8 @@ defineProps<{
   src: string
   alt: string
   caption?: string
+  width?: string
+  center?: boolean
 }>()
 </script>
 

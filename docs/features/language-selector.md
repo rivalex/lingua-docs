@@ -20,10 +20,7 @@ Renders as a grouped navigation section — ideal for application sidebars built
 <livewire:lingua::language-selector mode="sidebar" />
 ```
 
-<figure style="margin: 0 !important; max-width: 320px;">
-  <img src="../public/screenshots/selector-sidebar.png" alt="Language selector in sidebar mode">
-  <figcaption>Sidebar mode — shows all installed languages as navigation items.</figcaption>
-</figure>
+<Screenshot src="/screenshots/selector-sidebar.png" alt="Language selector in sidebar mode" caption="Sidebar mode — shows all installed languages as navigation items." width="320px" :center="true"/>
 
 ### Dropdown mode
 
@@ -33,10 +30,7 @@ Renders as a compact dropdown button — ideal for headers and navigation bars.
 <livewire:lingua::language-selector mode="dropdown" />
 ```
 
-<figure style="margin: 0 !important; max-width: 320px;">
-  <img src="../public/screenshots/selector-dropdown.png" alt="Language selector in dropdown mode">
-  <figcaption>Dropdown mode — shows the current language with a flag icon.</figcaption>
-</figure>
+<Screenshot src="/screenshots/selector-dropdown.png" alt="Language selector in dropdown mode" caption="Dropdown mode — shows the current language with a flag icon." width="320px" :center="true"/>
 
 ### Modal mode
 
@@ -46,10 +40,7 @@ Renders as a button that opens a full language picker modal — ideal for promin
 <livewire:lingua::language-selector mode="modal" />
 ```
 
-<figure style="margin: 0 !important; max-width: 640px;">
-  <img src="../public/screenshots/selector-modal.png" alt="Language selector in modal mode">
-  <figcaption>Modal mode — full-screen language picker overlay.</figcaption>
-</figure>
+<Screenshot src="/screenshots/selector-modal.png" alt="Language selector in modal mode" caption="Modal mode — full-screen language picker overlay."/>
 
 ## Props reference
 

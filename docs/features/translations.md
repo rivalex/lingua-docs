@@ -2,10 +2,7 @@
 
 The Translations page (`/lingua/translations/{locale?}`) lets you browse, filter, and edit every translation string.
 
-<figure style="margin: 0 !important; max-width: 100%;">
-  <img src="../public/screenshots/translations-page.png" alt="Lingua translations page">
-  <figcaption>Translations page — with locale switcher, group filter, and inline editor.</figcaption>
-</figure>
+<Screenshot src="/screenshots/translations-page.png" alt="Lingua translations page" caption="Translations page — with locale switcher, group filter, and inline editor." />
 
 ## Navigating translations
 
@@ -24,10 +21,7 @@ The **default locale** column is always shown on the left as a reference — you
 | **Type** | Filters by `text`, `html`, or `markdown` |
 | **Show only missing** | Shows only strings with no value in the selected locale |
 
-<figure style="margin: 0 !important; max-width: 640px;">
-  <img src="../public/screenshots/translations-filters.png" alt="Translation filters">
-  <figcaption>Filtering to show only missing French translations in the validation group.</figcaption>
-</figure>
+<Screenshot src="/screenshots/translations-filters.png" alt="Translation filters" caption="Filtering to show only missing French translations in the validation group." />
 
 ### Pagination
 
@@ -43,10 +37,7 @@ Click directly into the translation cell to start editing. Changes are saved on 
 - **HTML** translations open the TipTap rich-text editor
 - **Markdown** translations open the TipTap markdown editor
 
-<figure style="margin: 0 !important; max-width: 640px;">
-  <img src="../public/screenshots/translation-editor-html.png" alt="HTML translation editor">
-  <figcaption>The TipTap HTML editor for rich-text translations.</figcaption>
-</figure>
+<Screenshot src="/screenshots/translation-editor-html.png" alt="HTML translation editor" caption="The TipTap HTML editor for rich-text translations." width="512px" :center="true"/>
 
 ### Sync from default
 

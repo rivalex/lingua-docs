@@ -73,10 +73,7 @@ Visit `/lingua/translations` to see all translation strings. For each language:
 3. Use **Show only missing** to focus on untranslated strings
 4. For HTML or Markdown types the rich-text editor activates automatically
 
-<figure style="margin: 0 !important; max-width: 100%;">
-  <img src="../public/screenshots/translations-page.png" alt="Lingua translations management page">
-  <figcaption>The translations page with locale switcher, group filter, and inline editor.</figcaption>
-</figure>
+<Screenshot src="/screenshots/translations-page.png" alt="Lingua translations management page" caption="The translations page with locale switcher, group filter, and inline editor." />
 
 ## 6. Sync back to files (optional)
 

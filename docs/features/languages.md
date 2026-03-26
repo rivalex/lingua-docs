@@ -2,10 +2,7 @@
 
 The Languages page (`/lingua/languages`) is your control center for all installed locales.
 
-<figure style="margin: 0 !important; max-width: 100%;">
-  <img src="../public/screenshots/languages-page.png" alt="Lingua languages management page">
-  <figcaption>Languages page — showing installed locales with completion statistics.</figcaption>
-</figure>
+<Screenshot src="/screenshots/languages-page.png" alt="Lingua languages management page" caption="Languages page — showing installed locales with completion statistics." />
 
 ## Adding a language
 
@@ -18,10 +15,7 @@ Click **Add Language**, select any of the 70+ available locales, and confirm. Li
 3. Sync all new strings into `language_lines`
 4. Refresh the table with the new locale
 
-<figure style="margin: 0 !important; max-width: 640px;">
-  <img src="../public/screenshots/language-add-modal.png" alt="Add language modal">
-  <figcaption>The add-language modal with searchable locale picker.</figcaption>
-</figure>
+<Screenshot src="/screenshots/language-add-modal.png" alt="Add language modal" caption="The add-language modal with searchable locale picker." width="640px" :center="true"/>
 
 ### From the command line
 

@@ -29,10 +29,7 @@ The editor toolbar is controlled globally via `config/lingua.php`:
 
 Enable only the options your content actually needs. Keeping the toolbar minimal reduces cognitive load for translators.
 
-<figure style="margin: 0 !important; max-width: 640px;">
-  <img src="../public/screenshots/editor-toolbar.png" alt="Editor Toolbar">
-  <figcaption>The HTML editor toolbar with default options active.</figcaption>
-</figure>
+<Screenshot src="/screenshots/editor-toolbar.png" alt="Editor Toolbar" caption="The HTML editor toolbar with default options active." />
 
 ## Changing a translation's type
 ## Changing a translation's type
