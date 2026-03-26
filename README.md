@@ -32,7 +32,6 @@ Place screenshots in `docs/public/screenshots/`. Reference them in markdown as:
 ```
 
 Recommended screenshot filenames:
-- `hero.png` — home page hero image
 - `languages-page.png` — languages management page
 - `language-add-modal.png` — add language modal
 - `translations-page.png` — translations management page
