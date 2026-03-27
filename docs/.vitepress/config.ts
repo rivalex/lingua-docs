@@ -22,8 +22,8 @@ export default defineConfig({
   ],
 
   themeConfig: {
-    logo: '/logo.svg',
-    siteTitle: 'Lingua',
+    logo: '/public/favicon.svg',
+    siteTitle: 'LINGUA',
 
     nav: [
       { text: 'Guide', link: '/guide/introduction', activeMatch: '/guide/' },

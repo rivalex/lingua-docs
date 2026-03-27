@@ -52,12 +52,12 @@ At runtime, Lingua registers a custom `LinguaManager` as the Laravel translation
 
 ## Requirements
 
-| Dependency | Version |
-|---|---|
-| PHP | **8.4+** |
-| Laravel | **12+** |
-| Livewire | **4.1+** |
-| Livewire Flux | **2.12+** |
+| Dependency | Version  |
+|---|----------|
+| PHP | **8.2+** |
+| Laravel | **11+**  |
+| Livewire | **4.0+** |
+| Livewire Flux | **2.0+** |
 
 ## Next step
 

@@ -17,6 +17,7 @@
 
 /* Home hero */
 .VPHero .name {
+  font-weight: 900;
   background: linear-gradient(135deg, #B30A00 0%, #FF2D20 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

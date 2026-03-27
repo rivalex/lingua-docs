@@ -2,7 +2,7 @@
 layout: home
 
 hero:
-  name: "Lingua"
+  name: "LINGUA"
   text: "Database-driven translations for Laravel"
   tagline: Install languages, manage translations, and switch locales — all through a beautiful Livewire UI, with zero deployments.
   image:
