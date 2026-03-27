@@ -22,7 +22,7 @@ export default defineConfig({
   ],
 
   themeConfig: {
-    logo: '/public/favicon.svg',
+    logo: 'favicon.svg',
     siteTitle: 'LINGUA',
 
     nav: [
