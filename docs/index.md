@@ -6,7 +6,8 @@ hero:
   text: "Database-driven translations for Laravel"
   tagline: Install languages, manage translations, and switch locales — all through a beautiful Livewire UI, with zero deployments.
   image:
-    src: logoLinguaVertical.svg
+    light: logoLinguaVertical-light.svg
+    dark: logoLinguaVertical-dark.svg
     alt: Lingua UI
   actions:
     - theme: brand

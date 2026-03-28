@@ -1,5 +1,6 @@
 <figure style="margin: 30px auto 30px !important; max-width: 640px;">
-  <img src="../public/logoLinguaHorizzontal.svg" alt="Language selector in sidebar mode">
+  <img src="../public/logoLinguaHorizontal-light.svg" class="logo-light" alt="Language selector in sidebar mode">
+  <img src="../public/logoLinguaHorizontal-dark.svg" class="logo-dark" alt="Language selector in sidebar mode">
 </figure>
 
 # What is Lingua?
@@ -55,7 +56,7 @@ At runtime, Lingua registers a custom `LinguaManager` as the Laravel translation
 | Dependency | Version  |
 |---|----------|
 | PHP | **8.2+** |
-| Laravel | **11+**  |
+| Laravel | **11 \| 12 \| 13** |
 | Livewire | **4.0+** |
 | Livewire Flux | **2.0+** |
 

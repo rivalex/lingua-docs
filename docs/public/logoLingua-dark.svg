@@ -2,19 +2,10 @@
      xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
     <style>
         .red {
-            fill: rgb(179,10,0);
+            fill: rgb(253,45,32);
         }
         .gray {
-            fill: rgb(83,86,90);
-        }
-
-        @media (prefers-color-scheme: dark) {
-            .red {
-                fill:rgb(253,45,32);
-            }
-            .gray {
-                fill: rgb(255,255,255);
-            }
+            fill: rgb(255,255,255);
         }
   </style>
     <g transform="matrix(4.166667,0,0,4.166667,0,0)">
