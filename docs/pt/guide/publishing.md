@@ -34,7 +34,7 @@ php artisan vendor:publish --tag="lingua-migrations"
 
 **Saída:** `database/migrations/YYYY_MM_DD_HHMMSS_create_lingua_table.php`
 
-Use isso se precisar modificar o schema de `languages` ou `language_lines` — por exemplo, para adicionar índices ou alterar tipos de colunas. Após publicar, execute `php artisan migrate` normalmente.
+Use isso se precisar modificar o schema de `languages` ou `language_lines` - por exemplo, para adicionar índices ou alterar tipos de colunas. Após publicar, execute `php artisan migrate` normalmente.
 
 ::: warning
 O assistente `lingua:install` publica e executa as migrations automaticamente. Publique manualmente apenas se precisar personalizar o schema antes de executá-las.

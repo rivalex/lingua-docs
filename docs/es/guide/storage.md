@@ -4,7 +4,7 @@ Entender cómo se almacenan las traducciones te ayuda a consultarlas, importarla
 
 ## La tabla `language_lines`
 
-Cada fila en `language_lines` representa una **cadena** traducible — no un idioma. Todos los valores de idioma se almacenan juntos en una única columna JSON `text`:
+Cada fila en `language_lines` representa una **cadena** traducible - no un idioma. Todos los valores de idioma se almacenan juntos en una única columna JSON `text`:
 
 ```
 group      | key        | type | text
@@ -17,10 +17,10 @@ emails     | subject    | html | {"en":"<b>Welcome</b> to our platform!"}
 
 ### Ventajas de este diseño
 
-- **Una fila por cadena** — no hay filas por idioma que gestionar
-- **Agregar un idioma no es destructivo** — solo se agrega una nueva clave al objeto JSON
-- **Las traducciones faltantes son explícitas** — si `fr` no está en el JSON, la cadena aún no está traducida
-- **Una sola consulta** — un `SELECT` obtiene todos los valores de idioma para una clave
+- **Una fila por cadena** - no hay filas por idioma que gestionar
+- **Agregar un idioma no es destructivo** - solo se agrega una nueva clave al objeto JSON
+- **Las traducciones faltantes son explícitas** - si `fr` no está en el JSON, la cadena aún no está traducida
+- **Una sola consulta** - un `SELECT` obtiene todos los valores de idioma para una clave
 
 ### Consultas directas
 
@@ -95,7 +95,7 @@ La columna `group` corresponde al nombre del archivo (`auth` = `lang/en/auth.php
 Las traducciones de proveedores se marcan con `is_vendor = true` y llevan una cadena `vendor` (p. ej. `'spatie'`, `'laravel'`). Se sincronizan desde los directorios `lang/vendor/{vendor}/{locale}/`.
 
 - **Se pueden editar** en la interfaz (para sobreescribir el texto del proveedor)
-- **No se pueden eliminar** — intentarlo despacha un evento `vendor_translation_protected`
+- **No se pueden eliminar** - intentarlo despacha un evento `vendor_translation_protected`
 - Los campos `group` y `key` están **bloqueados** en el modal de actualización
 
 Consulta [Traducciones de Proveedores](/es/features/vendor-translations) para más detalles.

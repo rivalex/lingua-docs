@@ -34,7 +34,7 @@ php artisan vendor:publish --tag="lingua-migrations"
 
 **输出：** `database/migrations/YYYY_MM_DD_HHMMSS_create_lingua_table.php`
 
-当您需要修改 `languages` 或 `language_lines` 的数据库结构时使用——例如，添加索引或更改字段类型。发布后，像往常一样运行 `php artisan migrate`。
+当您需要修改 `languages` 或 `language_lines` 的数据库结构时使用--例如，添加索引或更改字段类型。发布后，像往常一样运行 `php artisan migrate`。
 
 ::: warning
 `lingua:install` 向导会自动发布并运行迁移。只有在需要在运行之前自定义数据库结构时，才需要手动发布。

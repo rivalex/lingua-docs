@@ -4,7 +4,7 @@
 
 ## `language_lines` 表
 
-`language_lines` 中的每一行代表一个可翻译的**字符串**——而不是一个语言环境。所有语言环境的值存储在单个 JSON `text` 列中：
+`language_lines` 中的每一行代表一个可翻译的**字符串**--而不是一个语言环境。所有语言环境的值存储在单个 JSON `text` 列中：
 
 ```
 group      | key        | type | text
@@ -17,10 +17,10 @@ emails     | subject    | html | {"en":"<b>Welcome</b> to our platform!"}
 
 ### 这种设计的优势
 
-- **每个字符串一行** — 无需管理每个语言环境的单独行
-- **添加语言环境是非破坏性的** — 只需在 JSON 对象中添加新键
-- **缺失翻译是显式的** — 如果 `fr` 不在 JSON 中，则该字符串尚未翻译
-- **单次查询** — 一条 `SELECT` 语句即可获取一个键的所有语言环境值
+- **每个字符串一行** - 无需管理每个语言环境的单独行
+- **添加语言环境是非破坏性的** - 只需在 JSON 对象中添加新键
+- **缺失翻译是显式的** - 如果 `fr` 不在 JSON 中，则该字符串尚未翻译
+- **单次查询** - 一条 `SELECT` 语句即可获取一个键的所有语言环境值
 
 ### 直接查询
 
@@ -95,7 +95,7 @@ Lingua 使用与标准 Laravel 翻译相同的 `group.key` 二段式约定：
 扩展包翻译使用 `is_vendor = true` 标记，并携带 `vendor` 字符串（例如 `'spatie'`、`'laravel'`）。它们从 `lang/vendor/{vendor}/{locale}/` 目录同步而来。
 
 - 它们**可以在界面中编辑**（用于覆盖扩展包的原始措辞）
-- 它们**不能被删除** — 尝试删除会触发 `vendor_translation_protected` 事件
+- 它们**不能被删除** - 尝试删除会触发 `vendor_translation_protected` 事件
 - **编辑模态框中的** `group` 和 `key` 字段被**锁定**
 
 详情请参阅[扩展包翻译](/zh/features/vendor-translations)。

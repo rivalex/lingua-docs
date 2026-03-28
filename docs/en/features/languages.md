@@ -2,7 +2,7 @@
 
 The Languages page (`/lingua/languages`) is your control center for all installed locales.
 
-<Screenshot src="/screenshots/languages-page.png" alt="Lingua languages management page" caption="Languages page — showing installed locales with completion statistics." />
+<Screenshot src="/screenshots/languages-page.png" alt="Lingua languages management page" caption="Languages page - showing installed locales with completion statistics." />
 
 ## Adding a language
 
@@ -47,7 +47,7 @@ $available = Lingua::notInstalled(); // ['af', 'ar', 'az', …]
 
 ## Removing a language
 
-Click the trash icon on any non-default language row. A confirmation modal prevents accidental deletion — you must type the language name to confirm.
+Click the trash icon on any non-default language row. A confirmation modal prevents accidental deletion - you must type the language name to confirm.
 
 Behind the scenes, the delete operation:
 1. Removes the language files via `lang:rm {locale} --force`
@@ -83,7 +83,7 @@ If you set a new default language, make sure all your translations are at least 
 
 ## Reordering languages
 
-Drag and drop language rows to control their display order throughout the application — in the language selector widget, the translations locale switcher, and anywhere you use `Lingua::languages()`.
+Drag and drop language rows to control their display order throughout the application - in the language selector widget, the translations locale switcher, and anywhere you use `Lingua::languages()`.
 
 The sort order is stored in the `sort` integer column and reassigned sequentially after every drop.
 

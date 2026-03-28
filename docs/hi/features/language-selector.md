@@ -1,6 +1,6 @@
 # Language Selector
 
-`<livewire:lingua::language-selector>` कंपोनेंट आपके end users के लिए एक embeddable locale switcher है — admin management UI से पूरी तरह अलग।
+`<livewire:lingua::language-selector>` कंपोनेंट आपके end users के लिए एक embeddable locale switcher है - admin management UI से पूरी तरह अलग।
 
 ## बुनियादी उपयोग
 
@@ -14,33 +14,33 @@
 
 ### Sidebar mode (डिफ़ॉल्ट)
 
-एक grouped navigation section के रूप में render होता है — Flux के साथ बनाए गए application sidebars के लिए आदर्श।
+एक grouped navigation section के रूप में render होता है - Flux के साथ बनाए गए application sidebars के लिए आदर्श।
 
 ```blade
 <livewire:lingua::language-selector mode="sidebar" />
 ```
 
-<Screenshot src="/screenshots/selector-sidebar.png" alt="Sidebar mode में language selector" caption="Sidebar mode — सभी इंस्टॉल की हुई भाषाओं को navigation items के रूप में दिखाता है।" width="320px" :center="true"/>
+<Screenshot src="/screenshots/selector-sidebar.png" alt="Sidebar mode में language selector" caption="Sidebar mode - सभी इंस्टॉल की हुई भाषाओं को navigation items के रूप में दिखाता है।" width="320px" :center="true"/>
 
 ### Dropdown mode
 
-एक compact dropdown button के रूप में render होता है — headers और navigation bars के लिए आदर्श।
+एक compact dropdown button के रूप में render होता है - headers और navigation bars के लिए आदर्श।
 
 ```blade
 <livewire:lingua::language-selector mode="dropdown" />
 ```
 
-<Screenshot src="/screenshots/selector-dropdown.png" alt="Dropdown mode में language selector" caption="Dropdown mode — flag icon के साथ वर्तमान भाषा दिखाता है।" width="320px" :center="true"/>
+<Screenshot src="/screenshots/selector-dropdown.png" alt="Dropdown mode में language selector" caption="Dropdown mode - flag icon के साथ वर्तमान भाषा दिखाता है।" width="320px" :center="true"/>
 
 ### Modal mode
 
-एक बटन के रूप में render होता है जो full language picker modal खोलता है — landing pages या onboarding flows में prominent locale switching के लिए आदर्श।
+एक बटन के रूप में render होता है जो full language picker modal खोलता है - landing pages या onboarding flows में prominent locale switching के लिए आदर्श।
 
 ```blade
 <livewire:lingua::language-selector mode="modal" />
 ```
 
-<Screenshot src="/screenshots/selector-modal.png" alt="Modal mode में language selector" caption="Modal mode — full-screen language picker overlay।"/>
+<Screenshot src="/screenshots/selector-modal.png" alt="Modal mode में language selector" caption="Modal mode - full-screen language picker overlay।"/>
 
 ## Props reference
 

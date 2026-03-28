@@ -36,7 +36,7 @@ Habilite apenas as opções que seu conteúdo realmente precisa. Manter a barra 
 No modal de Edição (ícone de lápis, apenas locale padrão), selecione o tipo desejado no dropdown **Type**. O editor é atualizado imediatamente na linha sem recarregar a página.
 
 ::: tip Detecção automática
-Quando você executa `lingua:sync-to-database` pela primeira vez, o Lingua detecta automaticamente o tipo com base no conteúdo. Você pode sobrescrevê-lo manualmente a qualquer momento — o valor armazenado não é alterado quando você muda o tipo, apenas o comportamento do editor.
+Quando você executa `lingua:sync-to-database` pela primeira vez, o Lingua detecta automaticamente o tipo com base no conteúdo. Você pode sobrescrevê-lo manualmente a qualquer momento - o valor armazenado não é alterado quando você muda o tipo, apenas o comportamento do editor.
 :::
 
 ## Trabalhando com traduções HTML
@@ -44,7 +44,7 @@ Quando você executa `lingua:sync-to-database` pela primeira vez, o Lingua detec
 Traduções HTML são armazenadas como HTML bruto na coluna JSON `text`:
 
 ```json
-{"en": "<p>Welcome to <strong>Lingua</strong> — the translation manager for Laravel.</p>"}
+{"en": "<p>Welcome to <strong>Lingua</strong> - the translation manager for Laravel.</p>"}
 ```
 
 Para renderizá-las em Blade sem duplo escape:

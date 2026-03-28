@@ -4,10 +4,10 @@ layout: home
 hero:
   name: "LINGUA"
   text: "Laravel के लिए डेटाबेस-संचालित अनुवाद"
-  tagline: भाषाएँ इंस्टॉल करें, अनुवाद प्रबंधित करें, और लोकेल बदलें — एक सुंदर Livewire UI के माध्यम से, बिना किसी डिप्लॉयमेंट के।
+  tagline: भाषाएँ इंस्टॉल करें, अनुवाद प्रबंधित करें, और लोकेल बदलें - एक सुंदर Livewire UI के माध्यम से, बिना किसी डिप्लॉयमेंट के।
   image:
-    light: logoLinguaVertical-light.svg
-    dark: logoLinguaVertical-dark.svg
+    light: /logoLinguaVertical-light.svg
+    dark: /logoLinguaVertical-dark.svg
     alt: Lingua UI
   actions:
     - theme: brand
@@ -20,11 +20,11 @@ hero:
 features:
   - icon: 🗄️
     title: डेटाबेस-आधारित अनुवाद
-    details: सभी अनुवाद डेटाबेस में संग्रहीत होते हैं और तुरंत संपादन योग्य होते हैं — किसी फ़ाइल डिप्लॉयमेंट की जरूरत नहीं। Spatie का laravel-translation-loader लोडिंग लेयर संभालता है।
+    details: सभी अनुवाद डेटाबेस में संग्रहीत होते हैं और तुरंत संपादन योग्य होते हैं - किसी फ़ाइल डिप्लॉयमेंट की जरूरत नहीं। Spatie का laravel-translation-loader लोडिंग लेयर संभालता है।
 
   - icon: ⚡
     title: Livewire + Flux UI
-    details: Livewire 4 और Flux 2 पर बना रिएक्टिव, रियल-टाइम प्रबंधन इंटरफ़ेस। हर कार्य — भाषा जोड़ना, अनुवाद संपादित करना, सिंक — बिना पेज रिलोड के होता है।
+    details: Livewire 4 और Flux 2 पर बना रिएक्टिव, रियल-टाइम प्रबंधन इंटरफ़ेस। हर कार्य - भाषा जोड़ना, अनुवाद संपादित करना, सिंक - बिना पेज रिलोड के होता है।
 
   - icon: 🔄
     title: द्विदिशीय सिंक

@@ -2,7 +2,7 @@
 
 Languages पेज (`/lingua/languages`) सभी इंस्टॉल किए हुए locales के लिए आपका नियंत्रण केंद्र है।
 
-<Screenshot src="/screenshots/languages-page.png" alt="Lingua भाषा प्रबंधन पेज" caption="Languages पेज — completion statistics के साथ इंस्टॉल किए हुए locales दिखाता है।" />
+<Screenshot src="/screenshots/languages-page.png" alt="Lingua भाषा प्रबंधन पेज" caption="Languages पेज - completion statistics के साथ इंस्टॉल किए हुए locales दिखाता है।" />
 
 ## भाषा जोड़ना
 
@@ -47,7 +47,7 @@ $available = Lingua::notInstalled(); // ['af', 'ar', 'az', …]
 
 ## भाषा हटाना
 
-किसी भी non-default language पंक्ति पर trash आइकन पर क्लिक करें। आकस्मिक हटाने से बचाव के लिए एक confirmation modal आता है — आपको confirm करने के लिए भाषा का नाम टाइप करना होगा।
+किसी भी non-default language पंक्ति पर trash आइकन पर क्लिक करें। आकस्मिक हटाने से बचाव के लिए एक confirmation modal आता है - आपको confirm करने के लिए भाषा का नाम टाइप करना होगा।
 
 पर्दे के पीछे, delete operation:
 1. `lang:rm {locale} --force` के माध्यम से language files हटाता है
@@ -83,7 +83,7 @@ Language::setDefault($french);
 
 ## भाषाओं का क्रम बदलना
 
-Language rows को drag और drop करके पूरे एप्लिकेशन में उनका display order नियंत्रित करें — language selector widget में, translations locale switcher में, और जहाँ भी आप `Lingua::languages()` का उपयोग करते हैं।
+Language rows को drag और drop करके पूरे एप्लिकेशन में उनका display order नियंत्रित करें - language selector widget में, translations locale switcher में, और जहाँ भी आप `Lingua::languages()` का उपयोग करते हैं।
 
 Sort order `sort` integer column में संग्रहीत होता है और प्रत्येक drop के बाद क्रमानुसार पुनः असाइन किया जाता है।
 

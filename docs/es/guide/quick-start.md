@@ -50,7 +50,7 @@ Abre tu layout Blade principal (p. ej. `resources/views/layouts/app.blade.php`) 
 
 ## 4. Usar traducciones en tu aplicación
 
-Lingua es transparente — usa los helpers estándar de Laravel como siempre:
+Lingua es transparente - usa los helpers estándar de Laravel como siempre:
 
 ```blade
 {{ __('messages.welcome') }}
@@ -134,4 +134,4 @@ El componente `LanguageSelector` gestiona el cambio de idioma para los usuarios 
 
 ### Exportar solo grupos específicos
 
-Si quieres exportar solo un subconjunto de traducciones a archivos, sincroniza a local primero y luego elimina los grupos que no necesitas de `lang/` — la base de datos siempre es la fuente de verdad en tiempo de ejecución.
+Si quieres exportar solo un subconjunto de traducciones a archivos, sincroniza a local primero y luego elimina los grupos que no necesitas de `lang/` - la base de datos siempre es la fuente de verdad en tiempo de ejecución.

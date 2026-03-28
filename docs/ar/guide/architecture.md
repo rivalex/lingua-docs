@@ -11,21 +11,21 @@ Browser request
 ┌─────────────────────────────┐
 │      LinguaMiddleware       │  Reads 'locale' from session
 │  app()->setLocale($locale)  │  Falls back to DB default
-└──────────────┬──────────────┘
-               │
+└───┬─────────────────────────┘
+    │
     ▼
 ┌─────────────────────────────┐
 │        Your Controller      │
 │  __('auth.failed')          │  Standard Laravel helper
-└──────────────┬──────────────┘
-               │
+└───┬─────────────────────────┘
+    │
     ▼
 ┌─────────────────────────────┐
 │       LinguaManager         │  Custom TranslationLoaderManager
 │  1. DB loader (Spatie)      │  DB always wins on overlap
 │  2. File loader (fallback)  │
-└──────────────┬──────────────┘
-               │
+└───┬─────────────────────────┘
+    │
     ▼
 Translated string returned
 ```
@@ -34,8 +34,8 @@ Translated string returned
 
 يمتد `LinguaManager` من `TranslationLoaderManager` الخاص بـ Spatie. في وقت التشغيل يدمج مصدرين:
 
-1. **محمّل الملفات** — يقرأ من `lang/` كما يفعل Laravel العادي
-2. **محمّل قاعدة البيانات** (محمّل `Db` من Spatie) — يقرأ من `language_lines`
+1. **محمّل الملفات** - يقرأ من `lang/` كما يفعل Laravel العادي
+2. **محمّل قاعدة البيانات** (محمّل `Db` من Spatie) - يقرأ من `language_lines`
 
 عندما يوجد نفس المفتاح في المصدرين، **تفوز قيمة قاعدة البيانات**. هذا يتيح لك تجاوز أي ترجمة من حزمة خارجية أو مستندة إلى ملف دون لمس ملفات المصدر.
 

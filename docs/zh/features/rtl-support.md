@@ -51,7 +51,7 @@ $direction = Lingua::getDirection('he'); // 'rtl'
 
 ## Tailwind CSS
 
-当 `<html>` 上设置了 `dir` 后，Tailwind 内置的 `rtl:` 变体可以自动工作——无需插件或额外配置：
+当 `<html>` 上设置了 `dir` 后，Tailwind 内置的 `rtl:` 变体可以自动工作--无需插件或额外配置：
 
 ```html
 <!-- 翻转文字对齐 -->
@@ -77,14 +77,14 @@ $direction = Lingua::getDirection('he'); // 'rtl'
 对于新的布局或组件，优先使用 **CSS 逻辑属性**而非方向性属性。浏览器会自动处理 LTR/RTL 翻转：
 
 ```css
-/* ❌ 方向性 — 需要 RTL 覆盖 */
+/* ❌ 方向性 - 需要 RTL 覆盖 */
 .card {
     padding-left: 1rem;
     border-left: 2px solid blue;
     margin-right: auto;
 }
 
-/* ✅ 逻辑属性 — 自动适配两种方向 */
+/* ✅ 逻辑属性 - 自动适配两种方向 */
 .card {
     padding-inline-start: 1rem;   /* LTR 时为 left，RTL 时为 right */
     border-inline-start: 2px solid blue;
@@ -144,4 +144,4 @@ if ($direction === 'rtl') {
 
 ## 安全回退
 
-`Lingua::getDirection()` 在数据库中找不到语言环境时始终返回 `'ltr'` 作为回退——它不会抛出异常。在请求生命周期的任何时间点调用都是安全的，包括在语言表填充之前。
+`Lingua::getDirection()` 在数据库中找不到语言环境时始终返回 `'ltr'` 作为回退--它不会抛出异常。在请求生命周期的任何时间点调用都是安全的，包括在语言表填充之前。

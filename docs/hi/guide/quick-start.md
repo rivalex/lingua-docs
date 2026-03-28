@@ -50,7 +50,7 @@ php artisan lingua:add it es de pt_BR ar
 
 ## 4. अपने एप्लिकेशन में अनुवाद का उपयोग करें
 
-Lingua पारदर्शी है — हमेशा की तरह मानक Laravel helpers का उपयोग करें:
+Lingua पारदर्शी है - हमेशा की तरह मानक Laravel helpers का उपयोग करें:
 
 ```blade
 {{ __('messages.welcome') }}
@@ -134,4 +134,4 @@ session()->put(config('lingua.session_variable'), 'fr');
 
 ### केवल specific groups निर्यात करें
 
-यदि आप केवल अनुवादों का एक subset फ़ाइलों में निर्यात करना चाहते हैं, तो पहले local में sync करें, फिर जिन groups की ज़रूरत नहीं है उन्हें `lang/` से हटाएँ — रनटाइम पर डेटाबेस हमेशा source of truth होता है।
+यदि आप केवल अनुवादों का एक subset फ़ाइलों में निर्यात करना चाहते हैं, तो पहले local में sync करें, फिर जिन groups की ज़रूरत नहीं है उन्हें `lang/` से हटाएँ - रनटाइम पर डेटाबेस हमेशा source of truth होता है।

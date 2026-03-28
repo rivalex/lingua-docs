@@ -4,7 +4,7 @@ Capire come vengono archiviate le traduzioni ti aiuta a interrogarle, importarle
 
 ## La tabella `language_lines`
 
-Ogni riga in `language_lines` rappresenta una **stringa** traducibile — non una locale. Tutti i valori delle locale sono memorizzati insieme in un'unica colonna JSON `text`:
+Ogni riga in `language_lines` rappresenta una **stringa** traducibile - non una locale. Tutti i valori delle locale sono memorizzati insieme in un'unica colonna JSON `text`:
 
 ```
 group      | key        | type | text
@@ -17,10 +17,10 @@ emails     | subject    | html | {"en":"<b>Welcome</b> to our platform!"}
 
 ### Vantaggi di questo design
 
-- **Una riga per stringa** — nessuna riga per-locale da gestire
-- **Aggiungere una locale è non distruttivo** — basta aggiungere una nuova chiave all'oggetto JSON
-- **Le traduzioni mancanti sono esplicite** — se `fr` è assente dal JSON, la stringa non è ancora tradotta
-- **Query singola** — una `SELECT` recupera tutti i valori per ogni locale di una chiave
+- **Una riga per stringa** - nessuna riga per-locale da gestire
+- **Aggiungere una locale è non distruttivo** - basta aggiungere una nuova chiave all'oggetto JSON
+- **Le traduzioni mancanti sono esplicite** - se `fr` è assente dal JSON, la stringa non è ancora tradotta
+- **Query singola** - una `SELECT` recupera tutti i valori per ogni locale di una chiave
 
 ### Interrogazione diretta
 
@@ -95,7 +95,7 @@ La colonna `group` corrisponde al nome del file (`auth` = `lang/en/auth.php`) e 
 Le traduzioni vendor sono contrassegnate con `is_vendor = true` e portano una stringa `vendor` (es. `'spatie'`, `'laravel'`). Vengono sincronizzate dalle directory `lang/vendor/{vendor}/{locale}/`.
 
 - Possono essere **modificate** nell'interfaccia (per sovrascrivere il testo del vendor)
-- **Non possono essere eliminate** — il tentativo di farlo genera l'evento `vendor_translation_protected`
+- **Non possono essere eliminate** - il tentativo di farlo genera l'evento `vendor_translation_protected`
 - I campi `group` e `key` sono **bloccati** nella modale di aggiornamento
 
 Vedi [Traduzioni Vendor](/it/features/vendor-translations) per tutti i dettagli.

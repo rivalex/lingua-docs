@@ -2,7 +2,7 @@
 
 A página de Idiomas (`/lingua/languages`) é o centro de controle para todos os locales instalados.
 
-<Screenshot src="/screenshots/languages-page.png" alt="Página de gerenciamento de idiomas do Lingua" caption="Página de idiomas — exibindo locales instalados com estatísticas de conclusão." />
+<Screenshot src="/screenshots/languages-page.png" alt="Página de gerenciamento de idiomas do Lingua" caption="Página de idiomas - exibindo locales instalados com estatísticas de conclusão." />
 
 ## Adicionando um idioma
 
@@ -47,7 +47,7 @@ $available = Lingua::notInstalled(); // ['af', 'ar', 'az', …]
 
 ## Removendo um idioma
 
-Clique no ícone de lixeira em qualquer linha de idioma não-padrão. Um modal de confirmação previne exclusões acidentais — você precisa digitar o nome do idioma para confirmar.
+Clique no ícone de lixeira em qualquer linha de idioma não-padrão. Um modal de confirmação previne exclusões acidentais - você precisa digitar o nome do idioma para confirmar.
 
 Por baixo dos panos, a operação de exclusão:
 1. Remove os arquivos de idioma via `lang:rm {locale} --force`
@@ -83,7 +83,7 @@ Se você definir um novo idioma padrão, certifique-se de que todas as suas trad
 
 ## Reordenando idiomas
 
-Arraste e solte as linhas de idioma para controlar sua ordem de exibição em toda a aplicação — no widget seletor de idioma, no seletor de locale de traduções e em qualquer lugar que você use `Lingua::languages()`.
+Arraste e solte as linhas de idioma para controlar sua ordem de exibição em toda a aplicação - no widget seletor de idioma, no seletor de locale de traduções e em qualquer lugar que você use `Lingua::languages()`.
 
 A ordem de classificação é armazenada na coluna inteira `sort` e reatribuída sequencialmente após cada drop.
 

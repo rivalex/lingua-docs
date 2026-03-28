@@ -2,7 +2,7 @@
 
 The Translations page (`/lingua/translations/{locale?}`) lets you browse, filter, and edit every translation string.
 
-<Screenshot src="/screenshots/translations-page.png" alt="Lingua translations page" caption="Translations page — with locale switcher, group filter, and inline editor." />
+<Screenshot src="/screenshots/translations-page.png" alt="Lingua translations page" caption="Translations page - with locale switcher, group filter, and inline editor." />
 
 ## Navigating translations
 
@@ -10,7 +10,7 @@ The Translations page (`/lingua/translations/{locale?}`) lets you browse, filter
 
 The locale tabs at the top of the page let you switch between installed languages. The URL updates to `/lingua/translations/{locale}` so every view is bookmarkable and shareable.
 
-The **default locale** column is always shown on the left as a reference — you edit the selected locale on the right.
+The **default locale** column is always shown on the left as a reference - you edit the selected locale on the right.
 
 ### Filtering
 
@@ -41,24 +41,24 @@ Click directly into the translation cell to start editing. Changes are saved on 
 
 ### Sync from default
 
-Each translation row has a **Sync from default** button (↺). Clicking it copies the default locale's value to the current locale — useful as a starting point when you only need minor wording changes.
+Each translation row has a **Sync from default** button (↺). Clicking it copies the default locale's value to the current locale - useful as a starting point when you only need minor wording changes.
 
 ### Edit modal
 
 For the default locale, click the pencil icon to open the Edit modal, where you can change the translation type (text / html / markdown) as well as the value.
 
 ::: tip Changing translation types
-If you change a translation from `text` to `html`, the inline editor on the row will immediately switch to TipTap. The stored value is unchanged — only the editor changes.
+If you change a translation from `text` to `html`, the inline editor on the row will immediately switch to TipTap. The stored value is unchanged - only the editor changes.
 :::
 
 ## Creating translations
 
 Click **New Translation** to create a custom entry. Fill in:
 
-- **Group** — the file name equivalent (e.g. `marketing`, `emails`)
-- **Key** — the key within the group (e.g. `hero_title`)
-- **Type** — `text`, `html`, or `markdown`
-- **Value** — the translation for the default locale
+- **Group** - the file name equivalent (e.g. `marketing`, `emails`)
+- **Key** - the key within the group (e.g. `hero_title`)
+- **Type** - `text`, `html`, or `markdown`
+- **Value** - the translation for the default locale
 
 ```
 group: marketing
@@ -89,7 +89,7 @@ Vendor translations cannot be deleted. Attempting to do so shows a warning and d
 
 ## Copy key to clipboard
 
-Every row has a clipboard icon that copies the full `group.key` reference (e.g. `auth.failed`) to your clipboard — handy when referencing keys in Blade or PHP.
+Every row has a clipboard icon that copies the full `group.key` reference (e.g. `auth.failed`) to your clipboard - handy when referencing keys in Blade or PHP.
 
 ## Keyboard shortcuts
 

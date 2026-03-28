@@ -1,6 +1,6 @@
 # Sélecteur de langue
 
-Le composant `<livewire:lingua::language-selector>` est un sélecteur de locale intégrable pour vos utilisateurs finaux — entièrement séparé de l'interface d'administration.
+Le composant `<livewire:lingua::language-selector>` est un sélecteur de locale intégrable pour vos utilisateurs finaux - entièrement séparé de l'interface d'administration.
 
 ## Utilisation de base
 
@@ -14,33 +14,33 @@ Ajoutez-le n'importe où dans vos layouts Blade. Il se rend en utilisant le mode
 
 ### Mode barre latérale (par défaut)
 
-Se rend comme une section de navigation groupée — idéal pour les barres latérales d'application construites avec Flux.
+Se rend comme une section de navigation groupée - idéal pour les barres latérales d'application construites avec Flux.
 
 ```blade
 <livewire:lingua::language-selector mode="sidebar" />
 ```
 
-<Screenshot src="/screenshots/selector-sidebar.png" alt="Sélecteur de langue en mode barre latérale" caption="Mode barre latérale — affiche toutes les langues installées comme éléments de navigation." width="320px" :center="true"/>
+<Screenshot src="/screenshots/selector-sidebar.png" alt="Sélecteur de langue en mode barre latérale" caption="Mode barre latérale - affiche toutes les langues installées comme éléments de navigation." width="320px" :center="true"/>
 
 ### Mode liste déroulante
 
-Se rend comme un bouton de liste déroulante compact — idéal pour les en-têtes et barres de navigation.
+Se rend comme un bouton de liste déroulante compact - idéal pour les en-têtes et barres de navigation.
 
 ```blade
 <livewire:lingua::language-selector mode="dropdown" />
 ```
 
-<Screenshot src="/screenshots/selector-dropdown.png" alt="Sélecteur de langue en mode liste déroulante" caption="Mode liste déroulante — affiche la langue courante avec une icône de drapeau." width="320px" :center="true"/>
+<Screenshot src="/screenshots/selector-dropdown.png" alt="Sélecteur de langue en mode liste déroulante" caption="Mode liste déroulante - affiche la langue courante avec une icône de drapeau." width="320px" :center="true"/>
 
 ### Mode modale
 
-Se rend comme un bouton qui ouvre une modale complète de sélection de langue — idéal pour la sélection de locale mise en avant dans les pages d'accueil ou les flux d'intégration.
+Se rend comme un bouton qui ouvre une modale complète de sélection de langue - idéal pour la sélection de locale mise en avant dans les pages d'accueil ou les flux d'intégration.
 
 ```blade
 <livewire:lingua::language-selector mode="modal" />
 ```
 
-<Screenshot src="/screenshots/selector-modal.png" alt="Sélecteur de langue en mode modale" caption="Mode modale — superposition plein écran pour le choix de la langue."/>
+<Screenshot src="/screenshots/selector-modal.png" alt="Sélecteur de langue en mode modale" caption="Mode modale - superposition plein écran pour le choix de la langue."/>
 
 ## Référence des props
 

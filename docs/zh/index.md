@@ -4,10 +4,10 @@ layout: home
 hero:
   name: "LINGUA"
   text: "Laravel 数据库驱动的翻译管理"
-  tagline: 安装语言、管理翻译、切换语言环境 — 全部通过精美的 Livewire 界面完成，无需重新部署。
+  tagline: 安装语言、管理翻译、切换语言环境 - 全部通过精美的 Livewire 界面完成，无需重新部署。
   image:
-    light: logoLinguaVertical-light.svg
-    dark: logoLinguaVertical-dark.svg
+    light: /logoLinguaVertical-light.svg
+    dark: /logoLinguaVertical-dark.svg
     alt: Lingua UI
   actions:
     - theme: brand
@@ -20,11 +20,11 @@ hero:
 features:
   - icon: 🗄️
     title: 数据库驱动的翻译
-    details: 所有翻译存储在数据库中，可即时编辑——无需文件部署。Spatie 的 laravel-translation-loader 负责加载层。
+    details: 所有翻译存储在数据库中，可即时编辑--无需文件部署。Spatie 的 laravel-translation-loader 负责加载层。
 
   - icon: ⚡
     title: Livewire + Flux UI
-    details: 基于 Livewire 4 和 Flux 2 构建的响应式实时管理界面。每个操作——添加语言、编辑翻译、同步——都无需页面刷新。
+    details: 基于 Livewire 4 和 Flux 2 构建的响应式实时管理界面。每个操作--添加语言、编辑翻译、同步--都无需页面刷新。
 
   - icon: 🔄
     title: 双向同步

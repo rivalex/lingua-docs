@@ -6,7 +6,7 @@ Lingua ships six Artisan commands for terminal-driven language and translation m
 
 ### `lingua:add {locale}`
 
-Installs a new language — downloads files, creates the DB record, syncs translations.
+Installs a new language - downloads files, creates the DB record, syncs translations.
 
 ```bash
 php artisan lingua:add it
@@ -37,7 +37,7 @@ After adding a language, visit `/lingua/translations/it` to see which strings st
 
 ### `lingua:remove {locale}`
 
-Removes a language — deletes files, cleans the database, reorders remaining languages.
+Removes a language - deletes files, cleans the database, reorders remaining languages.
 
 ```bash
 php artisan lingua:remove fr
@@ -88,18 +88,18 @@ php artisan lingua:sync-to-database
 ```
 
 **What gets imported:**
-- `lang/{locale}/*.php` — PHP files
-- `lang/{locale}.json` — JSON files
-- `lang/vendor/{package}/{locale}/*.php` — vendor package files
+- `lang/{locale}/*.php` - PHP files
+- `lang/{locale}.json` - JSON files
+- `lang/vendor/{package}/{locale}/*.php` - vendor package files
 
 Uses `updateOrCreate` matching on `group + key`, so existing edits from the UI are preserved.
 
 **Typical use cases:**
 ```bash
-# After a fresh clone — populate the DB from committed lang files
+# After a fresh clone - populate the DB from committed lang files
 php artisan lingua:sync-to-database
 
-# After lang:update — import new strings
+# After lang:update - import new strings
 php artisan lingua:sync-to-database
 
 # In a deployment script
@@ -125,7 +125,7 @@ php artisan lingua:sync-to-local
 
 **Typical use cases:**
 ```bash
-# Before committing — export DB state to files for version control
+# Before committing - export DB state to files for version control
 php artisan lingua:sync-to-local
 git add lang/
 git commit -m "chore: sync translations"

@@ -6,7 +6,7 @@ Lingua est livré avec six commandes Artisan pour la gestion des langues et des 
 
 ### `lingua:add {locale}`
 
-Installe une nouvelle langue — télécharge les fichiers, crée l'enregistrement en DB, synchronise les traductions.
+Installe une nouvelle langue - télécharge les fichiers, crée l'enregistrement en DB, synchronise les traductions.
 
 ```bash
 php artisan lingua:add it
@@ -37,7 +37,7 @@ Après l'ajout d'une langue, visitez `/lingua/translations/it` pour voir quelles
 
 ### `lingua:remove {locale}`
 
-Supprime une langue — efface les fichiers, nettoie la base de données, réordonne les langues restantes.
+Supprime une langue - efface les fichiers, nettoie la base de données, réordonne les langues restantes.
 
 ```bash
 php artisan lingua:remove fr
@@ -88,18 +88,18 @@ php artisan lingua:sync-to-database
 ```
 
 **Ce qui est importé :**
-- `lang/{locale}/*.php` — fichiers PHP
-- `lang/{locale}.json` — fichiers JSON
-- `lang/vendor/{package}/{locale}/*.php` — fichiers de packages
+- `lang/{locale}/*.php` - fichiers PHP
+- `lang/{locale}.json` - fichiers JSON
+- `lang/vendor/{package}/{locale}/*.php` - fichiers de packages
 
 Utilise `updateOrCreate` en correspondant sur `group + key`, les modifications existantes depuis l'interface sont donc préservées.
 
 **Cas d'utilisation typiques :**
 ```bash
-# Après un clone frais — peupler la DB depuis les fichiers lang commités
+# Après un clone frais - peupler la DB depuis les fichiers lang commités
 php artisan lingua:sync-to-database
 
-# Après lang:update — importer les nouvelles chaînes
+# Après lang:update - importer les nouvelles chaînes
 php artisan lingua:sync-to-database
 
 # Dans un script de déploiement
@@ -125,7 +125,7 @@ php artisan lingua:sync-to-local
 
 **Cas d'utilisation typiques :**
 ```bash
-# Avant de committer — exporter l'état de la DB vers les fichiers pour le contrôle de version
+# Avant de committer - exporter l'état de la DB vers les fichiers pour le contrôle de version
 php artisan lingua:sync-to-local
 git add lang/
 git commit -m "chore: sync translations"

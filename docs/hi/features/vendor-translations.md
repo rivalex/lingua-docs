@@ -1,6 +1,6 @@
 # Vendor Translations
 
-Vendor translations वे strings हैं जो तृतीय-पक्ष packages से संबंधित हैं — Laravel के अपने validation messages, pagination labels, password reset strings, और किसी भी अन्य package के translations जो अपनी `lang/` directory के साथ आते हैं।
+Vendor translations वे strings हैं जो तृतीय-पक्ष packages से संबंधित हैं - Laravel के अपने validation messages, pagination labels, password reset strings, और किसी भी अन्य package के translations जो अपनी `lang/` directory के साथ आते हैं।
 
 ## उन्हें कैसे पहचाना जाता है
 
@@ -40,7 +40,7 @@ Laravel की अपनी `lang/en/*.php` files (auth, validation, pagination,
 2. String ढूंढें (उदाहरण: `validation.required`)
 3. Update modal खोलने के लिए edit आइकन पर क्लिक करें
 4. किसी भी locale के लिए value बदलें
-5. Save करें — override अगले request पर तुरंत लागू होता है
+5. Save करें - override अगले request पर तुरंत लागू होता है
 
 ```php
 // या facade के माध्यम से programmatically:

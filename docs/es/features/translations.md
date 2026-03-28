@@ -2,7 +2,7 @@
 
 La página de Traducciones (`/lingua/translations/{locale?}`) te permite explorar, filtrar y editar cada cadena de traducción.
 
-<Screenshot src="/screenshots/translations-page.png" alt="Página de traducciones de Lingua" caption="Página de traducciones — con selector de idioma, filtro de grupo y editor en línea." />
+<Screenshot src="/screenshots/translations-page.png" alt="Página de traducciones de Lingua" caption="Página de traducciones - con selector de idioma, filtro de grupo y editor en línea." />
 
 ## Navegar por las traducciones
 
@@ -10,7 +10,7 @@ La página de Traducciones (`/lingua/translations/{locale?}`) te permite explora
 
 Las pestañas de idioma en la parte superior de la página te permiten cambiar entre los idiomas instalados. La URL se actualiza a `/lingua/translations/{locale}` para que cada vista sea marcable y compartible.
 
-La columna del **idioma predeterminado** siempre se muestra a la izquierda como referencia — editas el idioma seleccionado en la derecha.
+La columna del **idioma predeterminado** siempre se muestra a la izquierda como referencia - editas el idioma seleccionado en la derecha.
 
 ### Filtrado
 
@@ -41,24 +41,24 @@ Haz clic directamente en la celda de traducción para comenzar a editar. Los cam
 
 ### Sincronizar desde predeterminado
 
-Cada fila de traducción tiene un botón **Sync from default** (↺). Al hacer clic, copia el valor del idioma predeterminado al idioma actual — útil como punto de partida cuando solo necesitas pequeños cambios de redacción.
+Cada fila de traducción tiene un botón **Sync from default** (↺). Al hacer clic, copia el valor del idioma predeterminado al idioma actual - útil como punto de partida cuando solo necesitas pequeños cambios de redacción.
 
 ### Modal de edición
 
 Para el idioma predeterminado, haz clic en el icono de lápiz para abrir el modal de edición, donde puedes cambiar el tipo de traducción (text / html / markdown) así como el valor.
 
 ::: tip Cambiar tipos de traducción
-Si cambias una traducción de `text` a `html`, el editor en línea de la fila cambiará inmediatamente a TipTap. El valor almacenado no cambia — solo cambia el editor.
+Si cambias una traducción de `text` a `html`, el editor en línea de la fila cambiará inmediatamente a TipTap. El valor almacenado no cambia - solo cambia el editor.
 :::
 
 ## Crear traducciones
 
 Haz clic en **New Translation** para crear una entrada personalizada. Completa:
 
-- **Group** — el equivalente al nombre del archivo (p. ej. `marketing`, `emails`)
-- **Key** — la clave dentro del grupo (p. ej. `hero_title`)
-- **Type** — `text`, `html` o `markdown`
-- **Value** — la traducción para el idioma predeterminado
+- **Group** - el equivalente al nombre del archivo (p. ej. `marketing`, `emails`)
+- **Key** - la clave dentro del grupo (p. ej. `hero_title`)
+- **Type** - `text`, `html` o `markdown`
+- **Value** - la traducción para el idioma predeterminado
 
 ```
 group: marketing
@@ -89,7 +89,7 @@ Las traducciones de proveedores no se pueden eliminar. Intentarlo muestra una ad
 
 ## Copiar clave al portapapeles
 
-Cada fila tiene un icono de portapapeles que copia la referencia completa `grupo.clave` (p. ej. `auth.failed`) al portapapeles — útil cuando haces referencia a claves en Blade o PHP.
+Cada fila tiene un icono de portapapeles que copia la referencia completa `grupo.clave` (p. ej. `auth.failed`) al portapapeles - útil cuando haces referencia a claves en Blade o PHP.
 
 ## Atajos de teclado
 

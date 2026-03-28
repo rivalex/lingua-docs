@@ -1,6 +1,6 @@
 # Traducciones de Proveedores
 
-Las traducciones de proveedores son cadenas que pertenecen a paquetes de terceros — los propios mensajes de validación de Laravel, etiquetas de paginación, cadenas de restablecimiento de contraseña y traducciones de cualquier otro paquete que incluya su propio directorio `lang/`.
+Las traducciones de proveedores son cadenas que pertenecen a paquetes de terceros - los propios mensajes de validación de Laravel, etiquetas de paginación, cadenas de restablecimiento de contraseña y traducciones de cualquier otro paquete que incluya su propio directorio `lang/`.
 
 ## Cómo se identifican
 
@@ -40,7 +40,7 @@ El caso de uso más común es sobreescribir los mensajes de validación de Larav
 2. Encuentra la cadena (p. ej. `validation.required`)
 3. Haz clic en el icono de edición para abrir el modal de actualización
 4. Cambia el valor para cualquier idioma
-5. Guarda — la sobreescritura surte efecto inmediatamente en la siguiente solicitud
+5. Guarda - la sobreescritura surte efecto inmediatamente en la siguiente solicitud
 
 ```php
 // O programáticamente mediante el facade:

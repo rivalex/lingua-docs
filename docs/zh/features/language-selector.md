@@ -1,6 +1,6 @@
 # 语言选择器
 
-`<livewire:lingua::language-selector>` 组件是一个可嵌入的语言切换器，供终端用户使用——与后台管理界面完全分离。
+`<livewire:lingua::language-selector>` 组件是一个可嵌入的语言切换器，供终端用户使用--与后台管理界面完全分离。
 
 ## 基本用法
 
@@ -14,33 +14,33 @@
 
 ### 侧边栏模式（默认）
 
-渲染为分组导航区块——非常适合基于 Flux 构建的应用侧边栏。
+渲染为分组导航区块--非常适合基于 Flux 构建的应用侧边栏。
 
 ```blade
 <livewire:lingua::language-selector mode="sidebar" />
 ```
 
-<Screenshot src="/screenshots/selector-sidebar.png" alt="侧边栏模式的语言选择器" caption="侧边栏模式 — 将所有已安装语言显示为导航项。" width="320px" :center="true"/>
+<Screenshot src="/screenshots/selector-sidebar.png" alt="侧边栏模式的语言选择器" caption="侧边栏模式 - 将所有已安装语言显示为导航项。" width="320px" :center="true"/>
 
 ### 下拉菜单模式
 
-渲染为紧凑的下拉按钮——非常适合页头和导航栏。
+渲染为紧凑的下拉按钮--非常适合页头和导航栏。
 
 ```blade
 <livewire:lingua::language-selector mode="dropdown" />
 ```
 
-<Screenshot src="/screenshots/selector-dropdown.png" alt="下拉菜单模式的语言选择器" caption="下拉菜单模式 — 显示带有国旗图标的当前语言。" width="320px" :center="true"/>
+<Screenshot src="/screenshots/selector-dropdown.png" alt="下拉菜单模式的语言选择器" caption="下拉菜单模式 - 显示带有国旗图标的当前语言。" width="320px" :center="true"/>
 
 ### 模态框模式
 
-渲染为打开完整语言选择模态框的按钮——非常适合落地页或引导流程中的突出语言切换。
+渲染为打开完整语言选择模态框的按钮--非常适合落地页或引导流程中的突出语言切换。
 
 ```blade
 <livewire:lingua::language-selector mode="modal" />
 ```
 
-<Screenshot src="/screenshots/selector-modal.png" alt="模态框模式的语言选择器" caption="模态框模式 — 全屏语言选择覆盖层。"/>
+<Screenshot src="/screenshots/selector-modal.png" alt="模态框模式的语言选择器" caption="模态框模式 - 全屏语言选择覆盖层。"/>
 
 ## 属性参考
 

@@ -38,7 +38,7 @@ Un componente editor polimórfico que renderiza un `<textarea>`, editor HTML de 
 | `label` | string | `''` | Etiqueta opcional sobre el campo |
 | `placeholder` | string | `''` | Texto de marcador de posición |
 | `required` | bool | `false` | Muestra un indicador de campo obligatorio |
-| `wire:model` | — | — | Vinculación al modelo Livewire |
+| `wire:model` | - | - | Vinculación al modelo Livewire |
 
 ---
 
@@ -101,7 +101,7 @@ Un componente de mensaje transitorio que se muestra durante un breve período de
 
 | Prop | Tipo | Por defecto | Descripción |
 |---|---|---|---|
-| `on` | string | — | Nombre del evento Livewire a escuchar |
+| `on` | string | - | Nombre del evento Livewire a escuchar |
 | `delay` | int | `1500` | Duración en milisegundos antes de ocultarse |
 
 ---
@@ -122,7 +122,7 @@ Un componente de entrada de texto con autocompletado usado en el formulario de c
 
 | Prop | Tipo | Descripción |
 |---|---|---|
-| `wire:model` | — | Vinculación al modelo Livewire |
+| `wire:model` | - | Vinculación al modelo Livewire |
 | `suggestions` | array | Array de sugerencias de autocompletado |
 | `placeholder` | string | Texto de marcador de posición del input |
 

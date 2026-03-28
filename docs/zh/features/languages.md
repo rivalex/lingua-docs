@@ -2,7 +2,7 @@
 
 语言页面（`/lingua/languages`）是管理所有已安装语言环境的控制中心。
 
-<Screenshot src="/screenshots/languages-page.png" alt="Lingua 语言管理页面" caption="语言页面 — 显示已安装的语言环境及其完成度统计。" />
+<Screenshot src="/screenshots/languages-page.png" alt="Lingua 语言管理页面" caption="语言页面 - 显示已安装的语言环境及其完成度统计。" />
 
 ## 添加语言
 
@@ -47,7 +47,7 @@ $available = Lingua::notInstalled(); // ['af', 'ar', 'az', …]
 
 ## 删除语言
 
-点击任意非默认语言行上的垃圾桶图标。确认模态框会防止意外删除——您必须输入语言名称来确认。
+点击任意非默认语言行上的垃圾桶图标。确认模态框会防止意外删除--您必须输入语言名称来确认。
 
 在后台，删除操作将：
 1. 通过 `lang:rm {locale} --force` 删除语言文件
@@ -83,7 +83,7 @@ Language::setDefault($french);
 
 ## 重新排序语言
 
-拖放语言行以控制其在整个应用中的显示顺序——包括语言选择器小部件、翻译语言环境切换器，以及任何使用 `Lingua::languages()` 的地方。
+拖放语言行以控制其在整个应用中的显示顺序--包括语言选择器小部件、翻译语言环境切换器，以及任何使用 `Lingua::languages()` 的地方。
 
 排序顺序存储在 `sort` 整数列中，每次拖放后按顺序重新分配。
 

@@ -38,7 +38,7 @@ Un componente editor polimorfico che renderizza un `<textarea>`, un editor HTML 
 | `label` | string | `''` | Etichetta opzionale sopra il campo |
 | `placeholder` | string | `''` | Testo segnaposto |
 | `required` | bool | `false` | Mostra un badge richiesto |
-| `wire:model` | — | — | Collegamento al modello Livewire |
+| `wire:model` | - | - | Collegamento al modello Livewire |
 
 ---
 
@@ -101,7 +101,7 @@ Un componente di messaggio transitorio che appare per una breve durata dopo un e
 
 | Prop | Tipo | Default | Descrizione |
 |---|---|---|---|
-| `on` | string | — | Nome dell'evento Livewire da ascoltare |
+| `on` | string | - | Nome dell'evento Livewire da ascoltare |
 | `delay` | int | `1500` | Durata in millisecondi prima di nascondersi |
 
 ---
@@ -122,7 +122,7 @@ Un componente di input di testo con autocompletamento usato nel form di creazion
 
 | Prop | Tipo | Descrizione |
 |---|---|---|
-| `wire:model` | — | Collegamento al modello Livewire |
+| `wire:model` | - | Collegamento al modello Livewire |
 | `suggestions` | array | Array di suggerimenti per l'autocompletamento |
 | `placeholder` | string | Segnaposto dell'input |
 

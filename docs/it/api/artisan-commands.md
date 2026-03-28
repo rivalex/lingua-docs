@@ -6,7 +6,7 @@ Lingua include sei comandi Artisan per la gestione delle lingue e delle traduzio
 
 ### `lingua:add {locale}`
 
-Installa una nuova lingua — scarica i file, crea il record DB, sincronizza le traduzioni.
+Installa una nuova lingua - scarica i file, crea il record DB, sincronizza le traduzioni.
 
 ```bash
 php artisan lingua:add it
@@ -37,7 +37,7 @@ Dopo aver aggiunto una lingua, visita `/lingua/translations/it` per vedere quali
 
 ### `lingua:remove {locale}`
 
-Rimuove una lingua — elimina i file, pulisce il database, riordina le lingue rimanenti.
+Rimuove una lingua - elimina i file, pulisce il database, riordina le lingue rimanenti.
 
 ```bash
 php artisan lingua:remove fr
@@ -88,18 +88,18 @@ php artisan lingua:sync-to-database
 ```
 
 **Cosa viene importato:**
-- `lang/{locale}/*.php` — file PHP
-- `lang/{locale}.json` — file JSON
-- `lang/vendor/{package}/{locale}/*.php` — file dei pacchetti vendor
+- `lang/{locale}/*.php` - file PHP
+- `lang/{locale}.json` - file JSON
+- `lang/vendor/{package}/{locale}/*.php` - file dei pacchetti vendor
 
 Usa `updateOrCreate` abbinando su `group + key`, quindi le modifiche esistenti dall'interfaccia vengono preservate.
 
 **Casi d'uso tipici:**
 ```bash
-# Dopo un clone fresco — popola il DB dai file lang committati
+# Dopo un clone fresco - popola il DB dai file lang committati
 php artisan lingua:sync-to-database
 
-# Dopo lang:update — importa le nuove stringhe
+# Dopo lang:update - importa le nuove stringhe
 php artisan lingua:sync-to-database
 
 # In uno script di deployment
@@ -125,7 +125,7 @@ php artisan lingua:sync-to-local
 
 **Casi d'uso tipici:**
 ```bash
-# Prima del commit — esporta lo stato DB nei file per il controllo versione
+# Prima del commit - esporta lo stato DB nei file per il controllo versione
 php artisan lingua:sync-to-local
 git add lang/
 git commit -m "chore: sync translations"

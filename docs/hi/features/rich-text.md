@@ -36,7 +36,7 @@ Editor toolbar को `config/lingua.php` के माध्यम से globa
 Edit modal में (pencil icon, केवल default locale पर), **Type** dropdown से desired type चुनें। Editor तुरंत page reload के बिना row पर update होता है।
 
 ::: tip Auto-detection
-जब आप पहली बार `lingua:sync-to-database` चलाते हैं, Lingua content के आधार पर type auto-detect करता है। आप किसी भी समय इसे manually override कर सकते हैं — जब आप type बदलते हैं तो stored value नहीं बदलती, केवल editor व्यवहार बदलता है।
+जब आप पहली बार `lingua:sync-to-database` चलाते हैं, Lingua content के आधार पर type auto-detect करता है। आप किसी भी समय इसे manually override कर सकते हैं - जब आप type बदलते हैं तो stored value नहीं बदलती, केवल editor व्यवहार बदलता है।
 :::
 
 ## HTML translations के साथ काम करना
@@ -44,7 +44,7 @@ Edit modal में (pencil icon, केवल default locale पर), **Type**
 HTML translations को `text` JSON column में raw HTML के रूप में संग्रहीत किया जाता है:
 
 ```json
-{"en": "<p>Welcome to <strong>Lingua</strong> — the translation manager for Laravel.</p>"}
+{"en": "<p>Welcome to <strong>Lingua</strong> - the translation manager for Laravel.</p>"}
 ```
 
 उन्हें Blade में double-escaping के बिना render करने के लिए:

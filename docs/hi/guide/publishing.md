@@ -34,7 +34,7 @@ php artisan vendor:publish --tag="lingua-migrations"
 
 **Output:** `database/migrations/YYYY_MM_DD_HHMMSS_create_lingua_table.php`
 
-यदि आपको `languages` या `language_lines` schema को संशोधित करना है — उदाहरण के लिए, indexes जोड़ना या column types बदलना — तो इसका उपयोग करें। प्रकाशित करने के बाद, सामान्य रूप से `php artisan migrate` चलाएँ।
+यदि आपको `languages` या `language_lines` schema को संशोधित करना है - उदाहरण के लिए, indexes जोड़ना या column types बदलना - तो इसका उपयोग करें। प्रकाशित करने के बाद, सामान्य रूप से `php artisan migrate` चलाएँ।
 
 ::: warning
 `lingua:install` विज़ार्ड migrations को स्वचालित रूप से प्रकाशित और चलाता है। केवल मैनुअल रूप से प्रकाशित करें यदि आपको उन्हें चलाने से पहले schema customize करना है।

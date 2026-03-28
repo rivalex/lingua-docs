@@ -4,7 +4,7 @@ Comprendre la façon dont les traductions sont stockées vous aide à les interr
 
 ## La table `language_lines`
 
-Chaque ligne dans `language_lines` représente une **chaîne** traduisible — et non une locale. Toutes les valeurs de locale sont stockées ensemble dans une seule colonne JSON `text` :
+Chaque ligne dans `language_lines` représente une **chaîne** traduisible - et non une locale. Toutes les valeurs de locale sont stockées ensemble dans une seule colonne JSON `text` :
 
 ```
 group      | key        | type | text
@@ -17,10 +17,10 @@ emails     | subject    | html | {"en":"<b>Welcome</b> to our platform!"}
 
 ### Avantages de cette conception
 
-- **Une ligne par chaîne** — pas de lignes par locale à gérer
-- **L'ajout d'une locale est non destructif** — il suffit d'ajouter une nouvelle clé à l'objet JSON
-- **Les traductions manquantes sont explicites** — si `fr` est absent du JSON, la chaîne n'est pas encore traduite
-- **Requête unique** — un seul `SELECT` récupère toutes les valeurs de locale pour une clé
+- **Une ligne par chaîne** - pas de lignes par locale à gérer
+- **L'ajout d'une locale est non destructif** - il suffit d'ajouter une nouvelle clé à l'objet JSON
+- **Les traductions manquantes sont explicites** - si `fr` est absent du JSON, la chaîne n'est pas encore traduite
+- **Requête unique** - un seul `SELECT` récupère toutes les valeurs de locale pour une clé
 
 ### Requêtes directes
 
@@ -95,7 +95,7 @@ La colonne `group` correspond au nom du fichier (`auth` = `lang/en/auth.php`) et
 Les traductions de packages sont signalées avec `is_vendor = true` et portent une chaîne `vendor` (ex. `'spatie'`, `'laravel'`). Elles sont synchronisées depuis les répertoires `lang/vendor/{vendor}/{locale}/`.
 
 - Elles **peuvent être modifiées** dans l'interface (pour remplacer le texte du package)
-- Elles **ne peuvent pas être supprimées** — toute tentative de suppression déclenche un événement `vendor_translation_protected`
+- Elles **ne peuvent pas être supprimées** - toute tentative de suppression déclenche un événement `vendor_translation_protected`
 - Les champs `group` et `key` sont **verrouillés** dans la modale de mise à jour
 
 Consultez [Traductions de packages](/fr/features/vendor-translations) pour tous les détails.

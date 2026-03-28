@@ -4,10 +4,10 @@ layout: home
 hero:
   name: "LINGUA"
   text: "Traductions pilotées par la base de données pour Laravel"
-  tagline: Installez des langues, gérez vos traductions et changez de locale — le tout via une belle interface Livewire, sans aucun déploiement.
+  tagline: Installez des langues, gérez vos traductions et changez de locale - le tout via une belle interface Livewire, sans aucun déploiement.
   image:
-    light: logoLinguaVertical-light.svg
-    dark: logoLinguaVertical-dark.svg
+    light: /logoLinguaVertical-light.svg
+    dark: /logoLinguaVertical-dark.svg
     alt: Interface Lingua
   actions:
     - theme: brand
@@ -20,11 +20,11 @@ hero:
 features:
   - icon: 🗄️
     title: Traductions en base de données
-    details: Toutes les traductions vivent dans la base de données et sont modifiables instantanément — aucun déploiement de fichier n'est nécessaire. Le laravel-translation-loader de Spatie gère la couche de chargement.
+    details: Toutes les traductions vivent dans la base de données et sont modifiables instantanément - aucun déploiement de fichier n'est nécessaire. Le laravel-translation-loader de Spatie gère la couche de chargement.
 
   - icon: ⚡
     title: Livewire + Flux UI
-    details: Interface de gestion réactive en temps réel, construite avec Livewire 4 et Flux 2. Chaque action — ajout de langue, édition de traduction, synchronisation — se fait sans rechargement de page.
+    details: Interface de gestion réactive en temps réel, construite avec Livewire 4 et Flux 2. Chaque action - ajout de langue, édition de traduction, synchronisation - se fait sans rechargement de page.
 
   - icon: 🔄
     title: Synchronisation bidirectionnelle

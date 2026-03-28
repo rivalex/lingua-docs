@@ -11,21 +11,21 @@ Browser request
 ┌─────────────────────────────┐
 │      LinguaMiddleware       │  从 session 中读取 'locale'
 │  app()->setLocale($locale)  │  回退到数据库默认值
-└──────────────┬──────────────┘
-               │
+└───┬─────────────────────────┘
+    │
     ▼
 ┌─────────────────────────────┐
 │        Your Controller      │
 │  __('auth.failed')          │  标准 Laravel 辅助函数
-└──────────────┬──────────────┘
-               │
+└───┬─────────────────────────┘
+    │
     ▼
 ┌─────────────────────────────┐
 │       LinguaManager         │  自定义 TranslationLoaderManager
 │  1. DB loader (Spatie)      │  数据库在重叠时优先
 │  2. File loader (fallback)  │
-└──────────────┬──────────────┘
-               │
+└───┬─────────────────────────┘
+    │
     ▼
 Translated string returned
 ```
@@ -34,8 +34,8 @@ Translated string returned
 
 `LinguaManager` 继承自 Spatie 的 `TranslationLoaderManager`。在运行时，它合并两个来源：
 
-1. **文件加载器** — 像普通 Laravel 一样从 `lang/` 读取
-2. **数据库加载器**（Spatie 的 `Db` 加载器）— 从 `language_lines` 读取
+1. **文件加载器** - 像普通 Laravel 一样从 `lang/` 读取
+2. **数据库加载器**（Spatie 的 `Db` 加载器）- 从 `language_lines` 读取
 
 当两个来源中存在相同的键时，**数据库中的值优先**。这允许您覆盖任何扩展包或基于文件的翻译，而无需修改源文件。
 

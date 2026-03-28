@@ -2,7 +2,7 @@
 
 La pagina Traduzioni (`/lingua/translations/{locale?}`) ti permette di sfogliare, filtrare e modificare ogni stringa di traduzione.
 
-<Screenshot src="/screenshots/translations-page.png" alt="Pagina delle traduzioni di Lingua" caption="Pagina Traduzioni — con selettore di locale, filtro per gruppo e editor inline." />
+<Screenshot src="/screenshots/translations-page.png" alt="Pagina delle traduzioni di Lingua" caption="Pagina Traduzioni - con selettore di locale, filtro per gruppo e editor inline." />
 
 ## Navigare tra le traduzioni
 
@@ -10,7 +10,7 @@ La pagina Traduzioni (`/lingua/translations/{locale?}`) ti permette di sfogliare
 
 Le schede di locale in cima alla pagina ti permettono di passare tra le lingue installate. L'URL si aggiorna a `/lingua/translations/{locale}` così ogni vista è aggiungibile ai segnalibri e condivisibile.
 
-La colonna della **locale predefinita** è sempre mostrata a sinistra come riferimento — modifichi la locale selezionata a destra.
+La colonna della **locale predefinita** è sempre mostrata a sinistra come riferimento - modifichi la locale selezionata a destra.
 
 ### Filtri
 
@@ -41,24 +41,24 @@ Clicca direttamente nella cella della traduzione per iniziare a modificare. Le m
 
 ### Sincronizza dalla predefinita
 
-Ogni riga di traduzione ha un pulsante **Sincronizza dalla predefinita** (↺). Cliccandolo si copia il valore della locale predefinita nella locale corrente — utile come punto di partenza quando hai bisogno solo di piccole modifiche al testo.
+Ogni riga di traduzione ha un pulsante **Sincronizza dalla predefinita** (↺). Cliccandolo si copia il valore della locale predefinita nella locale corrente - utile come punto di partenza quando hai bisogno solo di piccole modifiche al testo.
 
 ### Modale di modifica
 
 Per la locale predefinita, clicca sull'icona a matita per aprire la modale di modifica, dove puoi cambiare il tipo di traduzione (text / html / markdown) oltre al valore.
 
 ::: tip Cambiare i tipi di traduzione
-Se cambi una traduzione da `text` a `html`, l'editor inline sulla riga passerà immediatamente a TipTap. Il valore memorizzato non cambia — cambia solo l'editor.
+Se cambi una traduzione da `text` a `html`, l'editor inline sulla riga passerà immediatamente a TipTap. Il valore memorizzato non cambia - cambia solo l'editor.
 :::
 
 ## Creare traduzioni
 
 Clicca **Nuova traduzione** per creare una voce personalizzata. Compila:
 
-- **Gruppo** — l'equivalente del nome del file (es. `marketing`, `emails`)
-- **Chiave** — la chiave all'interno del gruppo (es. `hero_title`)
-- **Tipo** — `text`, `html` o `markdown`
-- **Valore** — la traduzione per la locale predefinita
+- **Gruppo** - l'equivalente del nome del file (es. `marketing`, `emails`)
+- **Chiave** - la chiave all'interno del gruppo (es. `hero_title`)
+- **Tipo** - `text`, `html` o `markdown`
+- **Valore** - la traduzione per la locale predefinita
 
 ```
 group: marketing
@@ -89,7 +89,7 @@ Le traduzioni vendor non possono essere eliminate. Il tentativo di farlo mostra 
 
 ## Copia chiave negli appunti
 
-Ogni riga ha un'icona degli appunti che copia il riferimento completo `group.key` (es. `auth.failed`) negli appunti — comodo quando si fa riferimento alle chiavi in Blade o PHP.
+Ogni riga ha un'icona degli appunti che copia il riferimento completo `group.key` (es. `auth.failed`) negli appunti - comodo quando si fa riferimento alle chiavi in Blade o PHP.
 
 ## Scorciatoie da tastiera
 

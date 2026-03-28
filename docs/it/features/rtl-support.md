@@ -51,7 +51,7 @@ $direction = Lingua::getDirection('he'); // 'rtl'
 
 ## Tailwind CSS
 
-Con `dir` impostato su `<html>`, la variante integrata `rtl:` di Tailwind funziona automaticamente — non è richiesto alcun plugin o configurazione:
+Con `dir` impostato su `<html>`, la variante integrata `rtl:` di Tailwind funziona automaticamente - non è richiesto alcun plugin o configurazione:
 
 ```html
 <!-- Inverti l'allineamento del testo -->
@@ -77,14 +77,14 @@ Con `dir` impostato su `<html>`, la variante integrata `rtl:` di Tailwind funzio
 Per i nuovi layout o componenti, preferisci le **proprietà logiche CSS** rispetto a quelle direzionali. Il browser gestisce automaticamente l'inversione LTR/RTL:
 
 ```css
-/* ❌ Direzionale — richiede override RTL */
+/* ❌ Direzionale - richiede override RTL */
 .card {
     padding-left: 1rem;
     border-left: 2px solid blue;
     margin-right: auto;
 }
 
-/* ✅ Logico — funziona in entrambe le direzioni automaticamente */
+/* ✅ Logico - funziona in entrambe le direzioni automaticamente */
 .card {
     padding-inline-start: 1rem;   /* left in LTR, right in RTL */
     border-inline-start: 2px solid blue;
@@ -144,4 +144,4 @@ Molte lingue RTL richiedono font specifici. In particolare l'arabo e l'ebraico s
 
 ## Fallback sicuro
 
-`Lingua::getDirection()` restituisce sempre `'ltr'` come fallback se la locale non viene trovata nel database — non genera mai un'eccezione. È sicuro da chiamare in qualsiasi punto del ciclo di vita della richiesta, incluso prima che la tabella delle lingue sia popolata.
+`Lingua::getDirection()` restituisce sempre `'ltr'` come fallback se la locale non viene trovata nel database - non genera mai un'eccezione. È sicuro da chiamare in qualsiasi punto del ciclo di vita della richiesta, incluso prima che la tabella delle lingue sia popolata.

@@ -6,7 +6,7 @@ Lingua terminal-driven भाषा और translation प्रबंधन क
 
 ### `lingua:add {locale}`
 
-एक नई भाषा install करता है — files download करता है, DB record बनाता है, translations sync करता है।
+एक नई भाषा install करता है - files download करता है, DB record बनाता है, translations sync करता है।
 
 ```bash
 php artisan lingua:add it
@@ -37,7 +37,7 @@ Language 'it' added successfully.
 
 ### `lingua:remove {locale}`
 
-एक भाषा remove करता है — files delete करता है, database clean करता है, शेष भाषाओं को reorder करता है।
+एक भाषा remove करता है - files delete करता है, database clean करता है, शेष भाषाओं को reorder करता है।
 
 ```bash
 php artisan lingua:remove fr
@@ -88,18 +88,18 @@ php artisan lingua:sync-to-database
 ```
 
 **क्या import होता है:**
-- `lang/{locale}/*.php` — PHP files
-- `lang/{locale}.json` — JSON files
-- `lang/vendor/{package}/{locale}/*.php` — vendor package files
+- `lang/{locale}/*.php` - PHP files
+- `lang/{locale}.json` - JSON files
+- `lang/vendor/{package}/{locale}/*.php` - vendor package files
 
 `group + key` पर match करते हुए `updateOrCreate` का उपयोग करता है, इसलिए UI से मौजूदा edits preserved रहती हैं।
 
 **सामान्य उपयोग के मामले:**
 ```bash
-# Fresh clone के बाद — committed lang files से DB populate करें
+# Fresh clone के बाद - committed lang files से DB populate करें
 php artisan lingua:sync-to-database
 
-# lang:update के बाद — नई strings import करें
+# lang:update के बाद - नई strings import करें
 php artisan lingua:sync-to-database
 
 # Deployment script में
@@ -125,7 +125,7 @@ php artisan lingua:sync-to-local
 
 **सामान्य उपयोग के मामले:**
 ```bash
-# Commit करने से पहले — version control के लिए DB state को files में export करें
+# Commit करने से पहले - version control के लिए DB state को files में export करें
 php artisan lingua:sync-to-local
 git add lang/
 git commit -m "chore: sync translations"

@@ -113,7 +113,7 @@ Se usa como respaldo durante la instalación y cuando la tabla `languages` está
 
 **Valor por defecto:** `config('app.fallback_locale', 'en')`
 
-Comportamiento estándar de respaldo de Laravel — cuando falta una clave en el idioma activo, se intenta con este idioma.
+Comportamiento estándar de respaldo de Laravel - cuando falta una clave en el idioma activo, se intenta con este idioma.
 
 ### `middleware`
 
@@ -186,5 +186,5 @@ Controla la barra de herramientas de TipTap para los tipos de traducción HTML y
 | `clear` | Botón para limpiar el formato |
 
 ::: tip
-La barra de herramientas del editor es global — todos los campos de traducción HTML/Markdown comparten la misma configuración. Si necesitas control por campo, publica las vistas y personaliza el componente del editor directamente.
+La barra de herramientas del editor es global - todos los campos de traducción HTML/Markdown comparten la misma configuración. Si necesitas control por campo, publica las vistas y personaliza el componente del editor directamente.
 :::

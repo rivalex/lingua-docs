@@ -11,21 +11,21 @@ Browser request
 ┌─────────────────────────────┐
 │      LinguaMiddleware       │  Reads 'locale' from session
 │  app()->setLocale($locale)  │  Falls back to DB default
-└──────────────┬──────────────┘
-               │
+└───┬─────────────────────────┘
+    │
     ▼
 ┌─────────────────────────────┐
 │        Your Controller      │
 │  __('auth.failed')          │  Standard Laravel helper
-└──────────────┬──────────────┘
-               │
+└───┬─────────────────────────┘
+    │
     ▼
 ┌─────────────────────────────┐
 │       LinguaManager         │  Custom TranslationLoaderManager
 │  1. DB loader (Spatie)      │  DB always wins on overlap
 │  2. File loader (fallback)  │
-└──────────────┬──────────────┘
-               │
+└───┬─────────────────────────┘
+    │
     ▼
 Translated string returned
 ```
@@ -34,8 +34,8 @@ Translated string returned
 
 `LinguaManager` extends Spatie's `TranslationLoaderManager`. At runtime it merges two sources:
 
-1. **File loader** — reads from `lang/` as normal Laravel does
-2. **Database loader** (Spatie's `Db` loader) — reads from `language_lines`
+1. **File loader** - reads from `lang/` as normal Laravel does
+2. **Database loader** (Spatie's `Db` loader) - reads from `language_lines`
 
 When the same key exists in both sources, **the database value wins**. This lets you override any vendor or file-based translation without touching source files.
 

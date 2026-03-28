@@ -11,21 +11,21 @@ Browser request
 ┌─────────────────────────────┐
 │      LinguaMiddleware       │  Session से 'locale' पढ़ता है
 │  app()->setLocale($locale)  │  DB default पर fallback करता है
-└──────────────┬──────────────┘
-               │
+└───┬─────────────────────────┘
+    │
     ▼
 ┌─────────────────────────────┐
 │        Your Controller      │
 │  __('auth.failed')          │  मानक Laravel helper
-└──────────────┬──────────────┘
-               │
+└───┬─────────────────────────┘
+    │
     ▼
 ┌─────────────────────────────┐
 │       LinguaManager         │  Custom TranslationLoaderManager
 │  1. DB loader (Spatie)      │  DB ओवरलैप पर हमेशा जीतता है
 │  2. File loader (fallback)  │
-└──────────────┬──────────────┘
-               │
+└───┬─────────────────────────┘
+    │
     ▼
 अनुवादित string वापस आती है
 ```
@@ -34,8 +34,8 @@ Browser request
 
 `LinguaManager` Spatie के `TranslationLoaderManager` को extend करता है। रनटाइम पर यह दो sources को merge करता है:
 
-1. **File loader** — सामान्य Laravel की तरह `lang/` से पढ़ता है
-2. **Database loader** (Spatie का `Db` loader) — `language_lines` से पढ़ता है
+1. **File loader** - सामान्य Laravel की तरह `lang/` से पढ़ता है
+2. **Database loader** (Spatie का `Db` loader) - `language_lines` से पढ़ता है
 
 जब एक ही key दोनों sources में मौजूद हो, **डेटाबेस मान जीतता है**। इससे आप सोर्स फ़ाइलों को छुए बिना किसी भी vendor या file-based अनुवाद को ओवरराइड कर सकते हैं।
 

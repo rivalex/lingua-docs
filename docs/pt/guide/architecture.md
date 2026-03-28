@@ -11,21 +11,21 @@ Browser request
 ┌─────────────────────────────┐
 │      LinguaMiddleware       │  Lê 'locale' da sessão
 │  app()->setLocale($locale)  │  Usa o padrão do BD como fallback
-└──────────────┬──────────────┘
-               │
+└───┬─────────────────────────┘
+    │
     ▼
 ┌─────────────────────────────┐
 │        Your Controller      │
 │  __('auth.failed')          │  Helper padrão do Laravel
-└──────────────┬──────────────┘
-               │
+└───┬─────────────────────────┘
+    │
     ▼
 ┌─────────────────────────────┐
 │       LinguaManager         │  Custom TranslationLoaderManager
 │  1. DB loader (Spatie)      │  BD sempre vence em sobreposição
 │  2. File loader (fallback)  │
-└──────────────┬──────────────┘
-               │
+└───┬─────────────────────────┘
+    │
     ▼
 Translated string returned
 ```
@@ -34,8 +34,8 @@ Translated string returned
 
 O `LinguaManager` estende o `TranslationLoaderManager` da Spatie. Em tempo de execução, ele mescla duas fontes:
 
-1. **File loader** — lê de `lang/` como o Laravel padrão faz
-2. **Database loader** (loader `Db` da Spatie) — lê de `language_lines`
+1. **File loader** - lê de `lang/` como o Laravel padrão faz
+2. **Database loader** (loader `Db` da Spatie) - lê de `language_lines`
 
 Quando a mesma chave existe em ambas as fontes, **o valor do banco de dados vence**. Isso permite sobrescrever qualquer tradução de vendor ou baseada em arquivo sem tocar nos arquivos fonte.
 

@@ -38,7 +38,7 @@ A polymorphic editor component that renders a `<textarea>`, TipTap HTML editor, 
 | `label` | string | `''` | Optional label above the field |
 | `placeholder` | string | `''` | Placeholder text |
 | `required` | bool | `false` | Shows a required badge |
-| `wire:model` | — | — | Livewire model binding |
+| `wire:model` | - | - | Livewire model binding |
 
 ---
 
@@ -101,7 +101,7 @@ A transient message component that shows for a brief duration after a Livewire e
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `on` | string | — | Livewire event name to listen for |
+| `on` | string | - | Livewire event name to listen for |
 | `delay` | int | `1500` | Duration in milliseconds before hiding |
 
 ---
@@ -122,7 +122,7 @@ An autocomplete text input component used in the translation creation form.
 
 | Prop | Type | Description |
 |---|---|---|
-| `wire:model` | — | Livewire model binding |
+| `wire:model` | - | Livewire model binding |
 | `suggestions` | array | Array of autocomplete suggestions |
 | `placeholder` | string | Input placeholder |
 

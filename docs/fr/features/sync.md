@@ -1,6 +1,6 @@
 # Synchronisation bidirectionnelle
 
-Lingua peut importer les traductions depuis des fichiers locaux vers la base de données et les exporter à nouveau — vous offrant le meilleur des deux mondes : **exécution pilotée par la base de données** et **contrôle de version basé sur des fichiers**.
+Lingua peut importer les traductions depuis des fichiers locaux vers la base de données et les exporter à nouveau - vous offrant le meilleur des deux mondes : **exécution pilotée par la base de données** et **contrôle de version basé sur des fichiers**.
 
 ## Les deux directions
 
@@ -23,15 +23,15 @@ php artisan lingua:sync-to-database
 
 ### Ce qui est importé
 
-- `lang/{locale}/*.php` — fichiers de traduction PHP standard
-- `lang/{locale}.json` — fichiers de traduction JSON
-- `lang/vendor/{package}/{locale}/*.php` — traductions de packages
+- `lang/{locale}/*.php` - fichiers de traduction PHP standard
+- `lang/{locale}.json` - fichiers de traduction JSON
+- `lang/vendor/{package}/{locale}/*.php` - traductions de packages
 
 ### Comportement d'upsert
 
 Lingua utilise `updateOrCreate` en correspondant sur `group` + `key`. Cela signifie :
 - Les **nouvelles clés** sont insérées
-- Les **clés existantes** ont leur JSON `text` fusionné — les valeurs de locale que vous avez modifiées dans l'interface sont **préservées**
+- Les **clés existantes** ont leur JSON `text` fusionné - les valeurs de locale que vous avez modifiées dans l'interface sont **préservées**
 - La **détection de type** s'exécute sur la valeur pour déterminer `text` / `html` / `markdown`
 
 ### Détection automatique de type
@@ -43,7 +43,7 @@ Lingua utilise `updateOrCreate` en correspondant sur `group` + `key`. Cela signi
 | Ni l'un ni l'autre | `text` |
 
 ::: tip
-La détection de type est conservative — elle n'assigne `html` ou `markdown` que lorsque le contenu correspond clairement. Les chaînes simples obtiennent toujours `text`. Vous pouvez changer le type manuellement via la modale de modification.
+La détection de type est conservative - elle n'assigne `html` ou `markdown` que lorsque le contenu correspond clairement. Les chaînes simples obtiennent toujours `text`. Vous pouvez changer le type manuellement via la modale de modification.
 :::
 
 ### Via la facade
@@ -76,10 +76,10 @@ php artisan lingua:sync-to-local
 
 ### Cas d'utilisation
 
-- **Contrôle de version** — committer les fichiers exportés pour suivre les modifications de traduction dans le temps
-- **Pipelines de déploiement** — exporter avant le déploiement si les outils en aval attendent des traductions basées sur des fichiers
-- **Sauvegardes** — créer un instantané à un instant T de toutes les traductions
-- **Autres outils** — exporter pour utilisation dans un service de gestion des traductions ou un importateur CSV
+- **Contrôle de version** - committer les fichiers exportés pour suivre les modifications de traduction dans le temps
+- **Pipelines de déploiement** - exporter avant le déploiement si les outils en aval attendent des traductions basées sur des fichiers
+- **Sauvegardes** - créer un instantané à un instant T de toutes les traductions
+- **Autres outils** - exporter pour utilisation dans un service de gestion des traductions ou un importateur CSV
 
 ### Via la facade
 
@@ -137,7 +137,7 @@ Cela récupère toutes les nouvelles chaînes du package installé.
 ## Conseils et pièges à éviter
 
 ::: tip Garder la DB comme source de vérité
-Traitez la base de données comme la source principale. Ne synchronisez vers le stockage local que lorsque vous avez besoin des fichiers (contrôle de version, déploiement, etc.). Évitez de modifier les fichiers locaux directement pendant que la DB est en cours d'utilisation — la prochaine synchronisation vers la base de données écrasera vos modifications si les clés existent déjà.
+Traitez la base de données comme la source principale. Ne synchronisez vers le stockage local que lorsque vous avez besoin des fichiers (contrôle de version, déploiement, etc.). Évitez de modifier les fichiers locaux directement pendant que la DB est en cours d'utilisation - la prochaine synchronisation vers la base de données écrasera vos modifications si les clés existent déjà.
 :::
 
 ::: warning Fichiers de locale et DB désynchronisés
@@ -146,7 +146,7 @@ Si vous ajoutez manuellement de nouveaux fichiers PHP de locale sans exécuter `
 
 ::: tip Aller-retour complet
 Une façon sûre de réorganiser les traductions :
-1. `lingua:sync-to-local` — tout exporter
+1. `lingua:sync-to-local` - tout exporter
 2. Modifier les fichiers sur le disque
-3. `lingua:sync-to-database` — ré-importer
+3. `lingua:sync-to-database` - ré-importer
 :::

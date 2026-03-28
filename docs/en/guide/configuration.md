@@ -113,7 +113,7 @@ Used as a fallback during installation and when the `languages` table is empty. 
 
 **Default:** `config('app.fallback_locale', 'en')`
 
-Standard Laravel fallback behaviour — when a key is missing in the active locale, this locale is tried next.
+Standard Laravel fallback behaviour - when a key is missing in the active locale, this locale is tried next.
 
 ### `middleware`
 
@@ -186,5 +186,5 @@ Controls the TipTap toolbar for HTML and Markdown translation types. Each option
 | `clear` | Clear formatting button |
 
 ::: tip
-The editor toolbar is global — all HTML/Markdown translation fields share the same configuration. If you need per-field control, publish the views and customise the editor component directly.
+The editor toolbar is global - all HTML/Markdown translation fields share the same configuration. If you need per-field control, publish the views and customise the editor component directly.
 :::

@@ -2,13 +2,13 @@
 
 Lingua 附带一个交互式安装向导，通过一条命令即可完成所有配置。如果您希望更精细地控制安装过程，下面也提供了手动安装步骤。
 
-## 第一步 — 通过 Composer 安装
+## 第一步 - 通过 Composer 安装
 
 ```bash
 composer require rivalex/lingua
 ```
 
-## 第二步 — 运行安装程序
+## 第二步 - 运行安装程序
 
 ```bash
 php artisan lingua:install
@@ -32,7 +32,7 @@ php artisan lingua:install
 Lingua package installed successfully!
 ```
 
-## 第三步 — 访问管理界面
+## 第三步 - 访问管理界面
 
 打开您的应用并访问以下地址：
 
@@ -67,7 +67,7 @@ php artisan db:seed --class="Rivalex\Lingua\Database\Seeders\LinguaSeeder"
 
 ## 保护管理界面
 
-默认情况下，Lingua 路由仅使用 `web` 中间件——不会自动应用任何身份验证守卫。**在生产环境中，您应当添加自己的中间件**。
+默认情况下，Lingua 路由仅使用 `web` 中间件--不会自动应用任何身份验证守卫。**在生产环境中，您应当添加自己的中间件**。
 
 ### 通过配置文件
 
@@ -85,7 +85,7 @@ php artisan db:seed --class="Rivalex\Lingua\Database\Seeders\LinguaSeeder"
 ```
 
 ::: tip
-Laravel 路由器支持的任何中间件都可以添加到数组中。更改立即生效——无需清除缓存。
+Laravel 路由器支持的任何中间件都可以添加到数组中。更改立即生效--无需清除缓存。
 :::
 
 ---

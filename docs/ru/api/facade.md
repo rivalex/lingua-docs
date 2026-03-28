@@ -39,7 +39,7 @@ Lingua::getDefaultLocale(); // 'en'
 Возвращает `true`, если указанная локаль (или текущая, если `null`) является системным языком по умолчанию.
 
 ```php
-Lingua::isDefaultLocale();       // true  (текущая локаль — основная)
+Lingua::isDefaultLocale();       // true  (текущая локаль - основная)
 Lingua::isDefaultLocale('en');   // true
 Lingua::isDefaultLocale('fr');   // false
 Lingua::isDefaultLocale('xx');   // false (неизвестная локаль, без исключения)

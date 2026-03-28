@@ -11,21 +11,21 @@ Browser request
 ┌─────────────────────────────┐
 │      LinguaMiddleware       │  Legge 'locale' dalla sessione
 │  app()->setLocale($locale)  │  Fallback alla locale DB predefinita
-└──────────────┬──────────────┘
-               │
+└───┬─────────────────────────┘
+    │
     ▼
 ┌─────────────────────────────┐
 │        Your Controller      │
 │  __('auth.failed')          │  Helper standard di Laravel
-└──────────────┬──────────────┘
-               │
+└───┬─────────────────────────┘
+    │
     ▼
 ┌─────────────────────────────┐
 │       LinguaManager         │  Custom TranslationLoaderManager
 │  1. DB loader (Spatie)      │  Il DB ha sempre la precedenza
 │  2. File loader (fallback)  │
-└──────────────┬──────────────┘
-               │
+└───┬─────────────────────────┘
+    │
     ▼
 Stringa tradotta restituita
 ```
@@ -34,8 +34,8 @@ Stringa tradotta restituita
 
 `LinguaManager` estende il `TranslationLoaderManager` di Spatie. A runtime unisce due sorgenti:
 
-1. **File loader** — legge da `lang/` come fa il normale Laravel
-2. **Database loader** (loader `Db` di Spatie) — legge da `language_lines`
+1. **File loader** - legge da `lang/` come fa il normale Laravel
+2. **Database loader** (loader `Db` di Spatie) - legge da `language_lines`
 
 Quando la stessa chiave esiste in entrambe le sorgenti, **vince il valore del database**. Questo ti permette di sovrascrivere qualsiasi traduzione vendor o basata su file senza toccare i file sorgente.
 

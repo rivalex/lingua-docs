@@ -11,21 +11,21 @@ Browser request
 ┌─────────────────────────────┐
 │      LinguaMiddleware       │  Lee 'locale' de la sesión
 │  app()->setLocale($locale)  │  Recurre al predeterminado en BD
-└──────────────┬──────────────┘
-               │
+└───┬─────────────────────────┘
+    │
     ▼
 ┌─────────────────────────────┐
 │        Your Controller      │
 │  __('auth.failed')          │  Helper estándar de Laravel
-└──────────────┬──────────────┘
-               │
+└───┬─────────────────────────┘
+    │
     ▼
 ┌─────────────────────────────┐
 │       LinguaManager         │  Custom TranslationLoaderManager
 │  1. DB loader (Spatie)      │  La BD siempre gana ante conflictos
 │  2. File loader (fallback)  │
-└──────────────┬──────────────┘
-               │
+└───┬─────────────────────────┘
+    │
     ▼
 Translated string returned
 ```
@@ -34,8 +34,8 @@ Translated string returned
 
 `LinguaManager` extiende el `TranslationLoaderManager` de Spatie. En tiempo de ejecución fusiona dos fuentes:
 
-1. **Cargador de archivos** — lee de `lang/` como lo hace Laravel normalmente
-2. **Cargador de base de datos** (cargador `Db` de Spatie) — lee de `language_lines`
+1. **Cargador de archivos** - lee de `lang/` como lo hace Laravel normalmente
+2. **Cargador de base de datos** (cargador `Db` de Spatie) - lee de `language_lines`
 
 Cuando la misma clave existe en ambas fuentes, **el valor de la base de datos tiene prioridad**. Esto te permite sobreescribir cualquier traducción de proveedor o basada en archivos sin tocar los archivos fuente.
 

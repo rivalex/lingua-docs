@@ -6,7 +6,7 @@ O Lingua inclui seis comandos Artisan para gerenciamento de idiomas e traduçõe
 
 ### `lingua:add {locale}`
 
-Instala um novo idioma — baixa arquivos, cria o registro no BD, sincroniza traduções.
+Instala um novo idioma - baixa arquivos, cria o registro no BD, sincroniza traduções.
 
 ```bash
 php artisan lingua:add it
@@ -37,7 +37,7 @@ Após adicionar um idioma, acesse `/lingua/translations/it` para ver quais strin
 
 ### `lingua:remove {locale}`
 
-Remove um idioma — exclui arquivos, limpa o banco de dados, reordena os idiomas restantes.
+Remove um idioma - exclui arquivos, limpa o banco de dados, reordena os idiomas restantes.
 
 ```bash
 php artisan lingua:remove fr
@@ -88,18 +88,18 @@ php artisan lingua:sync-to-database
 ```
 
 **O que é importado:**
-- `lang/{locale}/*.php` — arquivos PHP
-- `lang/{locale}.json` — arquivos JSON
-- `lang/vendor/{package}/{locale}/*.php` — arquivos de pacotes de vendor
+- `lang/{locale}/*.php` - arquivos PHP
+- `lang/{locale}.json` - arquivos JSON
+- `lang/vendor/{package}/{locale}/*.php` - arquivos de pacotes de vendor
 
 Usa `updateOrCreate` com correspondência em `group + key`, portanto edições existentes da interface são preservadas.
 
 **Casos de uso típicos:**
 ```bash
-# Após um clone novo — popular o BD a partir dos arquivos lang commitados
+# Após um clone novo - popular o BD a partir dos arquivos lang commitados
 php artisan lingua:sync-to-database
 
-# Após lang:update — importar novas strings
+# Após lang:update - importar novas strings
 php artisan lingua:sync-to-database
 
 # Em um script de deployment
@@ -125,7 +125,7 @@ php artisan lingua:sync-to-local
 
 **Casos de uso típicos:**
 ```bash
-# Antes de fazer commit — exportar estado do BD para arquivos para controle de versão
+# Antes de fazer commit - exportar estado do BD para arquivos para controle de versão
 php artisan lingua:sync-to-local
 git add lang/
 git commit -m "chore: sync translations"

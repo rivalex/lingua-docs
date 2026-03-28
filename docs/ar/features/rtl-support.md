@@ -51,7 +51,7 @@ $direction = Lingua::getDirection('he'); // 'rtl'
 
 ## Tailwind CSS
 
-مع ضبط `dir` على `<html>`، يعمل متغيِّر `rtl:` المدمج في Tailwind تلقائيًا — لا حاجة لإضافة أو تكوين:
+مع ضبط `dir` على `<html>`، يعمل متغيِّر `rtl:` المدمج في Tailwind تلقائيًا - لا حاجة لإضافة أو تكوين:
 
 ```html
 <!-- Flip text alignment -->
@@ -77,14 +77,14 @@ $direction = Lingua::getDirection('he'); // 'rtl'
 للتخطيطات أو المكونات الجديدة، فضِّل **خصائص CSS المنطقية** على الخصائص الاتجاهية. يتولى المتصفح قلب LTR/RTL تلقائيًا:
 
 ```css
-/* ❌ Directional — needs RTL overrides */
+/* ❌ Directional - needs RTL overrides */
 .card {
     padding-left: 1rem;
     border-left: 2px solid blue;
     margin-right: auto;
 }
 
-/* ✅ Logical — works in both directions automatically */
+/* ✅ Logical - works in both directions automatically */
 .card {
     padding-inline-start: 1rem;   /* left in LTR, right in RTL */
     border-inline-start: 2px solid blue;
@@ -144,4 +144,4 @@ if ($direction === 'rtl') {
 
 ## الاحتياط الآمن
 
-`Lingua::getDirection()` تُرجع دائمًا `'ltr'` كقيمة احتياطية إذا لم توجد اللغة في قاعدة البيانات — لا ترمي استثناءً أبدًا. من الآمن استدعاؤها في أي نقطة من دورة حياة الطلب، بما في ذلك قبل تعبئة جدول اللغات.
+`Lingua::getDirection()` تُرجع دائمًا `'ltr'` كقيمة احتياطية إذا لم توجد اللغة في قاعدة البيانات - لا ترمي استثناءً أبدًا. من الآمن استدعاؤها في أي نقطة من دورة حياة الطلب، بما في ذلك قبل تعبئة جدول اللغات.

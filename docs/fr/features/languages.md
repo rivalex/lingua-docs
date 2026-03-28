@@ -2,7 +2,7 @@
 
 La page Langues (`/lingua/languages`) est votre centre de contrôle pour toutes les locales installées.
 
-<Screenshot src="/screenshots/languages-page.png" alt="Page de gestion des langues Lingua" caption="Page des langues — affichant les locales installées avec les statistiques de complétion." />
+<Screenshot src="/screenshots/languages-page.png" alt="Page de gestion des langues Lingua" caption="Page des langues - affichant les locales installées avec les statistiques de complétion." />
 
 ## Ajouter une langue
 
@@ -47,7 +47,7 @@ $available = Lingua::notInstalled(); // ['af', 'ar', 'az', …]
 
 ## Supprimer une langue
 
-Cliquez sur l'icône de corbeille sur n'importe quelle ligne de langue non définie par défaut. Une modale de confirmation empêche la suppression accidentelle — vous devez saisir le nom de la langue pour confirmer.
+Cliquez sur l'icône de corbeille sur n'importe quelle ligne de langue non définie par défaut. Une modale de confirmation empêche la suppression accidentelle - vous devez saisir le nom de la langue pour confirmer.
 
 En coulisses, l'opération de suppression :
 1. Supprime les fichiers de langue via `lang:rm {locale} --force`
@@ -83,7 +83,7 @@ Si vous définissez une nouvelle langue par défaut, assurez-vous que toutes vos
 
 ## Réordonner les langues
 
-Faites glisser et déposez les lignes de langue pour contrôler leur ordre d'affichage dans toute l'application — dans le widget sélecteur de langue, le sélecteur de locale des traductions, et partout où vous utilisez `Lingua::languages()`.
+Faites glisser et déposez les lignes de langue pour contrôler leur ordre d'affichage dans toute l'application - dans le widget sélecteur de langue, le sélecteur de locale des traductions, et partout où vous utilisez `Lingua::languages()`.
 
 L'ordre de tri est stocké dans la colonne entière `sort` et réattribué séquentiellement après chaque glisser-déposer.
 

@@ -51,7 +51,7 @@ $direction = Lingua::getDirection('he'); // 'rtl'
 
 ## Tailwind CSS
 
-`<html>` पर `dir` set होने के साथ, Tailwind का built-in `rtl:` variant स्वचालित रूप से काम करता है — कोई plugin या configuration आवश्यक नहीं:
+`<html>` पर `dir` set होने के साथ, Tailwind का built-in `rtl:` variant स्वचालित रूप से काम करता है - कोई plugin या configuration आवश्यक नहीं:
 
 ```html
 <!-- Text alignment flip करें -->
@@ -77,14 +77,14 @@ $direction = Lingua::getDirection('he'); // 'rtl'
 नए layouts या components के लिए, directional properties के बजाय **CSS logical properties** prefer करें। Browser LTR/RTL flip स्वचालित रूप से संभालता है:
 
 ```css
-/* ❌ Directional — RTL overrides की ज़रूरत है */
+/* ❌ Directional - RTL overrides की ज़रूरत है */
 .card {
     padding-left: 1rem;
     border-left: 2px solid blue;
     margin-right: auto;
 }
 
-/* ✅ Logical — दोनों दिशाओं में स्वचालित रूप से काम करता है */
+/* ✅ Logical - दोनों दिशाओं में स्वचालित रूप से काम करता है */
 .card {
     padding-inline-start: 1rem;   /* LTR में left, RTL में right */
     border-inline-start: 2px solid blue;
@@ -144,4 +144,4 @@ if ($direction === 'rtl') {
 
 ## Safe fallback
 
-`Lingua::getDirection()` हमेशा fallback के रूप में `'ltr'` return करता है यदि locale डेटाबेस में नहीं मिला — यह कभी exception नहीं throw करता। Request lifecycle में किसी भी बिंदु पर इसे safely call किया जा सकता है, भले ही languages टेबल अभी populate न हुई हो।
+`Lingua::getDirection()` हमेशा fallback के रूप में `'ltr'` return करता है यदि locale डेटाबेस में नहीं मिला - यह कभी exception नहीं throw करता। Request lifecycle में किसी भी बिंदु पर इसे safely call किया जा सकता है, भले ही languages टेबल अभी populate न हुई हो।

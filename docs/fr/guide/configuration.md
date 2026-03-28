@@ -113,7 +113,7 @@ Utilisé comme valeur de repli lors de l'installation et quand la table `languag
 
 **Par défaut :** `config('app.fallback_locale', 'en')`
 
-Comportement de repli standard de Laravel — lorsqu'une clé est manquante dans la locale active, cette locale est essayée ensuite.
+Comportement de repli standard de Laravel - lorsqu'une clé est manquante dans la locale active, cette locale est essayée ensuite.
 
 ### `middleware`
 
@@ -186,5 +186,5 @@ Contrôle la barre d'outils TipTap pour les types de traduction HTML et Markdown
 | `clear` | Bouton d'effacement de la mise en forme |
 
 ::: tip
-La barre d'outils de l'éditeur est globale — tous les champs de traduction HTML/Markdown partagent la même configuration. Si vous avez besoin d'un contrôle par champ, publiez les vues et personnalisez directement le composant éditeur.
+La barre d'outils de l'éditeur est globale - tous les champs de traduction HTML/Markdown partagent la même configuration. Si vous avez besoin d'un contrôle par champ, publiez les vues et personnalisez directement le composant éditeur.
 :::

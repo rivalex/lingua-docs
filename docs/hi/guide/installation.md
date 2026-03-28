@@ -2,13 +2,13 @@
 
 Lingua एक इंटरएक्टिव इंस्टॉलर विज़ार्ड के साथ आता है जो एक कमांड में सब कुछ संभाल लेता है। यदि आप अधिक नियंत्रण चाहते हैं तो नीचे मैनुअल चरण भी दिए गए हैं।
 
-## चरण 1 — Composer से इंस्टॉल करें
+## चरण 1 - Composer से इंस्टॉल करें
 
 ```bash
 composer require rivalex/lingua
 ```
 
-## चरण 2 — इंस्टॉलर चलाएँ
+## चरण 2 - इंस्टॉलर चलाएँ
 
 ```bash
 php artisan lingua:install
@@ -32,7 +32,7 @@ php artisan lingua:install
 Lingua package installed successfully!
 ```
 
-## चरण 3 — UI एक्सेस करें
+## चरण 3 - UI एक्सेस करें
 
 अपना एप्लिकेशन खोलें और निम्नलिखित URL पर जाएँ:
 
@@ -67,7 +67,7 @@ php artisan db:seed --class="Rivalex\Lingua\Database\Seeders\LinguaSeeder"
 
 ## प्रबंधन UI की सुरक्षा
 
-डिफ़ॉल्ट रूप से Lingua routes केवल `web` middleware का उपयोग करते हैं — कोई authentication guard स्वचालित रूप से लागू नहीं होता। **प्रोडक्शन पर जाने से पहले आपको अपना middleware जोड़ना चाहिए।**
+डिफ़ॉल्ट रूप से Lingua routes केवल `web` middleware का उपयोग करते हैं - कोई authentication guard स्वचालित रूप से लागू नहीं होता। **प्रोडक्शन पर जाने से पहले आपको अपना middleware जोड़ना चाहिए।**
 
 ### Config के माध्यम से
 
@@ -85,7 +85,7 @@ php artisan db:seed --class="Rivalex\Lingua\Database\Seeders\LinguaSeeder"
 ```
 
 ::: tip
-Laravel के router द्वारा स्वीकृत कोई भी middleware array में जोड़ा जा सकता है। परिवर्तन तुरंत प्रभावी होते हैं — cache clear करने की ज़रूरत नहीं।
+Laravel के router द्वारा स्वीकृत कोई भी middleware array में जोड़ा जा सकता है। परिवर्तन तुरंत प्रभावी होते हैं - cache clear करने की ज़रूरत नहीं।
 :::
 
 ---

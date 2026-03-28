@@ -2,13 +2,13 @@
 
 O Lingua inclui um assistente de instalação interativo que cuida de tudo em um único comando. As etapas manuais também estão documentadas abaixo caso você prefira mais controle.
 
-## Passo 1 — Instalar via Composer
+## Passo 1 - Instalar via Composer
 
 ```bash
 composer require rivalex/lingua
 ```
 
-## Passo 2 — Executar o instalador
+## Passo 2 - Executar o instalador
 
 ```bash
 php artisan lingua:install
@@ -32,7 +32,7 @@ Ao concluir, você verá:
 Lingua package installed successfully!
 ```
 
-## Passo 3 — Acessar a interface
+## Passo 3 - Acessar a interface
 
 Abra sua aplicação e acesse:
 
@@ -67,7 +67,7 @@ php artisan db:seed --class="Rivalex\Lingua\Database\Seeders\LinguaSeeder"
 
 ## Protegendo a interface de gerenciamento
 
-Por padrão, as rotas do Lingua utilizam apenas o middleware `web` — nenhum guard de autenticação é aplicado automaticamente. **Você deve adicionar seu próprio middleware** antes de ir para produção.
+Por padrão, as rotas do Lingua utilizam apenas o middleware `web` - nenhum guard de autenticação é aplicado automaticamente. **Você deve adicionar seu próprio middleware** antes de ir para produção.
 
 ### Via config
 
@@ -85,7 +85,7 @@ Por padrão, as rotas do Lingua utilizam apenas o middleware `web` — nenhum gu
 ```
 
 ::: tip
-Qualquer middleware aceito pelo roteador do Laravel pode ser adicionado ao array. As alterações têm efeito imediato — não é necessário limpar o cache.
+Qualquer middleware aceito pelo roteador do Laravel pode ser adicionado ao array. As alterações têm efeito imediato - não é necessário limpar o cache.
 :::
 
 ---

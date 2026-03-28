@@ -4,7 +4,7 @@ Understanding how translations are stored helps you query, import, and export th
 
 ## The `language_lines` table
 
-Each row in `language_lines` represents one translatable **string** — not one locale. All locale values are stored together in a single JSON `text` column:
+Each row in `language_lines` represents one translatable **string** - not one locale. All locale values are stored together in a single JSON `text` column:
 
 ```
 group      | key        | type | text
@@ -17,10 +17,10 @@ emails     | subject    | html | {"en":"<b>Welcome</b> to our platform!"}
 
 ### Benefits of this design
 
-- **One row per string** — no per-locale rows to manage
-- **Adding a locale is non-destructive** — just add a new key to the JSON object
-- **Missing translations are explicit** — if `fr` is absent from the JSON, the string isn't translated yet
-- **Single query** — one `SELECT` fetches all locale values for a key
+- **One row per string** - no per-locale rows to manage
+- **Adding a locale is non-destructive** - just add a new key to the JSON object
+- **Missing translations are explicit** - if `fr` is absent from the JSON, the string isn't translated yet
+- **Single query** - one `SELECT` fetches all locale values for a key
 
 ### Querying directly
 
@@ -95,7 +95,7 @@ The `group` column maps to the filename (`auth` = `lang/en/auth.php`) and the `k
 Vendor translations are flagged with `is_vendor = true` and carry a `vendor` string (e.g. `'spatie'`, `'laravel'`). They are synced from `lang/vendor/{vendor}/{locale}/` directories.
 
 - They **can be edited** in the UI (to override vendor wording)
-- They **cannot be deleted** — attempting to do so dispatches a `vendor_translation_protected` event
+- They **cannot be deleted** - attempting to do so dispatches a `vendor_translation_protected` event
 - The `group` and `key` fields are **locked** in the Update modal
 
 See [Vendor Translations](/features/vendor-translations) for full details.

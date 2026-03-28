@@ -1,6 +1,6 @@
 # Seletor de Idioma
 
-O componente `<livewire:lingua::language-selector>` é um seletor de locale incorporável para seus usuários finais — completamente separado da interface de gerenciamento administrativo.
+O componente `<livewire:lingua::language-selector>` é um seletor de locale incorporável para seus usuários finais - completamente separado da interface de gerenciamento administrativo.
 
 ## Uso básico
 
@@ -14,33 +14,33 @@ Adicione em qualquer lugar nos seus layouts Blade. Ele renderiza usando o modo c
 
 ### Modo sidebar (padrão)
 
-Renderiza como uma seção de navegação agrupada — ideal para sidebars de aplicações construídas com Flux.
+Renderiza como uma seção de navegação agrupada - ideal para sidebars de aplicações construídas com Flux.
 
 ```blade
 <livewire:lingua::language-selector mode="sidebar" />
 ```
 
-<Screenshot src="/screenshots/selector-sidebar.png" alt="Seletor de idioma no modo sidebar" caption="Modo sidebar — exibe todos os idiomas instalados como itens de navegação." width="320px" :center="true"/>
+<Screenshot src="/screenshots/selector-sidebar.png" alt="Seletor de idioma no modo sidebar" caption="Modo sidebar - exibe todos os idiomas instalados como itens de navegação." width="320px" :center="true"/>
 
 ### Modo dropdown
 
-Renderiza como um botão dropdown compacto — ideal para cabeçalhos e barras de navegação.
+Renderiza como um botão dropdown compacto - ideal para cabeçalhos e barras de navegação.
 
 ```blade
 <livewire:lingua::language-selector mode="dropdown" />
 ```
 
-<Screenshot src="/screenshots/selector-dropdown.png" alt="Seletor de idioma no modo dropdown" caption="Modo dropdown — exibe o idioma atual com um ícone de bandeira." width="320px" :center="true"/>
+<Screenshot src="/screenshots/selector-dropdown.png" alt="Seletor de idioma no modo dropdown" caption="Modo dropdown - exibe o idioma atual com um ícone de bandeira." width="320px" :center="true"/>
 
 ### Modo modal
 
-Renderiza como um botão que abre um modal completo de seleção de idioma — ideal para troca de locale em destaque em landing pages ou fluxos de onboarding.
+Renderiza como um botão que abre um modal completo de seleção de idioma - ideal para troca de locale em destaque em landing pages ou fluxos de onboarding.
 
 ```blade
 <livewire:lingua::language-selector mode="modal" />
 ```
 
-<Screenshot src="/screenshots/selector-modal.png" alt="Seletor de idioma no modo modal" caption="Modo modal — overlay de seleção de idioma em tela cheia."/>
+<Screenshot src="/screenshots/selector-modal.png" alt="Seletor de idioma no modo modal" caption="Modo modal - overlay de seleção de idioma em tela cheia."/>
 
 ## Referência de props
 

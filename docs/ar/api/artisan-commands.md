@@ -6,7 +6,7 @@
 
 ### `lingua:add {locale}`
 
-يثبّت لغة جديدة — يُنزِّل الملفات، ينشئ سجل قاعدة البيانات، يزامن الترجمات.
+يثبّت لغة جديدة - يُنزِّل الملفات، ينشئ سجل قاعدة البيانات، يزامن الترجمات.
 
 ```bash
 php artisan lingua:add it
@@ -37,7 +37,7 @@ Language 'it' added successfully.
 
 ### `lingua:remove {locale}`
 
-يزيل لغة — يحذف الملفات، ينظف قاعدة البيانات، يُعيد ترتيب اللغات المتبقية.
+يزيل لغة - يحذف الملفات، ينظف قاعدة البيانات، يُعيد ترتيب اللغات المتبقية.
 
 ```bash
 php artisan lingua:remove fr
@@ -88,18 +88,18 @@ php artisan lingua:sync-to-database
 ```
 
 **ما يُستورد:**
-- `lang/{locale}/*.php` — ملفات PHP
-- `lang/{locale}.json` — ملفات JSON
-- `lang/vendor/{package}/{locale}/*.php` — ملفات حزم الطرف الثالث
+- `lang/{locale}/*.php` - ملفات PHP
+- `lang/{locale}.json` - ملفات JSON
+- `lang/vendor/{package}/{locale}/*.php` - ملفات حزم الطرف الثالث
 
 يستخدم `updateOrCreate` مع تطابق `group + key`، لذا تُحافظ التعديلات الموجودة من الواجهة.
 
 **حالات الاستخدام النموذجية:**
 ```bash
-# After a fresh clone — populate the DB from committed lang files
+# After a fresh clone - populate the DB from committed lang files
 php artisan lingua:sync-to-database
 
-# After lang:update — import new strings
+# After lang:update - import new strings
 php artisan lingua:sync-to-database
 
 # In a deployment script
@@ -125,7 +125,7 @@ php artisan lingua:sync-to-local
 
 **حالات الاستخدام النموذجية:**
 ```bash
-# Before committing — export DB state to files for version control
+# Before committing - export DB state to files for version control
 php artisan lingua:sync-to-local
 git add lang/
 git commit -m "chore: sync translations"

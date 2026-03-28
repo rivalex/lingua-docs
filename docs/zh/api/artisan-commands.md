@@ -6,7 +6,7 @@ Lingua 提供六个 Artisan 命令，用于通过终端管理语言和翻译。
 
 ### `lingua:add {locale}`
 
-安装一种新语言——下载文件、创建数据库记录、同步翻译。
+安装一种新语言--下载文件、创建数据库记录、同步翻译。
 
 ```bash
 php artisan lingua:add it
@@ -37,7 +37,7 @@ Language 'it' added successfully.
 
 ### `lingua:remove {locale}`
 
-移除一种语言——删除文件、清理数据库、重新排序剩余语言。
+移除一种语言--删除文件、清理数据库、重新排序剩余语言。
 
 ```bash
 php artisan lingua:remove fr
@@ -88,18 +88,18 @@ php artisan lingua:sync-to-database
 ```
 
 **导入内容：**
-- `lang/{locale}/*.php` — PHP 文件
-- `lang/{locale}.json` — JSON 文件
-- `lang/vendor/{package}/{locale}/*.php` — 扩展包文件
+- `lang/{locale}/*.php` - PHP 文件
+- `lang/{locale}.json` - JSON 文件
+- `lang/vendor/{package}/{locale}/*.php` - 扩展包文件
 
 使用 `updateOrCreate` 基于 `group + key` 匹配，因此通过界面进行的现有编辑会被保留。
 
 **典型使用场景：**
 ```bash
-# 在新克隆后 — 从提交的语言文件填充数据库
+# 在新克隆后 - 从提交的语言文件填充数据库
 php artisan lingua:sync-to-database
 
-# 在 lang:update 后 — 导入新字符串
+# 在 lang:update 后 - 导入新字符串
 php artisan lingua:sync-to-database
 
 # 在部署脚本中
@@ -125,7 +125,7 @@ php artisan lingua:sync-to-local
 
 **典型使用场景：**
 ```bash
-# 在提交前 — 将数据库状态导出到文件以便版本控制
+# 在提交前 - 将数据库状态导出到文件以便版本控制
 php artisan lingua:sync-to-local
 git add lang/
 git commit -m "chore: sync translations"

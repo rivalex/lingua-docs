@@ -1,6 +1,6 @@
 # محدد اللغة
 
-مكون `<livewire:lingua::language-selector>` هو محوِّل لغة قابل للتضمين لمستخدميك النهائيين — منفصل تمامًا عن واجهة إدارة المشرف.
+مكون `<livewire:lingua::language-selector>` هو محوِّل لغة قابل للتضمين لمستخدميك النهائيين - منفصل تمامًا عن واجهة إدارة المشرف.
 
 ## الاستخدام الأساسي
 
@@ -14,33 +14,33 @@
 
 ### وضع الشريط الجانبي (الافتراضي)
 
-يُعرض كقسم تنقل مجمَّع — مثالي للأشرطة الجانبية للتطبيقات المبنية بـ Flux.
+يُعرض كقسم تنقل مجمَّع - مثالي للأشرطة الجانبية للتطبيقات المبنية بـ Flux.
 
 ```blade
 <livewire:lingua::language-selector mode="sidebar" />
 ```
 
-<Screenshot src="/screenshots/selector-sidebar.png" alt="محدد اللغة في وضع الشريط الجانبي" caption="وضع الشريط الجانبي — يعرض جميع اللغات المثبتة كعناصر تنقل." width="320px" :center="true"/>
+<Screenshot src="/screenshots/selector-sidebar.png" alt="محدد اللغة في وضع الشريط الجانبي" caption="وضع الشريط الجانبي - يعرض جميع اللغات المثبتة كعناصر تنقل." width="320px" :center="true"/>
 
 ### وضع القائمة المنسدلة
 
-يُعرض كزر قائمة منسدلة مضغوطة — مثالي للترويسات وأشرطة التنقل.
+يُعرض كزر قائمة منسدلة مضغوطة - مثالي للترويسات وأشرطة التنقل.
 
 ```blade
 <livewire:lingua::language-selector mode="dropdown" />
 ```
 
-<Screenshot src="/screenshots/selector-dropdown.png" alt="محدد اللغة في وضع القائمة المنسدلة" caption="وضع القائمة المنسدلة — يعرض اللغة الحالية مع أيقونة العلم." width="320px" :center="true"/>
+<Screenshot src="/screenshots/selector-dropdown.png" alt="محدد اللغة في وضع القائمة المنسدلة" caption="وضع القائمة المنسدلة - يعرض اللغة الحالية مع أيقونة العلم." width="320px" :center="true"/>
 
 ### وضع النافذة المنبثقة
 
-يُعرض كزر يفتح نافذة منبثقة كاملة لاختيار اللغة — مثالي للتبديل البارز في صفحات الهبوط أو تدفقات الإعداد.
+يُعرض كزر يفتح نافذة منبثقة كاملة لاختيار اللغة - مثالي للتبديل البارز في صفحات الهبوط أو تدفقات الإعداد.
 
 ```blade
 <livewire:lingua::language-selector mode="modal" />
 ```
 
-<Screenshot src="/screenshots/selector-modal.png" alt="محدد اللغة في وضع النافذة المنبثقة" caption="وضع النافذة المنبثقة — طبقة منتقي اللغة بملء الشاشة."/>
+<Screenshot src="/screenshots/selector-modal.png" alt="محدد اللغة في وضع النافذة المنبثقة" caption="وضع النافذة المنبثقة - طبقة منتقي اللغة بملء الشاشة."/>
 
 ## مرجع الخصائص
 

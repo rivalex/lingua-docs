@@ -1,6 +1,6 @@
 # Vendor Translations
 
-Vendor translations are strings that belong to third-party packages — Laravel's own validation messages, pagination labels, password reset strings, and translations from any other package that ships its own `lang/` directory.
+Vendor translations are strings that belong to third-party packages - Laravel's own validation messages, pagination labels, password reset strings, and translations from any other package that ships its own `lang/` directory.
 
 ## How they are identified
 
@@ -40,7 +40,7 @@ The most common use case is overriding Laravel's validation messages to match yo
 2. Find the string (e.g. `validation.required`)
 3. Click the edit icon to open the Update modal
 4. Change the value for any locale
-5. Save — the override takes effect immediately on the next request
+5. Save - the override takes effect immediately on the next request
 
 ```php
 // Or programmatically via the facade:

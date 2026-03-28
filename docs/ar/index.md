@@ -4,10 +4,10 @@ layout: home
 hero:
   name: "LINGUA"
   text: "ترجمات مدعومة بقاعدة البيانات لـ Laravel"
-  tagline: ثبِّت اللغات، وأدِر الترجمات، وبدِّل اللغة — كل ذلك من خلال واجهة Livewire أنيقة، دون الحاجة إلى نشر.
+  tagline: ثبِّت اللغات، وأدِر الترجمات، وبدِّل اللغة - كل ذلك من خلال واجهة Livewire أنيقة، دون الحاجة إلى نشر.
   image:
-    light: logoLinguaVertical-light.svg
-    dark: logoLinguaVertical-dark.svg
+    light: /logoLinguaVertical-light.svg
+    dark: /logoLinguaVertical-dark.svg
     alt: واجهة Lingua
   actions:
     - theme: brand
@@ -20,11 +20,11 @@ hero:
 features:
   - icon: 🗄️
     title: ترجمات مخزّنة في قاعدة البيانات
-    details: جميع الترجمات محفوظة في قاعدة البيانات وقابلة للتعديل فورًا — دون الحاجة إلى نشر ملفات. تتولى حزمة laravel-translation-loader من Spatie طبقة التحميل.
+    details: جميع الترجمات محفوظة في قاعدة البيانات وقابلة للتعديل فورًا - دون الحاجة إلى نشر ملفات. تتولى حزمة laravel-translation-loader من Spatie طبقة التحميل.
 
   - icon: ⚡
     title: Livewire + Flux UI
-    details: واجهة إدارة تفاعلية في الوقت الفعلي مبنية بـ Livewire 4 وFlux 2. كل إجراء — إضافة لغة، تعديل ترجمة، مزامنة — يحدث دون إعادة تحميل الصفحة.
+    details: واجهة إدارة تفاعلية في الوقت الفعلي مبنية بـ Livewire 4 وFlux 2. كل إجراء - إضافة لغة، تعديل ترجمة، مزامنة - يحدث دون إعادة تحميل الصفحة.
 
   - icon: 🔄
     title: مزامنة ثنائية الاتجاه

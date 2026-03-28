@@ -50,7 +50,7 @@ php artisan lingua:add it es de pt_BR ar
 
 ## 4. 在应用中使用翻译
 
-Lingua 对您的代码完全透明——像以往一样使用标准 Laravel 辅助函数：
+Lingua 对您的代码完全透明--像以往一样使用标准 Laravel 辅助函数：
 
 ```blade
 {{ __('messages.welcome') }}
@@ -134,4 +134,4 @@ session()->put(config('lingua.session_variable'), 'fr');
 
 ### 仅导出特定分组
 
-如果只想将部分翻译导出到文件，先同步到本地，然后从 `lang/` 中删除不需要的分组——数据库在运行时始终是事实的来源。
+如果只想将部分翻译导出到文件，先同步到本地，然后从 `lang/` 中删除不需要的分组--数据库在运行时始终是事实的来源。

@@ -37,7 +37,7 @@ Enable only the options your content actually needs. Keeping the toolbar minimal
 In the Edit modal (pencil icon, default locale only), select the desired type from the **Type** dropdown. The editor updates immediately on the row without a page reload.
 
 ::: tip Auto-detection
-When you first run `lingua:sync-to-database`, Lingua auto-detects the type based on the content. You can override it manually at any time — the stored value is not changed when you change the type, only the editor behaviour.
+When you first run `lingua:sync-to-database`, Lingua auto-detects the type based on the content. You can override it manually at any time - the stored value is not changed when you change the type, only the editor behaviour.
 :::
 
 ## Working with HTML translations
@@ -45,7 +45,7 @@ When you first run `lingua:sync-to-database`, Lingua auto-detects the type based
 HTML translations are stored as raw HTML in the `text` JSON column:
 
 ```json
-{"en": "<p>Welcome to <strong>Lingua</strong> — the translation manager for Laravel.</p>"}
+{"en": "<p>Welcome to <strong>Lingua</strong> - the translation manager for Laravel.</p>"}
 ```
 
 To render them in Blade without double-escaping:

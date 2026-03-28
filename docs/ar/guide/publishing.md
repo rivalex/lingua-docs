@@ -34,7 +34,7 @@ php artisan vendor:publish --tag="lingua-migrations"
 
 **الناتج:** `database/migrations/YYYY_MM_DD_HHMMSS_create_lingua_table.php`
 
-استخدم هذا إذا كنت بحاجة إلى تعديل مخطط `languages` أو `language_lines` — مثلًا لإضافة فهارس أو تغيير أنواع الأعمدة. بعد النشر، شغِّل `php artisan migrate` كالمعتاد.
+استخدم هذا إذا كنت بحاجة إلى تعديل مخطط `languages` أو `language_lines` - مثلًا لإضافة فهارس أو تغيير أنواع الأعمدة. بعد النشر، شغِّل `php artisan migrate` كالمعتاد.
 
 ::: warning
 معالج `lingua:install` ينشر ويشغّل الهجرات تلقائيًا. انشر يدويًا فقط إذا كنت بحاجة إلى تخصيص المخطط قبل تشغيلها.

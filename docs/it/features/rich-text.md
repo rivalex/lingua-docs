@@ -36,7 +36,7 @@ Abilita solo le opzioni di cui il tuo contenuto ha effettivamente bisogno. Mante
 Nella modale di modifica (icona a matita, solo locale predefinita), seleziona il tipo desiderato dal menu a tendina **Tipo**. L'editor si aggiorna immediatamente sulla riga senza ricaricare la pagina.
 
 ::: tip Rilevamento automatico
-Quando esegui per la prima volta `lingua:sync-to-database`, Lingua rileva automaticamente il tipo in base al contenuto. Puoi sovrascriverlo manualmente in qualsiasi momento — il valore memorizzato non cambia quando cambi il tipo, cambia solo il comportamento dell'editor.
+Quando esegui per la prima volta `lingua:sync-to-database`, Lingua rileva automaticamente il tipo in base al contenuto. Puoi sovrascriverlo manualmente in qualsiasi momento - il valore memorizzato non cambia quando cambi il tipo, cambia solo il comportamento dell'editor.
 :::
 
 ## Lavorare con le traduzioni HTML
@@ -44,7 +44,7 @@ Quando esegui per la prima volta `lingua:sync-to-database`, Lingua rileva automa
 Le traduzioni HTML vengono memorizzate come HTML grezzo nella colonna JSON `text`:
 
 ```json
-{"en": "<p>Welcome to <strong>Lingua</strong> — the translation manager for Laravel.</p>"}
+{"en": "<p>Welcome to <strong>Lingua</strong> - the translation manager for Laravel.</p>"}
 ```
 
 Per renderizzarle in Blade senza doppia codifica:

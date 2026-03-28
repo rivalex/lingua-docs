@@ -1,6 +1,6 @@
 # Sincronizzazione bidirezionale
 
-Lingua può importare le traduzioni dai file locali nel database e riesportarle — offrendoti il meglio di entrambi i mondi: **runtime basato su database** e **controllo versione basato su file**.
+Lingua può importare le traduzioni dai file locali nel database e riesportarle - offrendoti il meglio di entrambi i mondi: **runtime basato su database** e **controllo versione basato su file**.
 
 ## Le due direzioni
 
@@ -23,15 +23,15 @@ php artisan lingua:sync-to-database
 
 ### Cosa viene importato
 
-- `lang/{locale}/*.php` — file di traduzione PHP standard
-- `lang/{locale}.json` — file di traduzione JSON
-- `lang/vendor/{package}/{locale}/*.php` — traduzioni dei pacchetti vendor
+- `lang/{locale}/*.php` - file di traduzione PHP standard
+- `lang/{locale}.json` - file di traduzione JSON
+- `lang/vendor/{package}/{locale}/*.php` - traduzioni dei pacchetti vendor
 
 ### Comportamento di upsert
 
 Lingua usa `updateOrCreate` abbinando su `group` + `key`. Questo significa:
 - Le **nuove chiavi** vengono inserite
-- Le **chiavi esistenti** hanno il loro JSON `text` unito — i valori delle locale che hai modificato nell'interfaccia vengono **preservati**
+- Le **chiavi esistenti** hanno il loro JSON `text` unito - i valori delle locale che hai modificato nell'interfaccia vengono **preservati**
 - Il **rilevamento del tipo** viene eseguito sul valore per determinare `text` / `html` / `markdown`
 
 ### Rilevamento automatico del tipo
@@ -43,7 +43,7 @@ Lingua usa `updateOrCreate` abbinando su `group` + `key`. Questo significa:
 | Nessuno dei due | `text` |
 
 ::: tip
-Il rilevamento del tipo è conservativo — assegna `html` o `markdown` solo quando il contenuto corrisponde chiaramente. Le stringhe semplici ricevono sempre `text`. Puoi cambiare il tipo manualmente tramite la modale di modifica.
+Il rilevamento del tipo è conservativo - assegna `html` o `markdown` solo quando il contenuto corrisponde chiaramente. Le stringhe semplici ricevono sempre `text`. Puoi cambiare il tipo manualmente tramite la modale di modifica.
 :::
 
 ### Tramite il facade
@@ -76,10 +76,10 @@ php artisan lingua:sync-to-local
 
 ### Casi d'uso
 
-- **Controllo versione** — commetti i file esportati per tracciare le modifiche alle traduzioni nel tempo
-- **Pipeline di deployment** — esporta prima del deployment se gli strumenti downstream si aspettano traduzioni basate su file
-- **Backup** — crea uno snapshot in un determinato momento di tutte le traduzioni
-- **Altri strumenti** — esporta per l'uso in un servizio di gestione delle traduzioni o in un importatore CSV
+- **Controllo versione** - commetti i file esportati per tracciare le modifiche alle traduzioni nel tempo
+- **Pipeline di deployment** - esporta prima del deployment se gli strumenti downstream si aspettano traduzioni basate su file
+- **Backup** - crea uno snapshot in un determinato momento di tutte le traduzioni
+- **Altri strumenti** - esporta per l'uso in un servizio di gestione delle traduzioni o in un importatore CSV
 
 ### Tramite il facade
 
@@ -137,7 +137,7 @@ Questo recupera le nuove stringhe dal pacchetto installato.
 ## Consigli e avvertenze
 
 ::: tip Mantieni il DB come fonte di verità
-Tratta il database come la fonte primaria. Sincronizza in locale solo quando hai bisogno dei file (controllo versione, deployment, ecc.). Evita di modificare i file locali direttamente mentre il DB è in uso — la prossima sincronizzazione nel database sovrascriverà le tue modifiche se le chiavi esistono già.
+Tratta il database come la fonte primaria. Sincronizza in locale solo quando hai bisogno dei file (controllo versione, deployment, ecc.). Evita di modificare i file locali direttamente mentre il DB è in uso - la prossima sincronizzazione nel database sovrascriverà le tue modifiche se le chiavi esistono già.
 :::
 
 ::: warning File locale e DB non sincronizzati
@@ -146,7 +146,7 @@ Se aggiungi manualmente nuovi file PHP di locale senza eseguire `lingua:sync-to-
 
 ::: tip Ciclo completo
 Un modo sicuro per riorganizzare le traduzioni:
-1. `lingua:sync-to-local` — esporta tutto
+1. `lingua:sync-to-local` - esporta tutto
 2. Modifica i file su disco
-3. `lingua:sync-to-database` — reimporta
+3. `lingua:sync-to-database` - reimporta
 :::

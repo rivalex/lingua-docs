@@ -113,7 +113,7 @@ Usado como fallback durante a instalação e quando a tabela `languages` está v
 
 **Padrão:** `config('app.fallback_locale', 'en')`
 
-Comportamento de fallback padrão do Laravel — quando uma chave está ausente no locale ativo, este locale é tentado em seguida.
+Comportamento de fallback padrão do Laravel - quando uma chave está ausente no locale ativo, este locale é tentado em seguida.
 
 ### `middleware`
 
@@ -186,5 +186,5 @@ Controla a barra de ferramentas do TipTap para os tipos de tradução HTML e Mar
 | `clear` | Botão de limpar formatação |
 
 ::: tip
-A barra de ferramentas do editor é global — todos os campos de tradução HTML/Markdown compartilham a mesma configuração. Se precisar de controle por campo, publique as views e personalize o componente do editor diretamente.
+A barra de ferramentas do editor é global - todos os campos de tradução HTML/Markdown compartilham a mesma configuração. Se precisar de controle por campo, publique as views e personalize o componente do editor diretamente.
 :::

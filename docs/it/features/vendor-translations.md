@@ -1,6 +1,6 @@
 # Traduzioni vendor
 
-Le traduzioni vendor sono stringhe appartenenti a pacchetti di terze parti — i messaggi di validazione di Laravel, le etichette di paginazione, le stringhe di reset della password e le traduzioni di qualsiasi altro pacchetto che include la propria directory `lang/`.
+Le traduzioni vendor sono stringhe appartenenti a pacchetti di terze parti - i messaggi di validazione di Laravel, le etichette di paginazione, le stringhe di reset della password e le traduzioni di qualsiasi altro pacchetto che include la propria directory `lang/`.
 
 ## Come vengono identificate
 
@@ -40,7 +40,7 @@ Il caso d'uso più comune è sovrascrivere i messaggi di validazione di Laravel 
 2. Trova la stringa (es. `validation.required`)
 3. Clicca sull'icona di modifica per aprire la modale di aggiornamento
 4. Cambia il valore per qualsiasi locale
-5. Salva — la sovrascrittura ha effetto immediatamente alla richiesta successiva
+5. Salva - la sovrascrittura ha effetto immediatamente alla richiesta successiva
 
 ```php
 // Oppure in modo programmatico tramite il facade:

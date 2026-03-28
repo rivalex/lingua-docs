@@ -2,7 +2,7 @@
 
 La pagina Lingue (`/lingua/languages`) è il tuo centro di controllo per tutte le locale installate.
 
-<Screenshot src="/screenshots/languages-page.png" alt="Pagina di gestione delle lingue di Lingua" caption="Pagina Lingue — mostra le locale installate con le statistiche di completamento." />
+<Screenshot src="/screenshots/languages-page.png" alt="Pagina di gestione delle lingue di Lingua" caption="Pagina Lingue - mostra le locale installate con le statistiche di completamento." />
 
 ## Aggiungere una lingua
 
@@ -47,7 +47,7 @@ $available = Lingua::notInstalled(); // ['af', 'ar', 'az', …]
 
 ## Rimuovere una lingua
 
-Clicca sull'icona del cestino su qualsiasi riga di lingua non predefinita. Una modale di conferma previene l'eliminazione accidentale — devi digitare il nome della lingua per confermare.
+Clicca sull'icona del cestino su qualsiasi riga di lingua non predefinita. Una modale di conferma previene l'eliminazione accidentale - devi digitare il nome della lingua per confermare.
 
 Internamente, l'operazione di eliminazione:
 1. Rimuove i file della lingua tramite `lang:rm {locale} --force`
@@ -83,7 +83,7 @@ Se imposti una nuova lingua predefinita, assicurati che tutte le tue traduzioni 
 
 ## Riordinare le lingue
 
-Trascina e rilascia le righe delle lingue per controllarne l'ordine di visualizzazione in tutta l'applicazione — nel widget del selettore di lingua, nel selettore di locale delle traduzioni e ovunque usi `Lingua::languages()`.
+Trascina e rilascia le righe delle lingue per controllarne l'ordine di visualizzazione in tutta l'applicazione - nel widget del selettore di lingua, nel selettore di locale delle traduzioni e ovunque usi `Lingua::languages()`.
 
 L'ordine di ordinamento è memorizzato nella colonna intera `sort` e riassegnato sequenzialmente dopo ogni trascinamento.
 

@@ -1,6 +1,6 @@
 # Traductions de packages
 
-Les traductions de packages sont des chaînes appartenant à des packages tiers — les messages de validation de Laravel, les libellés de pagination, les chaînes de réinitialisation de mot de passe, et les traductions de tout autre package livrant son propre répertoire `lang/`.
+Les traductions de packages sont des chaînes appartenant à des packages tiers - les messages de validation de Laravel, les libellés de pagination, les chaînes de réinitialisation de mot de passe, et les traductions de tout autre package livrant son propre répertoire `lang/`.
 
 ## Comment elles sont identifiées
 
@@ -40,7 +40,7 @@ Le cas d'utilisation le plus courant est de remplacer les messages de validation
 2. Trouvez la chaîne (ex. `validation.required`)
 3. Cliquez sur l'icône de modification pour ouvrir la modale de mise à jour
 4. Modifiez la valeur pour n'importe quelle locale
-5. Sauvegardez — le remplacement prend effet immédiatement à la prochaine requête
+5. Sauvegardez - le remplacement prend effet immédiatement à la prochaine requête
 
 ```php
 // Ou par programmation via la facade :

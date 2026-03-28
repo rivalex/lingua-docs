@@ -38,7 +38,7 @@ Lingua 在 `lingua::` 前缀下注册了几个匿名 Blade 组件。这些组件
 | `label` | string | `''` | 字段上方的可选标签 |
 | `placeholder` | string | `''` | 占位符文本 |
 | `required` | bool | `false` | 显示必填标记 |
-| `wire:model` | — | — | Livewire 模型绑定 |
+| `wire:model` | - | - | Livewire 模型绑定 |
 
 ---
 
@@ -101,7 +101,7 @@ Lingua 在 `lingua::` 前缀下注册了几个匿名 Blade 组件。这些组件
 
 | 属性 | 类型 | 默认值 | 描述 |
 |---|---|---|---|
-| `on` | string | — | 要监听的 Livewire 事件名称 |
+| `on` | string | - | 要监听的 Livewire 事件名称 |
 | `delay` | int | `1500` | 隐藏前的持续时间（毫秒） |
 
 ---
@@ -122,7 +122,7 @@ Lingua 在 `lingua::` 前缀下注册了几个匿名 Blade 组件。这些组件
 
 | 属性 | 类型 | 描述 |
 |---|---|---|
-| `wire:model` | — | Livewire 模型绑定 |
+| `wire:model` | - | Livewire 模型绑定 |
 | `suggestions` | array | 自动补全建议数组 |
 | `placeholder` | string | 输入占位符 |
 

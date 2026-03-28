@@ -11,10 +11,10 @@ Lingua es un **paquete de Laravel** que reemplaza el sistema de traducción basa
 
 Las traducciones estándar de Laravel viven en archivos PHP y JSON dentro de `lang/`. Esto funciona bien para proyectos pequeños, pero genera fricción a medida que la aplicación crece:
 
-- **Actualizar una traducción requiere un despliegue** — incluso para corregir un simple error tipográfico.
-- **Los miembros no técnicos del equipo no pueden editar traducciones** — los editores necesitan Git y una revisión de código.
-- **El seguimiento de la completitud de las traducciones es manual** — hay que comparar archivos para encontrar los vacíos.
-- **Dar soporte a muchos idiomas desordena el código fuente** — docenas de archivos dispersos en distintos directorios.
+- **Actualizar una traducción requiere un despliegue** - incluso para corregir un simple error tipográfico.
+- **Los miembros no técnicos del equipo no pueden editar traducciones** - los editores necesitan Git y una revisión de código.
+- **El seguimiento de la completitud de las traducciones es manual** - hay que comparar archivos para encontrar los vacíos.
+- **Dar soporte a muchos idiomas desordena el código fuente** - docenas de archivos dispersos en distintos directorios.
 
 Lingua almacena cada traducción en la base de datos, en una única columna JSON por fila, y ofrece una interfaz Livewire donde cualquier usuario autorizado puede gestionar idiomas y cadenas en tiempo real.
 
@@ -38,7 +38,7 @@ Lingua almacena cada traducción en la base de datos, en una única columna JSON
 └─────────────────────────────────────────────────────────┘
 ```
 
-En tiempo de ejecución, Lingua registra un `LinguaManager` personalizado como cargador de traducciones de Laravel. Fusiona las traducciones basadas en archivos con las de la base de datos — **las entradas de la base de datos siempre tienen prioridad** — para que puedas sobreescribir cualquier cadena sin tocar los archivos fuente.
+En tiempo de ejecución, Lingua registra un `LinguaManager` personalizado como cargador de traducciones de Laravel. Fusiona las traducciones basadas en archivos con las de la base de datos - **las entradas de la base de datos siempre tienen prioridad** - para que puedas sobreescribir cualquier cadena sin tocar los archivos fuente.
 
 ## Conceptos clave
 
@@ -46,7 +46,7 @@ En tiempo de ejecución, Lingua registra un `LinguaManager` personalizado como c
 |---|---|
 | **Idioma** | Un idioma instalado con metadatos (nombre, nombre nativo, dirección, orden, indicador de predeterminado) |
 | **Traducción** | Una fila en `language_lines` con un `group`, `key`, `type` y una columna JSON `text` que contiene los valores de todos los idiomas |
-| **Tipo de traducción** | `text`, `html` o `markdown` — determina qué editor se muestra en la interfaz |
+| **Tipo de traducción** | `text`, `html` o `markdown` - determina qué editor se muestra en la interfaz |
 | **Traducción de proveedor** | Una traducción que pertenece a un paquete de terceros; protegida contra eliminación accidental |
 | **Idioma predeterminado** | El idioma principal; eliminar una traducción del idioma predeterminado elimina el registro completo |
 | **Sincronización** | El proceso de importar archivos locales → BD (`sync-to-database`) o exportar BD → archivos (`sync-to-local`) |

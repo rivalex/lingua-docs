@@ -1,6 +1,6 @@
 # Sincronización Bidireccional
 
-Lingua puede importar traducciones desde archivos locales a la base de datos y exportarlas de vuelta — dándote lo mejor de ambos mundos: **runtime gestionado por base de datos** y **control de versiones basado en archivos**.
+Lingua puede importar traducciones desde archivos locales a la base de datos y exportarlas de vuelta - dándote lo mejor de ambos mundos: **runtime gestionado por base de datos** y **control de versiones basado en archivos**.
 
 ## Las dos direcciones
 
@@ -23,15 +23,15 @@ php artisan lingua:sync-to-database
 
 ### Qué se importa
 
-- `lang/{locale}/*.php` — archivos de traducción PHP estándar
-- `lang/{locale}.json` — archivos de traducción JSON
-- `lang/vendor/{package}/{locale}/*.php` — traducciones de paquetes de proveedores
+- `lang/{locale}/*.php` - archivos de traducción PHP estándar
+- `lang/{locale}.json` - archivos de traducción JSON
+- `lang/vendor/{package}/{locale}/*.php` - traducciones de paquetes de proveedores
 
 ### Comportamiento de upsert
 
 Lingua usa `updateOrCreate` con coincidencia en `group` + `key`. Esto significa:
 - **Las claves nuevas** se insertan
-- **Las claves existentes** tienen su JSON `text` fusionado — los valores que has editado en la interfaz se **preservan**
+- **Las claves existentes** tienen su JSON `text` fusionado - los valores que has editado en la interfaz se **preservan**
 - **La detección de tipo** se ejecuta sobre el valor para determinar `text` / `html` / `markdown`
 
 ### Detección automática de tipo
@@ -43,7 +43,7 @@ Lingua usa `updateOrCreate` con coincidencia en `group` + `key`. Esto significa:
 | Ninguna de las anteriores | `text` |
 
 ::: tip
-La detección de tipo es conservadora — solo asigna `html` o `markdown` cuando el contenido claramente coincide. Las cadenas simples siempre obtienen `text`. Puedes cambiar el tipo manualmente mediante el modal de edición.
+La detección de tipo es conservadora - solo asigna `html` o `markdown` cuando el contenido claramente coincide. Las cadenas simples siempre obtienen `text`. Puedes cambiar el tipo manualmente mediante el modal de edición.
 :::
 
 ### Mediante el facade
@@ -76,10 +76,10 @@ php artisan lingua:sync-to-local
 
 ### Casos de uso
 
-- **Control de versiones** — confirma los archivos exportados para rastrear los cambios de traducción a lo largo del tiempo
-- **Pipelines de despliegue** — exporta antes de desplegar si las herramientas downstream esperan traducciones basadas en archivos
-- **Copias de seguridad** — crea un snapshot en el tiempo de todas las traducciones
-- **Otras herramientas** — exporta para usar en un servicio de gestión de traducciones o un importador CSV
+- **Control de versiones** - confirma los archivos exportados para rastrear los cambios de traducción a lo largo del tiempo
+- **Pipelines de despliegue** - exporta antes de desplegar si las herramientas downstream esperan traducciones basadas en archivos
+- **Copias de seguridad** - crea un snapshot en el tiempo de todas las traducciones
+- **Otras herramientas** - exporta para usar en un servicio de gestión de traducciones o un importador CSV
 
 ### Mediante el facade
 
@@ -137,7 +137,7 @@ Esto recoge las nuevas cadenas del paquete instalado.
 ## Consejos y advertencias
 
 ::: tip Mantén la BD como fuente de verdad
-Trata la base de datos como fuente primaria. Solo sincroniza a local cuando necesites los archivos (control de versiones, despliegue, etc.). Evita editar archivos locales directamente mientras la BD está en uso — la próxima sincronización a base de datos sobreescribirá tus ediciones si las claves ya existen.
+Trata la base de datos como fuente primaria. Solo sincroniza a local cuando necesites los archivos (control de versiones, despliegue, etc.). Evita editar archivos locales directamente mientras la BD está en uso - la próxima sincronización a base de datos sobreescribirá tus ediciones si las claves ya existen.
 :::
 
 ::: warning Archivos de idioma y BD desincronizados
@@ -146,7 +146,7 @@ Si agregas nuevos archivos PHP de idioma manualmente sin ejecutar `lingua:sync-t
 
 ::: tip Ida y vuelta completa
 Una forma segura de reorganizar traducciones:
-1. `lingua:sync-to-local` — exportar todo
+1. `lingua:sync-to-local` - exportar todo
 2. Editar archivos en disco
-3. `lingua:sync-to-database` — re-importar
+3. `lingua:sync-to-database` - re-importar
 :::

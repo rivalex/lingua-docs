@@ -11,21 +11,21 @@ Requête du navigateur
 ┌─────────────────────────────┐
 │      LinguaMiddleware       │  Lit 'locale' depuis la session
 │  app()->setLocale($locale)  │  Retombe sur la valeur par défaut en DB
-└──────────────┬──────────────┘
-               │
+└───┬─────────────────────────┘
+    │
     ▼
 ┌─────────────────────────────┐
 │        Votre contrôleur     │
 │  __('auth.failed')          │  Helper standard de Laravel
-└──────────────┬──────────────┘
-               │
+└───┬─────────────────────────┘
+    │
     ▼
 ┌─────────────────────────────┐
 │       LinguaManager         │  TranslationLoaderManager personnalisé
 │  1. Chargeur DB (Spatie)    │  La DB gagne toujours en cas de chevauchement
 │  2. Chargeur fichier (repli)│
-└──────────────┬──────────────┘
-               │
+└───┬─────────────────────────┘
+    │
     ▼
 Chaîne traduite retournée
 ```
@@ -34,8 +34,8 @@ Chaîne traduite retournée
 
 `LinguaManager` étend le `TranslationLoaderManager` de Spatie. Au moment de l'exécution, il fusionne deux sources :
 
-1. **Chargeur de fichiers** — lit depuis `lang/` comme Laravel le fait normalement
-2. **Chargeur de base de données** (chargeur `Db` de Spatie) — lit depuis `language_lines`
+1. **Chargeur de fichiers** - lit depuis `lang/` comme Laravel le fait normalement
+2. **Chargeur de base de données** (chargeur `Db` de Spatie) - lit depuis `language_lines`
 
 Lorsque la même clé existe dans les deux sources, **la valeur en base de données gagne**. Cela vous permet de remplacer n'importe quelle traduction de package ou de fichier sans toucher aux fichiers sources.
 

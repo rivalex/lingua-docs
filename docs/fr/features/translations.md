@@ -2,7 +2,7 @@
 
 La page Traductions (`/lingua/translations/{locale?}`) vous permet de parcourir, filtrer et modifier chaque chaîne de traduction.
 
-<Screenshot src="/screenshots/translations-page.png" alt="Page des traductions Lingua" caption="Page des traductions — avec le sélecteur de locale, le filtre de groupe et l'éditeur en ligne." />
+<Screenshot src="/screenshots/translations-page.png" alt="Page des traductions Lingua" caption="Page des traductions - avec le sélecteur de locale, le filtre de groupe et l'éditeur en ligne." />
 
 ## Navigation dans les traductions
 
@@ -10,7 +10,7 @@ La page Traductions (`/lingua/translations/{locale?}`) vous permet de parcourir,
 
 Les onglets de locale en haut de la page vous permettent de basculer entre les langues installées. L'URL est mise à jour vers `/lingua/translations/{locale}` pour que chaque vue soit mémorisable et partageable.
 
-La colonne de la **locale par défaut** est toujours affichée à gauche comme référence — vous modifiez la locale sélectionnée à droite.
+La colonne de la **locale par défaut** est toujours affichée à gauche comme référence - vous modifiez la locale sélectionnée à droite.
 
 ### Filtrage
 
@@ -41,24 +41,24 @@ Cliquez directement dans la cellule de traduction pour commencer l'édition. Les
 
 ### Synchroniser depuis la valeur par défaut
 
-Chaque ligne de traduction dispose d'un bouton **Synchroniser depuis la valeur par défaut** (↺). En cliquant dessus, la valeur de la locale par défaut est copiée vers la locale courante — utile comme point de départ quand seules de légères modifications de formulation sont nécessaires.
+Chaque ligne de traduction dispose d'un bouton **Synchroniser depuis la valeur par défaut** (↺). En cliquant dessus, la valeur de la locale par défaut est copiée vers la locale courante - utile comme point de départ quand seules de légères modifications de formulation sont nécessaires.
 
 ### Modale de modification
 
 Pour la locale par défaut, cliquez sur l'icône crayon pour ouvrir la modale de modification, où vous pouvez changer le type de traduction (texte / html / markdown) ainsi que la valeur.
 
 ::: tip Changer le type de traduction
-Si vous changez une traduction de `text` à `html`, l'éditeur en ligne de la ligne passera immédiatement à TipTap. La valeur stockée n'est pas modifiée — seul le comportement de l'éditeur change.
+Si vous changez une traduction de `text` à `html`, l'éditeur en ligne de la ligne passera immédiatement à TipTap. La valeur stockée n'est pas modifiée - seul le comportement de l'éditeur change.
 :::
 
 ## Créer des traductions
 
 Cliquez sur **Nouvelle traduction** pour créer une entrée personnalisée. Renseignez :
 
-- **Groupe** — l'équivalent du nom de fichier (ex. `marketing`, `emails`)
-- **Clé** — la clé au sein du groupe (ex. `hero_title`)
-- **Type** — `text`, `html` ou `markdown`
-- **Valeur** — la traduction pour la locale par défaut
+- **Groupe** - l'équivalent du nom de fichier (ex. `marketing`, `emails`)
+- **Clé** - la clé au sein du groupe (ex. `hero_title`)
+- **Type** - `text`, `html` ou `markdown`
+- **Valeur** - la traduction pour la locale par défaut
 
 ```
 group: marketing
@@ -89,7 +89,7 @@ Les traductions de packages ne peuvent pas être supprimées. Toute tentative af
 
 ## Copier la clé dans le presse-papiers
 
-Chaque ligne possède une icône de presse-papiers qui copie la référence complète `groupe.clé` (ex. `auth.failed`) dans votre presse-papiers — pratique lors du référencement des clés dans Blade ou PHP.
+Chaque ligne possède une icône de presse-papiers qui copie la référence complète `groupe.clé` (ex. `auth.failed`) dans votre presse-papiers - pratique lors du référencement des clés dans Blade ou PHP.
 
 ## Raccourcis clavier
 

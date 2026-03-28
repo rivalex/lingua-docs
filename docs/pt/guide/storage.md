@@ -4,7 +4,7 @@ Entender como as traduções são armazenadas ajuda a consultá-las, importá-la
 
 ## A tabela `language_lines`
 
-Cada linha em `language_lines` representa uma **string** traduzível — não um locale. Todos os valores de locale são armazenados juntos em uma única coluna JSON `text`:
+Cada linha em `language_lines` representa uma **string** traduzível - não um locale. Todos os valores de locale são armazenados juntos em uma única coluna JSON `text`:
 
 ```
 group      | key        | type | text
@@ -17,10 +17,10 @@ emails     | subject    | html | {"en":"<b>Welcome</b> to our platform!"}
 
 ### Vantagens deste design
 
-- **Uma linha por string** — sem linhas por locale para gerenciar
-- **Adicionar um locale é não-destrutivo** — basta adicionar uma nova chave ao objeto JSON
-- **Traduções ausentes são explícitas** — se `fr` está ausente do JSON, a string ainda não foi traduzida
-- **Query única** — um único `SELECT` busca todos os valores de locale para uma chave
+- **Uma linha por string** - sem linhas por locale para gerenciar
+- **Adicionar um locale é não-destrutivo** - basta adicionar uma nova chave ao objeto JSON
+- **Traduções ausentes são explícitas** - se `fr` está ausente do JSON, a string ainda não foi traduzida
+- **Query única** - um único `SELECT` busca todos os valores de locale para uma chave
 
 ### Consultando diretamente
 
@@ -95,7 +95,7 @@ A coluna `group` mapeia para o nome do arquivo (`auth` = `lang/en/auth.php`) e a
 As traduções de vendor são marcadas com `is_vendor = true` e carregam uma string `vendor` (ex: `'spatie'`, `'laravel'`). Elas são sincronizadas dos diretórios `lang/vendor/{vendor}/{locale}/`.
 
 - Elas **podem ser editadas** na interface (para sobrescrever o texto do vendor)
-- Elas **não podem ser excluídas** — tentar fazê-lo dispara um evento `vendor_translation_protected`
+- Elas **não podem ser excluídas** - tentar fazê-lo dispara um evento `vendor_translation_protected`
 - Os campos `group` e `key` são **bloqueados** no modal de atualização
 
 Veja [Traduções de Vendor](/pt/features/vendor-translations) para detalhes completos.
