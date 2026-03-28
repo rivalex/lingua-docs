@@ -20,7 +20,7 @@
 <livewire:lingua::language-selector mode="sidebar" />
 ```
 
-<Screenshot src="/lingua-docs/screenshots/selector-sidebar.png" alt="Переключатель языков в режиме sidebar" caption="Режим sidebar — показывает все установленные языки как пункты навигации." width="320px" :center="true"/>
+<Screenshot src="/screenshots/selector-sidebar.png" alt="Переключатель языков в режиме sidebar" caption="Режим sidebar — показывает все установленные языки как пункты навигации." width="320px" :center="true"/>
 
 ### Режим Dropdown
 
@@ -30,7 +30,7 @@
 <livewire:lingua::language-selector mode="dropdown" />
 ```
 
-<Screenshot src="/lingua-docs/screenshots/selector-dropdown.png" alt="Переключатель языков в режиме dropdown" caption="Режим dropdown — показывает текущий язык с иконкой флага." width="320px" :center="true"/>
+<Screenshot src="/screenshots/selector-dropdown.png" alt="Переключатель языков в режиме dropdown" caption="Режим dropdown — показывает текущий язык с иконкой флага." width="320px" :center="true"/>
 
 ### Режим Modal
 
@@ -40,7 +40,7 @@
 <livewire:lingua::language-selector mode="modal" />
 ```
 
-<Screenshot src="/lingua-docs/screenshots/selector-modal.png" alt="Переключатель языков в режиме modal" caption="Режим modal — полноэкранное наложение выбора языка."/>
+<Screenshot src="/screenshots/selector-modal.png" alt="Переключатель языков в режиме modal" caption="Режим modal — полноэкранное наложение выбора языка."/>
 
 ## Справочник пропсов
 

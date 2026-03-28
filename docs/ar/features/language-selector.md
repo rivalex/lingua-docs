@@ -20,7 +20,7 @@
 <livewire:lingua::language-selector mode="sidebar" />
 ```
 
-<Screenshot src="/lingua-docs/screenshots/selector-sidebar.png" alt="محدد اللغة في وضع الشريط الجانبي" caption="وضع الشريط الجانبي — يعرض جميع اللغات المثبتة كعناصر تنقل." width="320px" :center="true"/>
+<Screenshot src="/screenshots/selector-sidebar.png" alt="محدد اللغة في وضع الشريط الجانبي" caption="وضع الشريط الجانبي — يعرض جميع اللغات المثبتة كعناصر تنقل." width="320px" :center="true"/>
 
 ### وضع القائمة المنسدلة
 
@@ -30,7 +30,7 @@
 <livewire:lingua::language-selector mode="dropdown" />
 ```
 
-<Screenshot src="/lingua-docs/screenshots/selector-dropdown.png" alt="محدد اللغة في وضع القائمة المنسدلة" caption="وضع القائمة المنسدلة — يعرض اللغة الحالية مع أيقونة العلم." width="320px" :center="true"/>
+<Screenshot src="/screenshots/selector-dropdown.png" alt="محدد اللغة في وضع القائمة المنسدلة" caption="وضع القائمة المنسدلة — يعرض اللغة الحالية مع أيقونة العلم." width="320px" :center="true"/>
 
 ### وضع النافذة المنبثقة
 
@@ -40,7 +40,7 @@
 <livewire:lingua::language-selector mode="modal" />
 ```
 
-<Screenshot src="/lingua-docs/screenshots/selector-modal.png" alt="محدد اللغة في وضع النافذة المنبثقة" caption="وضع النافذة المنبثقة — طبقة منتقي اللغة بملء الشاشة."/>
+<Screenshot src="/screenshots/selector-modal.png" alt="محدد اللغة في وضع النافذة المنبثقة" caption="وضع النافذة المنبثقة — طبقة منتقي اللغة بملء الشاشة."/>
 
 ## مرجع الخصائص
 

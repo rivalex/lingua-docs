@@ -73,7 +73,7 @@ __('pagination.next')
 3. 使用**仅显示缺失**专注于未翻译的字符串
 4. 对于 HTML 或 Markdown 类型，富文本编辑器会自动激活
 
-<Screenshot src="/lingua-docs/screenshots/translations-page.png" alt="Lingua 翻译管理页面" caption="翻译页面，包含语言环境切换器、分组过滤器和内联编辑器。" />
+<Screenshot src="/screenshots/translations-page.png" alt="Lingua 翻译管理页面" caption="翻译页面，包含语言环境切换器、分组过滤器和内联编辑器。" />
 
 ## 6. 同步回文件（可选）
 

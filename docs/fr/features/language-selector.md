@@ -20,7 +20,7 @@ Se rend comme une section de navigation groupée — idéal pour les barres lat�
 <livewire:lingua::language-selector mode="sidebar" />
 ```
 
-<Screenshot src="/lingua-docs/screenshots/selector-sidebar.png" alt="Sélecteur de langue en mode barre latérale" caption="Mode barre latérale — affiche toutes les langues installées comme éléments de navigation." width="320px" :center="true"/>
+<Screenshot src="/screenshots/selector-sidebar.png" alt="Sélecteur de langue en mode barre latérale" caption="Mode barre latérale — affiche toutes les langues installées comme éléments de navigation." width="320px" :center="true"/>
 
 ### Mode liste déroulante
 
@@ -30,7 +30,7 @@ Se rend comme un bouton de liste déroulante compact — idéal pour les en-têt
 <livewire:lingua::language-selector mode="dropdown" />
 ```
 
-<Screenshot src="/lingua-docs/screenshots/selector-dropdown.png" alt="Sélecteur de langue en mode liste déroulante" caption="Mode liste déroulante — affiche la langue courante avec une icône de drapeau." width="320px" :center="true"/>
+<Screenshot src="/screenshots/selector-dropdown.png" alt="Sélecteur de langue en mode liste déroulante" caption="Mode liste déroulante — affiche la langue courante avec une icône de drapeau." width="320px" :center="true"/>
 
 ### Mode modale
 
@@ -40,7 +40,7 @@ Se rend comme un bouton qui ouvre une modale complète de sélection de langue �
 <livewire:lingua::language-selector mode="modal" />
 ```
 
-<Screenshot src="/lingua-docs/screenshots/selector-modal.png" alt="Sélecteur de langue en mode modale" caption="Mode modale — superposition plein écran pour le choix de la langue."/>
+<Screenshot src="/screenshots/selector-modal.png" alt="Sélecteur de langue en mode modale" caption="Mode modale — superposition plein écran pour le choix de la langue."/>
 
 ## Référence des props
 

@@ -2,7 +2,7 @@
 
 صفحة اللغات (`/lingua/languages`) هي مركز التحكم لجميع اللغات المثبتة.
 
-<Screenshot src="/lingua-docs/screenshots/languages-page.png" alt="صفحة إدارة اللغات في Lingua" caption="صفحة اللغات — تعرض اللغات المثبتة مع إحصاءات الاكتمال." />
+<Screenshot src="/screenshots/languages-page.png" alt="صفحة إدارة اللغات في Lingua" caption="صفحة اللغات — تعرض اللغات المثبتة مع إحصاءات الاكتمال." />
 
 ## إضافة لغة
 
@@ -15,7 +15,7 @@
 3. مزامنة جميع النصوص الجديدة إلى `language_lines`
 4. تحديث الجدول باللغة الجديدة
 
-<Screenshot src="/lingua-docs/screenshots/language-add-modal.png" alt="نافذة إضافة لغة" caption="نافذة إضافة اللغة مع منتقي اللغة القابل للبحث." width="640px" :center="true"/>
+<Screenshot src="/screenshots/language-add-modal.png" alt="نافذة إضافة لغة" caption="نافذة إضافة اللغة مع منتقي اللغة القابل للبحث." width="640px" :center="true"/>
 
 ### من سطر الأوامر
 

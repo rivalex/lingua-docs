@@ -2,7 +2,7 @@
 
 Страница «Переводы» (`/lingua/translations/{locale?}`) позволяет просматривать, фильтровать и редактировать все строки переводов.
 
-<Screenshot src="/lingua-docs/screenshots/translations-page.png" alt="Страница переводов Lingua" caption="Страница переводов — с переключателем локалей, фильтром по группе и встроенным редактором." />
+<Screenshot src="/screenshots/translations-page.png" alt="Страница переводов Lingua" caption="Страница переводов — с переключателем локалей, фильтром по группе и встроенным редактором." />
 
 ## Навигация по переводам
 
@@ -21,7 +21,7 @@
 | **Тип** | Фильтрует по `text`, `html` или `markdown` |
 | **Только непереведённые** | Показывает только строки без значения в выбранной локали |
 
-<Screenshot src="/lingua-docs/screenshots/translations-filters.png" alt="Фильтры переводов" caption="Фильтрация для отображения только отсутствующих французских переводов в группе validation." />
+<Screenshot src="/screenshots/translations-filters.png" alt="Фильтры переводов" caption="Фильтрация для отображения только отсутствующих французских переводов в группе validation." />
 
 ### Пагинация
 
@@ -37,7 +37,7 @@
 - Переводы типа **HTML** открывают rich-text редактор TipTap
 - Переводы типа **Markdown** открывают markdown-редактор TipTap
 
-<Screenshot src="/lingua-docs/screenshots/translation-editor-html.png" alt="HTML-редактор переводов" caption="Редактор TipTap HTML для переводов с форматированием." width="512px" :center="true"/>
+<Screenshot src="/screenshots/translation-editor-html.png" alt="HTML-редактор переводов" caption="Редактор TipTap HTML для переводов с форматированием." width="512px" :center="true"/>
 
 ### Синхронизация из основного языка
 

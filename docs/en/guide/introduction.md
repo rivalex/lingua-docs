@@ -1,7 +1,9 @@
 <figure style="margin: 30px auto 30px !important; max-width: 640px;">
-  <img src="../public/logoLinguaHorizontal-light.svg" class="logo-light" alt="Language selector in sidebar mode">
-  <img src="../public/logoLinguaHorizontal-dark.svg" class="logo-dark" alt="Language selector in sidebar mode">
+  <img src="/logoLinguaHorizontal-light.svg" class="logo-light" alt="Language selector in sidebar mode">
+  <img src="/logoLinguaHorizontal-dark.svg" class="logo-dark" alt="Language selector in sidebar mode">
 </figure>
+
+
 
 # What is Lingua?
 

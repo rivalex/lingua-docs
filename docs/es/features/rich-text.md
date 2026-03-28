@@ -29,7 +29,7 @@ La barra de herramientas del editor se controla globalmente mediante `config/lin
 
 Activa solo las opciones que tu contenido realmente necesita. Mantener la barra de herramientas mínima reduce la carga cognitiva para los traductores.
 
-<Screenshot src="/lingua-docs/screenshots/editor-toolbar.png" alt="Barra de herramientas del editor" caption="La barra de herramientas del editor HTML con las opciones predeterminadas activas." />
+<Screenshot src="/screenshots/editor-toolbar.png" alt="Barra de herramientas del editor" caption="La barra de herramientas del editor HTML con las opciones predeterminadas activas." />
 
 ## Cambiar el tipo de una traducción
 

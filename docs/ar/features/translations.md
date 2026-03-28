@@ -2,7 +2,7 @@
 
 صفحة الترجمات (`/lingua/translations/{locale?}`) تتيح لك تصفح وتصفية وتعديل كل نص ترجمة.
 
-<Screenshot src="/lingua-docs/screenshots/translations-page.png" alt="صفحة الترجمات في Lingua" caption="صفحة الترجمات — مع محوِّل اللغة وتصفية المجموعة والمحرر المضمّن." />
+<Screenshot src="/screenshots/translations-page.png" alt="صفحة الترجمات في Lingua" caption="صفحة الترجمات — مع محوِّل اللغة وتصفية المجموعة والمحرر المضمّن." />
 
 ## التنقل في الترجمات
 
@@ -21,7 +21,7 @@
 | **النوع** | يصفي حسب `text` أو `html` أو `markdown` |
 | **عرض الناقصة فقط** | يعرض فقط النصوص التي لا تملك قيمة في اللغة المحددة |
 
-<Screenshot src="/lingua-docs/screenshots/translations-filters.png" alt="مرشحات الترجمة" caption="التصفية لعرض الترجمات الفرنسية الناقصة فقط في مجموعة التحقق." />
+<Screenshot src="/screenshots/translations-filters.png" alt="مرشحات الترجمة" caption="التصفية لعرض الترجمات الفرنسية الناقصة فقط في مجموعة التحقق." />
 
 ### الصفحات
 
@@ -37,7 +37,7 @@
 - ترجمات **HTML** تفتح محرر النص الغني TipTap
 - ترجمات **Markdown** تفتح محرر Markdown في TipTap
 
-<Screenshot src="/lingua-docs/screenshots/translation-editor-html.png" alt="محرر ترجمة HTML" caption="محرر HTML لـ TipTap لترجمات النص الغني." width="512px" :center="true"/>
+<Screenshot src="/screenshots/translation-editor-html.png" alt="محرر ترجمة HTML" caption="محرر HTML لـ TipTap لترجمات النص الغني." width="512px" :center="true"/>
 
 ### المزامنة من الافتراضي
 

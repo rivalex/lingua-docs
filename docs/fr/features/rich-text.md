@@ -29,7 +29,7 @@ La barre d'outils de l'éditeur est contrôlée globalement via `config/lingua.p
 
 N'activez que les options dont votre contenu a réellement besoin. Garder la barre d'outils minimale réduit la charge cognitive pour les traducteurs.
 
-<Screenshot src="/lingua-docs/screenshots/editor-toolbar.png" alt="Barre d'outils de l'éditeur" caption="La barre d'outils de l'éditeur HTML avec les options par défaut actives." />
+<Screenshot src="/screenshots/editor-toolbar.png" alt="Barre d'outils de l'éditeur" caption="La barre d'outils de l'éditeur HTML avec les options par défaut actives." />
 
 ## Changer le type d'une traduction
 

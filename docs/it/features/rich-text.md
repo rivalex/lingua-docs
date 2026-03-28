@@ -29,7 +29,7 @@ La barra degli strumenti dell'editor è controllata globalmente tramite `config/
 
 Abilita solo le opzioni di cui il tuo contenuto ha effettivamente bisogno. Mantenere la barra degli strumenti minimale riduce il carico cognitivo per i traduttori.
 
-<Screenshot src="/lingua-docs/screenshots/editor-toolbar.png" alt="Barra degli strumenti dell'editor" caption="La barra degli strumenti dell'editor HTML con le opzioni predefinite attive." />
+<Screenshot src="/screenshots/editor-toolbar.png" alt="Barra degli strumenti dell'editor" caption="La barra degli strumenti dell'editor HTML con le opzioni predefinite attive." />
 
 ## Cambiare il tipo di una traduzione
 

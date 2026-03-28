@@ -2,7 +2,7 @@
 
 Страница «Языки» (`/lingua/languages`) — ваш центр управления всеми установленными локалями.
 
-<Screenshot src="/lingua-docs/screenshots/languages-page.png" alt="Страница управления языками Lingua" caption="Страница языков — установленные локали со статистикой заполнения." />
+<Screenshot src="/screenshots/languages-page.png" alt="Страница управления языками Lingua" caption="Страница языков — установленные локали со статистикой заполнения." />
 
 ## Добавление языка
 
@@ -15,7 +15,7 @@
 3. Синхронизирует все новые строки в `language_lines`
 4. Обновит таблицу с новой локалью
 
-<Screenshot src="/lingua-docs/screenshots/language-add-modal.png" alt="Модальное окно добавления языка" caption="Модальное окно добавления языка с поиском по локали." width="640px" :center="true"/>
+<Screenshot src="/screenshots/language-add-modal.png" alt="Модальное окно добавления языка" caption="Модальное окно добавления языка с поиском по локали." width="640px" :center="true"/>
 
 ### Из командной строки
 

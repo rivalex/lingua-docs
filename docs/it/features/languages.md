@@ -2,7 +2,7 @@
 
 La pagina Lingue (`/lingua/languages`) è il tuo centro di controllo per tutte le locale installate.
 
-<Screenshot src="/lingua-docs/screenshots/languages-page.png" alt="Pagina di gestione delle lingue di Lingua" caption="Pagina Lingue — mostra le locale installate con le statistiche di completamento." />
+<Screenshot src="/screenshots/languages-page.png" alt="Pagina di gestione delle lingue di Lingua" caption="Pagina Lingue — mostra le locale installate con le statistiche di completamento." />
 
 ## Aggiungere una lingua
 
@@ -15,7 +15,7 @@ Clicca **Aggiungi lingua**, seleziona una qualsiasi delle 70+ locale disponibili
 3. Sincronizza tutte le nuove stringhe in `language_lines`
 4. Aggiorna la tabella con la nuova locale
 
-<Screenshot src="/lingua-docs/screenshots/language-add-modal.png" alt="Modale per aggiungere una lingua" caption="La modale di aggiunta lingua con selettore di locale ricercabile." width="640px" :center="true"/>
+<Screenshot src="/screenshots/language-add-modal.png" alt="Modale per aggiungere una lingua" caption="La modale di aggiunta lingua con selettore di locale ricercabile." width="640px" :center="true"/>
 
 ### Dalla riga di comando
 

@@ -20,7 +20,7 @@ Renderiza como uma seção de navegação agrupada — ideal para sidebars de ap
 <livewire:lingua::language-selector mode="sidebar" />
 ```
 
-<Screenshot src="/lingua-docs/screenshots/selector-sidebar.png" alt="Seletor de idioma no modo sidebar" caption="Modo sidebar — exibe todos os idiomas instalados como itens de navegação." width="320px" :center="true"/>
+<Screenshot src="/screenshots/selector-sidebar.png" alt="Seletor de idioma no modo sidebar" caption="Modo sidebar — exibe todos os idiomas instalados como itens de navegação." width="320px" :center="true"/>
 
 ### Modo dropdown
 
@@ -30,7 +30,7 @@ Renderiza como um botão dropdown compacto — ideal para cabeçalhos e barras d
 <livewire:lingua::language-selector mode="dropdown" />
 ```
 
-<Screenshot src="/lingua-docs/screenshots/selector-dropdown.png" alt="Seletor de idioma no modo dropdown" caption="Modo dropdown — exibe o idioma atual com um ícone de bandeira." width="320px" :center="true"/>
+<Screenshot src="/screenshots/selector-dropdown.png" alt="Seletor de idioma no modo dropdown" caption="Modo dropdown — exibe o idioma atual com um ícone de bandeira." width="320px" :center="true"/>
 
 ### Modo modal
 
@@ -40,7 +40,7 @@ Renderiza como um botão que abre um modal completo de seleção de idioma — i
 <livewire:lingua::language-selector mode="modal" />
 ```
 
-<Screenshot src="/lingua-docs/screenshots/selector-modal.png" alt="Seletor de idioma no modo modal" caption="Modo modal — overlay de seleção de idioma em tela cheia."/>
+<Screenshot src="/screenshots/selector-modal.png" alt="Seletor de idioma no modo modal" caption="Modo modal — overlay de seleção de idioma em tela cheia."/>
 
 ## Referência de props
 

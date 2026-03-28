@@ -2,7 +2,7 @@
 
 语言页面（`/lingua/languages`）是管理所有已安装语言环境的控制中心。
 
-<Screenshot src="/lingua-docs/screenshots/languages-page.png" alt="Lingua 语言管理页面" caption="语言页面 — 显示已安装的语言环境及其完成度统计。" />
+<Screenshot src="/screenshots/languages-page.png" alt="Lingua 语言管理页面" caption="语言页面 — 显示已安装的语言环境及其完成度统计。" />
 
 ## 添加语言
 
@@ -15,7 +15,7 @@
 3. 将所有新字符串同步到 `language_lines`
 4. 刷新表格显示新语言环境
 
-<Screenshot src="/lingua-docs/screenshots/language-add-modal.png" alt="添加语言模态框" caption="添加语言模态框，带有可搜索的语言环境选择器。" width="640px" :center="true"/>
+<Screenshot src="/screenshots/language-add-modal.png" alt="添加语言模态框" caption="添加语言模态框，带有可搜索的语言环境选择器。" width="640px" :center="true"/>
 
 ### 通过命令行
 

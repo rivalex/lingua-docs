@@ -6,14 +6,6 @@ export default defineConfig({
   base: '/lingua-docs/',
   ignoreDeadLinks: true,
 
-  vite: {
-    build: {
-      rollupOptions: {
-        external: [/\/screenshots\//],
-      },
-    },
-  },
-
   head: [
     ['link', { rel: 'icon', href: '/lingua-docs/favicon.svg', type: 'image/svg+xml' }],
     ['meta', { name: 'og:type', content: 'website' }],
@@ -21,15 +13,15 @@ export default defineConfig({
   ],
 
   locales: {
-    root: {
+    en: {
       label: 'English',
       lang: 'en',
       description: 'The complete multilingual management system for Laravel',
       themeConfig: {
         nav: [
-          { text: 'Guide', link: '/guide/introduction', activeMatch: '/guide/' },
-          { text: 'Features', link: '/features/languages', activeMatch: '/features/' },
-          { text: 'API Reference', link: '/api/facade', activeMatch: '/api/' },
+          { text: 'Guide', link: '/en/guide/introduction', activeMatch: '/en/guide/' },
+          { text: 'Features', link: '/en/features/languages', activeMatch: '/en/features/' },
+          { text: 'API Reference', link: '/en/api/facade', activeMatch: '/en/api/' },
           {
             text: '1.x',
             items: [
@@ -39,52 +31,52 @@ export default defineConfig({
           },
         ],
         sidebar: {
-          '/guide/': [
+          '/en/guide/': [
             {
               text: 'Getting Started',
               items: [
-                { text: 'What is Lingua?', link: '/guide/introduction' },
-                { text: 'Installation', link: '/guide/installation' },
-                { text: 'Configuration', link: '/guide/configuration' },
-                { text: 'Quick Start', link: '/guide/quick-start' },
+                { text: 'What is Lingua?', link: '/en/guide/introduction' },
+                { text: 'Installation', link: '/en/guide/installation' },
+                { text: 'Configuration', link: '/en/guide/configuration' },
+                { text: 'Quick Start', link: '/en/guide/quick-start' },
               ],
             },
             {
               text: 'Architecture',
               items: [
-                { text: 'How It Works', link: '/guide/architecture' },
-                { text: 'Translation Storage', link: '/guide/storage' },
-                { text: 'Publishing Assets', link: '/guide/publishing' },
+                { text: 'How It Works', link: '/en/guide/architecture' },
+                { text: 'Translation Storage', link: '/en/guide/storage' },
+                { text: 'Publishing Assets', link: '/en/guide/publishing' },
               ],
             },
           ],
-          '/features/': [
+          '/en/features/': [
             {
               text: 'UI Features',
               items: [
-                { text: 'Language Management', link: '/features/languages' },
-                { text: 'Translation Management', link: '/features/translations' },
-                { text: 'Language Selector', link: '/features/language-selector' },
+                { text: 'Language Management', link: '/en/features/languages' },
+                { text: 'Translation Management', link: '/en/features/translations' },
+                { text: 'Language Selector', link: '/en/features/language-selector' },
               ],
             },
             {
               text: 'Advanced',
               items: [
-                { text: 'RTL / LTR Support', link: '/features/rtl-support' },
-                { text: 'Vendor Translations', link: '/features/vendor-translations' },
-                { text: 'Bi-directional Sync', link: '/features/sync' },
-                { text: 'Rich Text Editor', link: '/features/rich-text' },
+                { text: 'RTL / LTR Support', link: '/en/features/rtl-support' },
+                { text: 'Vendor Translations', link: '/en/features/vendor-translations' },
+                { text: 'Bi-directional Sync', link: '/en/features/sync' },
+                { text: 'Rich Text Editor', link: '/en/features/rich-text' },
               ],
             },
           ],
-          '/api/': [
+          '/en/api/': [
             {
               text: 'API Reference',
               items: [
-                { text: 'Lingua Facade', link: '/api/facade' },
-                { text: 'Artisan Commands', link: '/api/artisan-commands' },
-                { text: 'Blade Components', link: '/api/blade-components' },
-                { text: 'Events', link: '/api/events' },
+                { text: 'Lingua Facade', link: '/en/api/facade' },
+                { text: 'Artisan Commands', link: '/en/api/artisan-commands' },
+                { text: 'Blade Components', link: '/en/api/blade-components' },
+                { text: 'Events', link: '/en/api/events' },
               ],
             },
           ],

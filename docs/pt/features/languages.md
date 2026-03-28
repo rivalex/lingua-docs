@@ -2,7 +2,7 @@
 
 A página de Idiomas (`/lingua/languages`) é o centro de controle para todos os locales instalados.
 
-<Screenshot src="/lingua-docs/screenshots/languages-page.png" alt="Página de gerenciamento de idiomas do Lingua" caption="Página de idiomas — exibindo locales instalados com estatísticas de conclusão." />
+<Screenshot src="/screenshots/languages-page.png" alt="Página de gerenciamento de idiomas do Lingua" caption="Página de idiomas — exibindo locales instalados com estatísticas de conclusão." />
 
 ## Adicionando um idioma
 
@@ -15,7 +15,7 @@ Clique em **Add Language**, selecione qualquer um dos 70+ locales disponíveis e
 3. Sincronizar todas as novas strings em `language_lines`
 4. Atualizar a tabela com o novo locale
 
-<Screenshot src="/lingua-docs/screenshots/language-add-modal.png" alt="Modal de adicionar idioma" caption="O modal de adição de idioma com seletor de locale pesquisável." width="640px" :center="true"/>
+<Screenshot src="/screenshots/language-add-modal.png" alt="Modal de adicionar idioma" caption="O modal de adição de idioma com seletor de locale pesquisável." width="640px" :center="true"/>
 
 ### Pela linha de comando
 

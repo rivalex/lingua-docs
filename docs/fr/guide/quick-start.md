@@ -73,7 +73,7 @@ Visitez `/lingua/translations` pour voir toutes les chaînes de traduction. Pour
 3. Utilisez **Afficher uniquement les manquants** pour vous concentrer sur les chaînes non traduites
 4. Pour les types HTML ou Markdown, l'éditeur de texte enrichi s'active automatiquement
 
-<Screenshot src="/lingua-docs/screenshots/translations-page.png" alt="Page de gestion des traductions Lingua" caption="La page des traductions avec le sélecteur de locale, le filtre de groupe et l'éditeur en ligne." />
+<Screenshot src="/screenshots/translations-page.png" alt="Page de gestion des traductions Lingua" caption="La page des traductions avec le sélecteur de locale, le filtre de groupe et l'éditeur en ligne." />
 
 ## 6. Synchroniser vers les fichiers (optionnel)
 

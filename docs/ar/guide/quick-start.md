@@ -73,7 +73,7 @@ __('pagination.next')
 3. استخدم **عرض الناقصة فقط** للتركيز على النصوص غير المترجمة
 4. لأنواع HTML أو Markdown يتفعّل محرر النص الغني تلقائيًا
 
-<Screenshot src="/lingua-docs/screenshots/translations-page.png" alt="صفحة إدارة الترجمات في Lingua" caption="صفحة الترجمات مع محوِّل اللغة وتصفية المجموعة والمحرر المضمّن." />
+<Screenshot src="/screenshots/translations-page.png" alt="صفحة إدارة الترجمات في Lingua" caption="صفحة الترجمات مع محوِّل اللغة وتصفية المجموعة والمحرر المضمّن." />
 
 ## 6. المزامنة مرة أخرى إلى الملفات (اختياري)
 

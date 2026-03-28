@@ -2,7 +2,7 @@
 
 La pagina Traduzioni (`/lingua/translations/{locale?}`) ti permette di sfogliare, filtrare e modificare ogni stringa di traduzione.
 
-<Screenshot src="/lingua-docs/screenshots/translations-page.png" alt="Pagina delle traduzioni di Lingua" caption="Pagina Traduzioni — con selettore di locale, filtro per gruppo e editor inline." />
+<Screenshot src="/screenshots/translations-page.png" alt="Pagina delle traduzioni di Lingua" caption="Pagina Traduzioni — con selettore di locale, filtro per gruppo e editor inline." />
 
 ## Navigare tra le traduzioni
 
@@ -21,7 +21,7 @@ La colonna della **locale predefinita** è sempre mostrata a sinistra come rifer
 | **Tipo** | Filtra per `text`, `html` o `markdown` |
 | **Mostra solo le mancanti** | Mostra solo le stringhe senza valore nella locale selezionata |
 
-<Screenshot src="/lingua-docs/screenshots/translations-filters.png" alt="Filtri delle traduzioni" caption="Filtraggio per mostrare solo le traduzioni francesi mancanti nel gruppo validation." />
+<Screenshot src="/screenshots/translations-filters.png" alt="Filtri delle traduzioni" caption="Filtraggio per mostrare solo le traduzioni francesi mancanti nel gruppo validation." />
 
 ### Paginazione
 
@@ -37,7 +37,7 @@ Clicca direttamente nella cella della traduzione per iniziare a modificare. Le m
 - Le traduzioni **HTML** aprono l'editor di testo ricco TipTap
 - Le traduzioni **Markdown** aprono l'editor markdown TipTap
 
-<Screenshot src="/lingua-docs/screenshots/translation-editor-html.png" alt="Editor HTML delle traduzioni" caption="L'editor HTML TipTap per le traduzioni di testo ricco." width="512px" :center="true"/>
+<Screenshot src="/screenshots/translation-editor-html.png" alt="Editor HTML delle traduzioni" caption="L'editor HTML TipTap per le traduzioni di testo ricco." width="512px" :center="true"/>
 
 ### Sincronizza dalla predefinita
 

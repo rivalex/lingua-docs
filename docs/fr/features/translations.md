@@ -2,7 +2,7 @@
 
 La page Traductions (`/lingua/translations/{locale?}`) vous permet de parcourir, filtrer et modifier chaque chaîne de traduction.
 
-<Screenshot src="/lingua-docs/screenshots/translations-page.png" alt="Page des traductions Lingua" caption="Page des traductions — avec le sélecteur de locale, le filtre de groupe et l'éditeur en ligne." />
+<Screenshot src="/screenshots/translations-page.png" alt="Page des traductions Lingua" caption="Page des traductions — avec le sélecteur de locale, le filtre de groupe et l'éditeur en ligne." />
 
 ## Navigation dans les traductions
 
@@ -21,7 +21,7 @@ La colonne de la **locale par défaut** est toujours affichée à gauche comme r
 | **Type** | Filtre par `text`, `html` ou `markdown` |
 | **Afficher uniquement les manquants** | Affiche uniquement les chaînes sans valeur dans la locale sélectionnée |
 
-<Screenshot src="/lingua-docs/screenshots/translations-filters.png" alt="Filtres de traduction" caption="Filtrage pour afficher uniquement les traductions françaises manquantes dans le groupe validation." />
+<Screenshot src="/screenshots/translations-filters.png" alt="Filtres de traduction" caption="Filtrage pour afficher uniquement les traductions françaises manquantes dans le groupe validation." />
 
 ### Pagination
 
@@ -37,7 +37,7 @@ Cliquez directement dans la cellule de traduction pour commencer l'édition. Les
 - Les traductions **HTML** ouvrent l'éditeur de texte enrichi TipTap
 - Les traductions **Markdown** ouvrent l'éditeur Markdown TipTap
 
-<Screenshot src="/lingua-docs/screenshots/translation-editor-html.png" alt="Éditeur de traduction HTML" caption="L'éditeur HTML TipTap pour les traductions en texte enrichi." width="512px" :center="true"/>
+<Screenshot src="/screenshots/translation-editor-html.png" alt="Éditeur de traduction HTML" caption="L'éditeur HTML TipTap pour les traductions en texte enrichi." width="512px" :center="true"/>
 
 ### Synchroniser depuis la valeur par défaut
 

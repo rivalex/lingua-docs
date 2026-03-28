@@ -73,7 +73,7 @@ Acesse `/lingua/translations` para ver todas as strings de tradução. Para cada
 3. Use **Mostrar apenas ausentes** para focar nas strings não traduzidas
 4. Para tipos HTML ou Markdown, o editor de texto rico é ativado automaticamente
 
-<Screenshot src="/lingua-docs/screenshots/translations-page.png" alt="Página de gerenciamento de traduções do Lingua" caption="A página de traduções com seletor de locale, filtro de grupo e editor inline." />
+<Screenshot src="/screenshots/translations-page.png" alt="Página de gerenciamento de traduções do Lingua" caption="A página de traduções com seletor de locale, filtro de grupo e editor inline." />
 
 ## 6. Sincronizar de volta para arquivos (opcional)
 

@@ -73,7 +73,7 @@ Visita `/lingua/translations` para ver todas las cadenas de traducción. Para ca
 3. Usa **Mostrar solo faltantes** para centrarte en las cadenas sin traducir
 4. Para los tipos HTML o Markdown, el editor de texto enriquecido se activa automáticamente
 
-<Screenshot src="/lingua-docs/screenshots/translations-page.png" alt="Página de gestión de traducciones de Lingua" caption="La página de traducciones con selector de idioma, filtro de grupo y editor en línea." />
+<Screenshot src="/screenshots/translations-page.png" alt="Página de gestión de traducciones de Lingua" caption="La página de traducciones con selector de idioma, filtro de grupo y editor en línea." />
 
 ## 6. Sincronizar de vuelta a archivos (opcional)
 

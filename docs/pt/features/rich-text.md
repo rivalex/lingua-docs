@@ -29,7 +29,7 @@ A barra de ferramentas do editor é controlada globalmente via `config/lingua.ph
 
 Habilite apenas as opções que seu conteúdo realmente precisa. Manter a barra de ferramentas mínima reduz a carga cognitiva dos tradutores.
 
-<Screenshot src="/lingua-docs/screenshots/editor-toolbar.png" alt="Barra de ferramentas do editor" caption="A barra de ferramentas do editor HTML com as opções padrão ativas." />
+<Screenshot src="/screenshots/editor-toolbar.png" alt="Barra de ferramentas do editor" caption="A barra de ferramentas do editor HTML com as opções padrão ativas." />
 
 ## Alterando o tipo de uma tradução
 

@@ -20,7 +20,7 @@
 <livewire:lingua::language-selector mode="sidebar" />
 ```
 
-<Screenshot src="/lingua-docs/screenshots/selector-sidebar.png" alt="侧边栏模式的语言选择器" caption="侧边栏模式 — 将所有已安装语言显示为导航项。" width="320px" :center="true"/>
+<Screenshot src="/screenshots/selector-sidebar.png" alt="侧边栏模式的语言选择器" caption="侧边栏模式 — 将所有已安装语言显示为导航项。" width="320px" :center="true"/>
 
 ### 下拉菜单模式
 
@@ -30,7 +30,7 @@
 <livewire:lingua::language-selector mode="dropdown" />
 ```
 
-<Screenshot src="/lingua-docs/screenshots/selector-dropdown.png" alt="下拉菜单模式的语言选择器" caption="下拉菜单模式 — 显示带有国旗图标的当前语言。" width="320px" :center="true"/>
+<Screenshot src="/screenshots/selector-dropdown.png" alt="下拉菜单模式的语言选择器" caption="下拉菜单模式 — 显示带有国旗图标的当前语言。" width="320px" :center="true"/>
 
 ### 模态框模式
 
@@ -40,7 +40,7 @@
 <livewire:lingua::language-selector mode="modal" />
 ```
 
-<Screenshot src="/lingua-docs/screenshots/selector-modal.png" alt="模态框模式的语言选择器" caption="模态框模式 — 全屏语言选择覆盖层。"/>
+<Screenshot src="/screenshots/selector-modal.png" alt="模态框模式的语言选择器" caption="模态框模式 — 全屏语言选择覆盖层。"/>
 
 ## 属性参考
 

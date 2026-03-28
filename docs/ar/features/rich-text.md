@@ -29,7 +29,7 @@
 
 فعِّل فقط الخيارات التي يحتاجها محتواك فعليًا. إبقاء شريط الأدوات بسيطًا يُقلِّل العبء المعرفي على المترجمين.
 
-<Screenshot src="/lingua-docs/screenshots/editor-toolbar.png" alt="شريط أدوات المحرر" caption="شريط أدوات محرر HTML مع الخيارات الافتراضية النشطة." />
+<Screenshot src="/screenshots/editor-toolbar.png" alt="شريط أدوات المحرر" caption="شريط أدوات محرر HTML مع الخيارات الافتراضية النشطة." />
 
 ## تغيير نوع الترجمة
 
