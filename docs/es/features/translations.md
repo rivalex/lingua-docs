@@ -69,6 +69,10 @@ value: Build faster, together.
 
 La nueva clave está disponible inmediatamente mediante `__('marketing.hero_title')`.
 
+::: tip Después de guardar
+El campo **Group** se conserva tras la creación para que puedas añadir más claves al mismo grupo sin tener que volver a seleccionarlo. Solo los campos **Key** y **Value** se resetean. Los espacios iniciales, finales y redundantes internos en Group y Key se normalizan automáticamente antes de guardar.
+:::
+
 ::: warning Traducciones de proveedores
 No puedes crear traducciones directamente en un grupo de proveedor (p. ej. `validation`, `auth`). Esos grupos son propiedad de Laravel u otros paquetes y se sincronizan automáticamente. Si quieres sobreescribir una cadena de proveedor, edítala directamente en la página de traducciones.
 :::

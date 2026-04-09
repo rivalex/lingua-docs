@@ -69,6 +69,10 @@ value: Build faster, together.
 
 नई key तुरंत `__('marketing.hero_title')` के माध्यम से उपलब्ध हो जाती है।
 
+::: tip सहेजने के बाद
+**Group** फ़ील्ड creation के बाद preserve रहता है, ताकि आप बिना group पुनः select किए उसी group में और keys जोड़ सकें। केवल **Key** और **Value** fields reset होते हैं। Group और Key में leading, trailing, और अतिरिक्त internal spaces सहेजने से पहले स्वचालित रूप से normalize हो जाते हैं।
+:::
+
 ::: warning Vendor translations
 आप vendor group में सीधे translations नहीं बना सकते (उदाहरण: `validation`, `auth`)। वे groups Laravel या अन्य packages के हैं और स्वचालित रूप से sync होते हैं। यदि आप कोई vendor string override करना चाहते हैं, तो translations पेज पर इसे सीधे संपादित करें।
 :::

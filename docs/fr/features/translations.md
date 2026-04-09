@@ -69,6 +69,10 @@ value: Build faster, together.
 
 La nouvelle clé est immédiatement disponible via `__('marketing.hero_title')`.
 
+::: tip Après la sauvegarde
+Le champ **Groupe** est conservé après la création, ce qui vous permet d'ajouter plusieurs clés au même groupe sans avoir à le resélectionner. Seuls les champs **Clé** et **Valeur** sont réinitialisés. Les espaces en début, en fin et les espaces internes redondants dans Groupe et Clé sont normalisés automatiquement avant la sauvegarde.
+:::
+
 ::: warning Traductions de packages
 Vous ne pouvez pas créer de traductions directement dans un groupe de package (ex. `validation`, `auth`). Ces groupes sont la propriété de Laravel ou d'autres packages et sont synchronisés automatiquement. Si vous souhaitez remplacer une chaîne de package, modifiez-la directement sur la page des traductions.
 :::

@@ -69,6 +69,10 @@ value: Build faster, together.
 
 La nuova chiave è immediatamente disponibile tramite `__('marketing.hero_title')`.
 
+::: tip Dopo il salvataggio
+Il campo **Gruppo** viene preservato dopo la creazione, così puoi aggiungere più chiavi allo stesso gruppo senza doverlo riselezionare. Solo i campi **Chiave** e **Valore** vengono azzerati. Spazi iniziali, finali e interni ridondanti in Gruppo e Chiave vengono normalizzati automaticamente prima del salvataggio.
+:::
+
 ::: warning Traduzioni vendor
 Non puoi creare traduzioni direttamente in un gruppo vendor (es. `validation`, `auth`). Quei gruppi sono di proprietà di Laravel o di altri pacchetti e vengono sincronizzati automaticamente. Se vuoi sovrascrivere una stringa vendor, modificala direttamente nella pagina delle traduzioni.
 :::

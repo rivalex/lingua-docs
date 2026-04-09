@@ -69,6 +69,10 @@ value: Build faster, together.
 
 The new key is immediately available via `__('marketing.hero_title')`.
 
+::: tip After saving
+The **Group** field is preserved after creation so you can add multiple keys to the same group without reselecting it. Only the **Key** and **Value** fields are reset. Leading, trailing, and excess internal spaces in Group and Key are normalized automatically before saving.
+:::
+
 ::: warning Vendor translations
 You cannot create translations directly in a vendor group (e.g. `validation`, `auth`). Those groups are owned by Laravel or other packages and are synced automatically. If you want to override a vendor string, edit it directly on the translations page.
 :::
