@@ -115,3 +115,142 @@ El selector escucha el evento Livewire `refreshLanguages`. Si agregas o eliminas
 // Despachar desde cualquier componente Livewire o código Alpine.js:
 this.$dispatch('refreshLanguages')
 ```
+
+---
+
+## Modo headless
+
+El selector headless no genera CSS ni marcado del framework — HTML semántico puro con atributos `data-lingua-*` que puedes estilizar completamente con tu propio CSS, Tailwind o cualquier otro enfoque.
+
+Usa el modo headless cuando necesitas la lógica de cambio de idioma pero quieres control total sobre la salida visual.
+
+### Uso básico
+
+```blade
+<livewire:lingua::headless-language-selector />
+```
+
+La lista de idiomas siempre está presente en el DOM. La visibilidad es tu responsabilidad — usa CSS `display`, Alpine.js `x-show` o cualquier otro mecanismo. No se proporciona ningún botón desencadenador integrado por diseño.
+
+Habilita el modo headless globalmente a través de la config o la página de Configuración:
+
+```php
+// config/lingua.php
+'selector' => ['mode' => 'headless'],
+```
+
+### Slots con nombre
+
+#### Slot `$item`
+
+Reemplaza el marcado `<button>` predeterminado dentro de cada `<li>` de idioma. Recibe la instancia del modelo `Language`:
+
+```blade
+<livewire:lingua::headless-language-selector>
+    <x-slot:item="language">
+        {{ $language->native }} ({{ $language->code }})
+    </x-slot>
+</livewire:lingua::headless-language-selector>
+```
+
+#### Slot `$current`
+
+Reemplaza el renderizado del idioma **actualmente seleccionado** únicamente. Recurre a `$item` si no se proporciona:
+
+```blade
+<livewire:lingua::headless-language-selector>
+    <x-slot:current="language">
+        <strong>{{ $language->native }}</strong>
+    </x-slot>
+    <x-slot:item="language">
+        {{ $language->native }}
+    </x-slot>
+</livewire:lingua::headless-language-selector>
+```
+
+### API de selección CSS
+
+El componente expone atributos `data-lingua-*` en cada elemento para la selección con CSS y JavaScript:
+
+| Atributo | Elemento |
+|---|---|
+| `data-lingua-selector` | Elemento `<nav>` raíz |
+| `data-lingua-list` | La lista `<ul>` de idiomas |
+| `data-lingua-item` | Cada entrada `<li>` de idioma |
+| `data-lingua-active` | El `<li>` del idioma actualmente activo |
+| `data-lingua-button` | El `<button>` dentro de cada `<li>` |
+| `data-lingua-name` | `<span>` del nombre en inglés del idioma |
+| `data-lingua-native` | `<span>` del nombre nativo del idioma |
+| `data-lingua-code` | `<span>` del código ISO del idioma |
+
+### Ejemplos de estilo
+
+**CSS simple:**
+
+```css
+[data-lingua-selector] {
+    display: flex;
+    gap: 0.5rem;
+    list-style: none;
+}
+[data-lingua-item] {
+    cursor: pointer;
+}
+[data-lingua-active] {
+    font-weight: bold;
+    text-decoration: underline;
+}
+[data-lingua-button] {
+    background: none;
+    border: none;
+    padding: 0.25rem 0.5rem;
+}
+```
+
+**Tailwind CSS:**
+
+```blade
+<livewire:lingua::headless-language-selector>
+    <x-slot:item="language">
+        <span class="px-3 py-1 rounded-full text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
+            {{ $language->native }}
+        </span>
+    </x-slot>
+    <x-slot:current="language">
+        <span class="px-3 py-1 rounded-full text-sm bg-red-100 dark:bg-red-900 font-semibold text-red-700 dark:text-red-300">
+            {{ $language->native }}
+        </span>
+    </x-slot>
+</livewire:lingua::headless-language-selector>
+```
+
+**Alternancia de visibilidad con Alpine.js:**
+
+```blade
+<div x-data="{ open: false }">
+    <button @click="open = !open">
+        {{ app()->getLocale() }}
+    </button>
+
+    <div x-show="open" @click.outside="open = false">
+        <livewire:lingua::headless-language-selector>
+            <x-slot:item="language">
+                <button class="block w-full px-4 py-2 text-left hover:bg-gray-100">
+                    {{ $language->native }}
+                </button>
+            </x-slot>
+        </livewire:lingua::headless-language-selector>
+    </div>
+</div>
+```
+
+### Referencia de props (actualizada)
+
+| Prop | Tipo | Defecto | Descripción |
+|---|---|---|---|
+| `mode` | `string` | `config('lingua.selector.mode')` | `'sidebar'`, `'dropdown'`, `'modal'`, o `'headless'` |
+| `show-flags` | `bool` | `config('lingua.selector.show_flags')` | Mostrar iconos de banderas |
+
+::: tip
+Cuando se pasa `mode="headless"` a `<livewire:lingua::language-selector />`, ese componente no renderiza nada. Usa directamente `<livewire:lingua::headless-language-selector />` para soporte completo de slots y atributos.
+:::

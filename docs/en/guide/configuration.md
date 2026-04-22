@@ -68,7 +68,7 @@ return [
     | component. Both options can be overridden per-instance via props.
     */
     'selector' => [
-        'mode'       => 'sidebar',   // 'sidebar' | 'modal' | 'dropdown'
+        'mode'       => 'sidebar',   // 'sidebar' | 'modal' | 'dropdown' | 'headless'
         'show_flags' => true,
     ],
 
@@ -85,9 +85,15 @@ return [
         'italic'        => true,
         'underline'     => true,
         'strikethrough' => false,
+        'subscript'     => true,
+        'superscript'   => true,
+        'blockquote'    => false,
+        'code-line'     => false,
+        'code-block'    => false,
         'bullet'        => true,
         'ordered'       => true,
         'clear'         => true,
+        'code-mode'     => false,
     ],
 
 ];
@@ -163,6 +169,7 @@ Controls the default render mode of the `<livewire:lingua::language-selector>` c
 | `sidebar` | Renders as a grouped sidebar navigation item |
 | `dropdown` | Renders as a compact dropdown button |
 | `modal` | Renders as a button that opens a locale picker modal |
+| `headless` | No built-in rendering — use `<livewire:lingua::headless-language-selector />` |
 
 ### `selector.show_flags`
 
@@ -181,9 +188,15 @@ Controls the TipTap toolbar for HTML and Markdown translation types. Each option
 | `italic` | *Italic* |
 | `underline` | Underline |
 | `strikethrough` | ~~Strikethrough~~ |
+| `subscript` | Subscript (X₂) |
+| `superscript` | Superscript (X²) |
+| `blockquote` | Block quote |
+| `code-line` | Inline code |
+| `code-block` | Code block |
 | `bullet` | Unordered list |
 | `ordered` | Ordered list |
 | `clear` | Clear formatting button |
+| `code-mode` | Toggle raw HTML/Markdown source mode |
 
 ::: tip
 The editor toolbar is global - all HTML/Markdown translation fields share the same configuration. If you need per-field control, publish the views and customise the editor component directly.

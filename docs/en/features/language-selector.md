@@ -46,7 +46,7 @@ Renders as a button that opens a full language picker modal - ideal for prominen
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `mode` | `string` | `config('lingua.selector.mode')` | `'sidebar'`, `'dropdown'`, or `'modal'` |
+| `mode` | `string` | `config('lingua.selector.mode')` | `'sidebar'`, `'dropdown'`, `'modal'`, or `'headless'` |
 | `show-flags` | `bool` | `config('lingua.selector.show_flags')` | Show country flag icons |
 
 ```blade
@@ -115,3 +115,142 @@ The selector listens for the `refreshLanguages` Livewire event. If you add or re
 // Dispatch from any Livewire component or Alpine.js code:
 this.$dispatch('refreshLanguages')
 ```
+
+---
+
+## Headless mode
+
+The headless selector renders zero CSS and zero framework markup — pure semantic HTML with `data-lingua-*` attributes that you style entirely with your own CSS, Tailwind, or any other approach.
+
+Use headless mode when you need the locale-switching logic but want complete control over the visual output.
+
+### Basic usage
+
+```blade
+<livewire:lingua::headless-language-selector />
+```
+
+The language list is always present in the DOM. Visibility is your responsibility — use CSS `display`, Alpine.js `x-show`, or any other mechanism. No built-in trigger button is provided by design.
+
+Enable headless mode globally via config or the Settings page:
+
+```php
+// config/lingua.php
+'selector' => ['mode' => 'headless'],
+```
+
+### Named slots
+
+#### `$item` slot
+
+Replaces the default `<button>` markup inside every language `<li>`. Receives the `Language` model instance:
+
+```blade
+<livewire:lingua::headless-language-selector>
+    <x-slot:item="language">
+        {{ $language->native }} ({{ $language->code }})
+    </x-slot>
+</livewire:lingua::headless-language-selector>
+```
+
+#### `$current` slot
+
+Replaces the rendering of the **currently selected** language only. Falls through to `$item` if not provided:
+
+```blade
+<livewire:lingua::headless-language-selector>
+    <x-slot:current="language">
+        <strong>{{ $language->native }}</strong>
+    </x-slot>
+    <x-slot:item="language">
+        {{ $language->native }}
+    </x-slot>
+</livewire:lingua::headless-language-selector>
+```
+
+### CSS targeting API
+
+The component exposes `data-lingua-*` attributes on every element for CSS and JavaScript targeting:
+
+| Attribute | Element |
+|---|---|
+| `data-lingua-selector` | Root `<nav>` element |
+| `data-lingua-list` | The `<ul>` language list |
+| `data-lingua-item` | Each `<li>` language entry |
+| `data-lingua-active` | The `<li>` of the currently active language |
+| `data-lingua-button` | The `<button>` inside each `<li>` |
+| `data-lingua-name` | Language English display name `<span>` |
+| `data-lingua-native` | Language native name `<span>` |
+| `data-lingua-code` | Language ISO code `<span>` |
+
+### Styling examples
+
+**Plain CSS:**
+
+```css
+[data-lingua-selector] {
+    display: flex;
+    gap: 0.5rem;
+    list-style: none;
+}
+[data-lingua-item] {
+    cursor: pointer;
+}
+[data-lingua-active] {
+    font-weight: bold;
+    text-decoration: underline;
+}
+[data-lingua-button] {
+    background: none;
+    border: none;
+    padding: 0.25rem 0.5rem;
+}
+```
+
+**Tailwind CSS:**
+
+```blade
+<livewire:lingua::headless-language-selector>
+    <x-slot:item="language">
+        <span class="px-3 py-1 rounded-full text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
+            {{ $language->native }}
+        </span>
+    </x-slot>
+    <x-slot:current="language">
+        <span class="px-3 py-1 rounded-full text-sm bg-red-100 dark:bg-red-900 font-semibold text-red-700 dark:text-red-300">
+            {{ $language->native }}
+        </span>
+    </x-slot>
+</livewire:lingua::headless-language-selector>
+```
+
+**Alpine.js visibility toggle:**
+
+```blade
+<div x-data="{ open: false }">
+    <button @click="open = !open">
+        {{ app()->getLocale() }}
+    </button>
+
+    <div x-show="open" @click.outside="open = false">
+        <livewire:lingua::headless-language-selector>
+            <x-slot:item="language">
+                <button class="block w-full px-4 py-2 text-left hover:bg-gray-100">
+                    {{ $language->native }}
+                </button>
+            </x-slot>
+        </livewire:lingua::headless-language-selector>
+    </div>
+</div>
+```
+
+### Props reference (updated)
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `mode` | `string` | `config('lingua.selector.mode')` | `'sidebar'`, `'dropdown'`, `'modal'`, or `'headless'` |
+| `show-flags` | `bool` | `config('lingua.selector.show_flags')` | Show country flag icons |
+
+::: tip
+When `mode="headless"` is passed to `<livewire:lingua::language-selector />`, that component renders nothing. Use `<livewire:lingua::headless-language-selector />` directly instead for full slot/attribute support.
+:::

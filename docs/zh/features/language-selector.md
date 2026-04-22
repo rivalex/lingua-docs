@@ -115,3 +115,142 @@ resources/views/vendor/lingua/livewire/
 // 从任何 Livewire 组件或 Alpine.js 代码中触发：
 this.$dispatch('refreshLanguages')
 ```
+
+---
+
+## Headless 模式
+
+Headless 选择器不生成任何 CSS 或框架标记——纯粹的语义化 HTML，带有 `data-lingua-*` 属性，完全由你自己的 CSS、Tailwind 或任何其他方式来样式化。
+
+当你需要语言切换逻辑但希望完全控制视觉输出时，请使用 headless 模式。
+
+### 基本用法
+
+```blade
+<livewire:lingua::headless-language-selector />
+```
+
+语言列表始终存在于 DOM 中。可见性由你负责——使用 CSS `display`、Alpine.js `x-show` 或任何其他机制。设计上不提供内置触发按钮。
+
+通过配置文件或设置页面全局启用 headless 模式：
+
+```php
+// config/lingua.php
+'selector' => ['mode' => 'headless'],
+```
+
+### 具名插槽
+
+#### `$item` 插槽
+
+替换每个语言 `<li>` 内部的默认 `<button>` 标记。接收 `Language` 模型实例：
+
+```blade
+<livewire:lingua::headless-language-selector>
+    <x-slot:item="language">
+        {{ $language->native }} ({{ $language->code }})
+    </x-slot>
+</livewire:lingua::headless-language-selector>
+```
+
+#### `$current` 插槽
+
+仅替换**当前选中**语言的渲染。如未提供则回退到 `$item`：
+
+```blade
+<livewire:lingua::headless-language-selector>
+    <x-slot:current="language">
+        <strong>{{ $language->native }}</strong>
+    </x-slot>
+    <x-slot:item="language">
+        {{ $language->native }}
+    </x-slot>
+</livewire:lingua::headless-language-selector>
+```
+
+### CSS 定位 API
+
+组件在每个元素上公开 `data-lingua-*` 属性，用于 CSS 和 JavaScript 定位：
+
+| 属性 | 元素 |
+|---|---|
+| `data-lingua-selector` | 根 `<nav>` 元素 |
+| `data-lingua-list` | `<ul>` 语言列表 |
+| `data-lingua-item` | 每个语言 `<li>` 条目 |
+| `data-lingua-active` | 当前活动语言的 `<li>` |
+| `data-lingua-button` | 每个 `<li>` 内的 `<button>` |
+| `data-lingua-name` | 语言英文名称 `<span>` |
+| `data-lingua-native` | 语言本地名称 `<span>` |
+| `data-lingua-code` | 语言 ISO 代码 `<span>` |
+
+### 样式示例
+
+**纯 CSS：**
+
+```css
+[data-lingua-selector] {
+    display: flex;
+    gap: 0.5rem;
+    list-style: none;
+}
+[data-lingua-item] {
+    cursor: pointer;
+}
+[data-lingua-active] {
+    font-weight: bold;
+    text-decoration: underline;
+}
+[data-lingua-button] {
+    background: none;
+    border: none;
+    padding: 0.25rem 0.5rem;
+}
+```
+
+**Tailwind CSS：**
+
+```blade
+<livewire:lingua::headless-language-selector>
+    <x-slot:item="language">
+        <span class="px-3 py-1 rounded-full text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
+            {{ $language->native }}
+        </span>
+    </x-slot>
+    <x-slot:current="language">
+        <span class="px-3 py-1 rounded-full text-sm bg-red-100 dark:bg-red-900 font-semibold text-red-700 dark:text-red-300">
+            {{ $language->native }}
+        </span>
+    </x-slot>
+</livewire:lingua::headless-language-selector>
+```
+
+**Alpine.js 可见性切换：**
+
+```blade
+<div x-data="{ open: false }">
+    <button @click="open = !open">
+        {{ app()->getLocale() }}
+    </button>
+
+    <div x-show="open" @click.outside="open = false">
+        <livewire:lingua::headless-language-selector>
+            <x-slot:item="language">
+                <button class="block w-full px-4 py-2 text-left hover:bg-gray-100">
+                    {{ $language->native }}
+                </button>
+            </x-slot>
+        </livewire:lingua::headless-language-selector>
+    </div>
+</div>
+```
+
+### Props 参考（已更新）
+
+| Prop | 类型 | 默认值 | 描述 |
+|---|---|---|---|
+| `mode` | `string` | `config('lingua.selector.mode')` | `'sidebar'`、`'dropdown'`、`'modal'` 或 `'headless'` |
+| `show-flags` | `bool` | `config('lingua.selector.show_flags')` | 显示国旗图标 |
+
+::: tip
+当 `mode="headless"` 传递给 `<livewire:lingua::language-selector />` 时，该组件不渲染任何内容。请直接使用 `<livewire:lingua::headless-language-selector />` 以获得完整的插槽和属性支持。
+:::

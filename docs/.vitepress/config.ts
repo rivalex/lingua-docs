@@ -26,7 +26,7 @@ export default defineConfig({
             text: '1.x',
             items: [
               { text: 'Changelog', link: 'https://github.com/rivalex/lingua/blob/main/CHANGELOG.md' },
-              { text: 'Contributing', link: 'https://github.com/rivalex/lingua/blob/main/.github/CONTRIBUTING.md' },
+              // { text: 'Contributing', link: 'https://github.com/rivalex/lingua/blob/main/.github/CONTRIBUTING.md' },
             ],
           },
         ],
@@ -57,6 +57,8 @@ export default defineConfig({
                 { text: 'Language Management', link: '/en/features/languages' },
                 { text: 'Translation Management', link: '/en/features/translations' },
                 { text: 'Language Selector', link: '/en/features/language-selector' },
+                { text: 'Translation Statistics', link: '/en/features/statistics' },
+                { text: 'Settings', link: '/en/features/settings' },
               ],
             },
             {
@@ -136,6 +138,8 @@ export default defineConfig({
                 { text: '语言管理', link: '/zh/features/languages' },
                 { text: '翻译管理', link: '/zh/features/translations' },
                 { text: '语言选择器', link: '/zh/features/language-selector' },
+                { text: '翻译统计', link: '/zh/features/statistics' },
+                { text: '设置', link: '/zh/features/settings' },
               ],
             },
             {
@@ -230,6 +234,8 @@ export default defineConfig({
                 { text: 'भाषा प्रबंधन', link: '/hi/features/languages' },
                 { text: 'अनुवाद प्रबंधन', link: '/hi/features/translations' },
                 { text: 'भाषा चयनकर्ता', link: '/hi/features/language-selector' },
+                { text: 'अनुवाद सांख्यिकी', link: '/hi/features/statistics' },
+                { text: 'सेटिंग्स', link: '/hi/features/settings' },
               ],
             },
             {
@@ -324,6 +330,8 @@ export default defineConfig({
                 { text: 'Gestión de idiomas', link: '/es/features/languages' },
                 { text: 'Gestión de traducciones', link: '/es/features/translations' },
                 { text: 'Selector de idioma', link: '/es/features/language-selector' },
+                { text: 'Estadísticas', link: '/es/features/statistics' },
+                { text: 'Configuración', link: '/es/features/settings' },
               ],
             },
             {
@@ -419,6 +427,8 @@ export default defineConfig({
                 { text: 'إدارة اللغات', link: '/ar/features/languages' },
                 { text: 'إدارة الترجمات', link: '/ar/features/translations' },
                 { text: 'محدد اللغة', link: '/ar/features/language-selector' },
+                { text: 'إحصائيات الترجمة', link: '/ar/features/statistics' },
+                { text: 'الإعدادات', link: '/ar/features/settings' },
               ],
             },
             {
@@ -513,6 +523,8 @@ export default defineConfig({
                 { text: 'Gestion des langues', link: '/fr/features/languages' },
                 { text: 'Gestion des traductions', link: '/fr/features/translations' },
                 { text: 'Sélecteur de langue', link: '/fr/features/language-selector' },
+                { text: 'Statistiques', link: '/fr/features/statistics' },
+                { text: 'Paramètres', link: '/fr/features/settings' },
               ],
             },
             {
@@ -607,6 +619,8 @@ export default defineConfig({
                 { text: 'Gerenciar idiomas', link: '/pt/features/languages' },
                 { text: 'Gerenciar traduções', link: '/pt/features/translations' },
                 { text: 'Seletor de idioma', link: '/pt/features/language-selector' },
+                { text: 'Estatísticas', link: '/pt/features/statistics' },
+                { text: 'Configurações', link: '/pt/features/settings' },
               ],
             },
             {
@@ -701,6 +715,8 @@ export default defineConfig({
                 { text: 'Управление языками', link: '/ru/features/languages' },
                 { text: 'Управление переводами', link: '/ru/features/translations' },
                 { text: 'Выбор языка', link: '/ru/features/language-selector' },
+                { text: 'Статистика переводов', link: '/ru/features/statistics' },
+                { text: 'Настройки', link: '/ru/features/settings' },
               ],
             },
             {
@@ -795,6 +811,8 @@ export default defineConfig({
                 { text: 'Gestione lingue', link: '/it/features/languages' },
                 { text: 'Gestione traduzioni', link: '/it/features/translations' },
                 { text: 'Selettore lingua', link: '/it/features/language-selector' },
+                { text: 'Statistiche', link: '/it/features/statistics' },
+                { text: 'Impostazioni', link: '/it/features/settings' },
               ],
             },
             {

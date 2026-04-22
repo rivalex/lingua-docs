@@ -68,7 +68,7 @@ return [
     | component. Both options can be overridden per-instance via props.
     */
     'selector' => [
-        'mode'       => 'sidebar',   // 'sidebar' | 'modal' | 'dropdown'
+        'mode'       => 'sidebar',   // 'sidebar' | 'modal' | 'dropdown' | 'headless'
         'show_flags' => true,
     ],
 
@@ -85,9 +85,15 @@ return [
         'italic'        => true,
         'underline'     => true,
         'strikethrough' => false,
+        'subscript'     => true,
+        'superscript'   => true,
+        'blockquote'    => false,
+        'code-line'     => false,
+        'code-block'    => false,
         'bullet'        => true,
         'ordered'       => true,
         'clear'         => true,
+        'code-mode'     => false,
     ],
 
 ];

@@ -115,3 +115,142 @@ resources/views/vendor/lingua/livewire/
 // Dispatch from any Livewire component or Alpine.js code:
 this.$dispatch('refreshLanguages')
 ```
+
+---
+
+## وضع Headless
+
+يُنتج محدد headless صفر من CSS وصفر من ترميز الإطار — HTML دلالي خالص مع سمات `data-lingua-*` تُنسّقها بالكامل باستخدام CSS الخاص بك أو Tailwind أو أي نهج آخر.
+
+استخدم وضع headless عندما تحتاج إلى منطق تبديل اللغة ولكنك تريد تحكمًا كاملاً في المخرجات المرئية.
+
+### الاستخدام الأساسي
+
+```blade
+<livewire:lingua::headless-language-selector />
+```
+
+قائمة اللغات موجودة دائمًا في DOM. الرؤية مسؤوليتك — استخدم CSS `display` أو Alpine.js `x-show` أو أي آلية أخرى. لا يوجد زر تشغيل مدمج بحسب التصميم.
+
+فعّل وضع headless بشكل عام عبر ملف الإعداد أو صفحة الإعدادات:
+
+```php
+// config/lingua.php
+'selector' => ['mode' => 'headless'],
+```
+
+### الفتحات المُسمَّاة
+
+#### فتحة `$item`
+
+تحل محل ترميز `<button>` الافتراضي داخل كل `<li>` للغة. تستقبل نسخة نموذج `Language`:
+
+```blade
+<livewire:lingua::headless-language-selector>
+    <x-slot:item="language">
+        {{ $language->native }} ({{ $language->code }})
+    </x-slot>
+</livewire:lingua::headless-language-selector>
+```
+
+#### فتحة `$current`
+
+تحل محل عرض اللغة **المحددة حاليًا** فقط. تعود إلى `$item` إن لم تُوفَّر:
+
+```blade
+<livewire:lingua::headless-language-selector>
+    <x-slot:current="language">
+        <strong>{{ $language->native }}</strong>
+    </x-slot>
+    <x-slot:item="language">
+        {{ $language->native }}
+    </x-slot>
+</livewire:lingua::headless-language-selector>
+```
+
+### واجهة استهداف CSS
+
+يعرض المكوّن سمات `data-lingua-*` على كل عنصر لاستهداف CSS وJavaScript:
+
+| السمة | العنصر |
+|---|---|
+| `data-lingua-selector` | عنصر `<nav>` الجذر |
+| `data-lingua-list` | قائمة اللغات `<ul>` |
+| `data-lingua-item` | كل مدخل `<li>` للغة |
+| `data-lingua-active` | `<li>` اللغة النشطة حاليًا |
+| `data-lingua-button` | `<button>` داخل كل `<li>` |
+| `data-lingua-name` | `<span>` الاسم الإنجليزي للغة |
+| `data-lingua-native` | `<span>` الاسم المحلي للغة |
+| `data-lingua-code` | `<span>` رمز ISO للغة |
+
+### أمثلة التنسيق
+
+**CSS بسيط:**
+
+```css
+[data-lingua-selector] {
+    display: flex;
+    gap: 0.5rem;
+    list-style: none;
+}
+[data-lingua-item] {
+    cursor: pointer;
+}
+[data-lingua-active] {
+    font-weight: bold;
+    text-decoration: underline;
+}
+[data-lingua-button] {
+    background: none;
+    border: none;
+    padding: 0.25rem 0.5rem;
+}
+```
+
+**Tailwind CSS:**
+
+```blade
+<livewire:lingua::headless-language-selector>
+    <x-slot:item="language">
+        <span class="px-3 py-1 rounded-full text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
+            {{ $language->native }}
+        </span>
+    </x-slot>
+    <x-slot:current="language">
+        <span class="px-3 py-1 rounded-full text-sm bg-red-100 dark:bg-red-900 font-semibold text-red-700 dark:text-red-300">
+            {{ $language->native }}
+        </span>
+    </x-slot>
+</livewire:lingua::headless-language-selector>
+```
+
+**تبديل الرؤية مع Alpine.js:**
+
+```blade
+<div x-data="{ open: false }">
+    <button @click="open = !open">
+        {{ app()->getLocale() }}
+    </button>
+
+    <div x-show="open" @click.outside="open = false">
+        <livewire:lingua::headless-language-selector>
+            <x-slot:item="language">
+                <button class="block w-full px-4 py-2 text-left hover:bg-gray-100">
+                    {{ $language->native }}
+                </button>
+            </x-slot>
+        </livewire:lingua::headless-language-selector>
+    </div>
+</div>
+```
+
+### مرجع الخصائص (محدَّث)
+
+| الخاصية | النوع | الافتراضي | الوصف |
+|---|---|---|---|
+| `mode` | `string` | `config('lingua.selector.mode')` | `'sidebar'`، `'dropdown'`، `'modal'`، أو `'headless'` |
+| `show-flags` | `bool` | `config('lingua.selector.show_flags')` | إظهار أيقونات الأعلام |
+
+::: tip
+عند تمرير `mode="headless"` إلى `<livewire:lingua::language-selector />`، لا يعرض ذلك المكوّن شيئًا. استخدم `<livewire:lingua::headless-language-selector />` مباشرةً للحصول على دعم كامل للفتحات والسمات.
+:::
