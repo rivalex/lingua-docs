@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"gh api repos/actions/deploy-pages/releases/latest --jq '.tag_name'\",\"description\":\"Get latest deploy-pages release tag\"}",
+  "error": "Exit code 127\n(eval):1: command not found: gh",
+  "timestamp": "2026-04-22T15:06:51.037Z",
+  "retry_count": 1
+}
