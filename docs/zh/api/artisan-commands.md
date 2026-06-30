@@ -1,197 +1,127 @@
 # Artisan 命令
 
-Lingua 提供六个 Artisan 命令，用于通过终端管理语言和翻译。
+Lingua 提供 8 个 Artisan 命令，用于通过终端管理语言和翻译。
 
-## 语言管理
+## `lingua:install`
 
-### `lingua:add {locale}`
-
-安装一种新语言--下载文件、创建数据库记录、同步翻译。
-
-```bash
-php artisan lingua:add it
-php artisan lingua:add pt_BR
-php artisan lingua:add ar
-```
-
-**执行内容：**
-1. 从 `laravel-lang/locales` 获取语言环境元数据
-2. 运行 `lang:add {locale}` 安装语言文件
-3. 在数据库中创建 `Language` 记录
-4. 运行 `lingua:sync-to-database` 导入新字符串
-
-**输出：**
-```
-Adding language: it...
-Installing language files via Laravel Lang...
-Creating language record in database...
-Syncing translations to database...
-Language 'it' added successfully.
-```
-
-::: tip
-添加语言后，访问 `/lingua/translations/it` 查看哪些字符串仍需翻译。
-:::
-
----
-
-### `lingua:remove {locale}`
-
-移除一种语言--删除文件、清理数据库、重新排序剩余语言。
-
-```bash
-php artisan lingua:remove fr
-```
-
-**执行内容：**
-1. 检查该语言是否为默认语言（如果是则中止并报错）
-2. 运行 `lang:rm {locale} --force` 移除语言文件
-3. 从 `language_lines.text` 中移除所有 `{locale}` 值
-4. 删除 `Language` 记录
-5. 重新排序剩余语言的排序值
-6. 运行 `lingua:sync-to-database`
-
-::: warning 默认语言保护
-您不能移除默认语言。请先将另一种语言设置为默认语言：
-```bash
-php artisan lingua:add fr       # 添加新的默认语言
-# 然后通过界面：将法语设置为默认语言
-php artisan lingua:remove en    # 现在可以安全地移除英语
-```
-:::
-
----
-
-### `lingua:update-lang`
-
-通过 Laravel Lang 更新所有已安装的语言文件，然后重新同步到数据库。
-
-```bash
-php artisan lingua:update-lang
-```
-
-在以下情况后运行：
-- 升级 Laravel（新的验证消息等）
-- 安装附带翻译的新扩展包
-- 更新 `laravel-lang/*` 扩展包
-
----
-
-## 翻译同步
-
-### `lingua:sync-to-database`
-
-将所有本地 PHP/JSON 翻译文件导入 `language_lines` 表。
-
-```bash
-php artisan lingua:sync-to-database
-```
-
-**导入内容：**
-- `lang/{locale}/*.php` - PHP 文件
-- `lang/{locale}.json` - JSON 文件
-- `lang/vendor/{package}/{locale}/*.php` - 扩展包文件
-
-使用 `updateOrCreate` 基于 `group + key` 匹配，因此通过界面进行的现有编辑会被保留。
-
-**典型使用场景：**
-```bash
-# 在新克隆后 - 从提交的语言文件填充数据库
-php artisan lingua:sync-to-database
-
-# 在 lang:update 后 - 导入新字符串
-php artisan lingua:sync-to-database
-
-# 在部署脚本中
-php artisan migrate
-php artisan lingua:sync-to-database
-php artisan optimize
-```
-
----
-
-### `lingua:sync-to-local`
-
-将所有数据库翻译导出回本地 PHP/JSON 文件。
-
-```bash
-php artisan lingua:sync-to-local
-```
-
-**导出内容：**
-- 数据库翻译 → `lang/{locale}/{group}.php`
-- JSON 分组（`single`） → `lang/{locale}.json`
-- 扩展包翻译 → `lang/vendor/{vendor}/{locale}/{group}.php`
-
-**典型使用场景：**
-```bash
-# 在提交前 - 将数据库状态导出到文件以便版本控制
-php artisan lingua:sync-to-local
-git add lang/
-git commit -m "chore: sync translations"
-
-# 在部署到从文件读取的服务器之前
-php artisan lingua:sync-to-local
-```
-
----
-
-### `lingua:install`
-
-交互式首次安装向导。在 `composer require` 后运行一次。
+交互式安装向导。选择存储驱动，发布配置和迁移，运行迁移，并填充默认语言。
 
 ```bash
 php artisan lingua:install
 ```
 
-不建议在初始安装后重新运行。如果您需要重新发布单个资源，请改用 `vendor:publish` 标签。
+**选项：**
 
----
-
-## 命令快速参考
-
-<div class="command-table">
-
-| 命令 | 描述 |
+| 选项 | 说明 |
 |---|---|
-| `lingua:add {locale}` | 安装语言（文件 + 数据库 + 同步） |
-| `lingua:remove {locale}` | 移除语言（文件 + 数据库 + 同步） |
-| `lingua:update-lang` | 通过 Laravel Lang 更新语言文件 + 同步 |
-| `lingua:sync-to-database` | 将本地文件导入数据库 |
-| `lingua:sync-to-local` | 将数据库导出到本地文件 |
-| `lingua:install` | 交互式首次安装向导 |
-
-</div>
+| `--driver=database` | 跳过交互提示，直接使用指定驱动 |
+| `--no-seed` | 跳过翻译数据填充（仅创建数据库结构） |
 
 ---
 
-## 技巧
+## `lingua:storage`
 
-::: tip 在 CI/CD 中自动化同步
-将同步添加到部署流水线，使数据库与仓库保持同步：
-
-```yaml
-# GitHub Actions 部署步骤（示例）
-- name: Sync translations
-  run: php artisan lingua:sync-to-database
-```
-:::
-
-::: tip 一次添加多种语言
-没有批量添加命令，但您可以通过 Shell 循环链式调用：
+切换存储驱动（`database` 或 `file`）。更新 `.env`，发布缺失的迁移，并清除缓存。
 
 ```bash
-for locale in fr it de es pt_BR; do
-  php artisan lingua:add $locale
-done
+php artisan lingua:storage database
+php artisan lingua:storage file
 ```
+
+::: warning 切换前先导出
+从 `database` 切换到 `file` 时，先运行 `lingua:sync-to-local` 将翻译导出到文件，否则数据库中的翻译不会自动迁移。
 :::
 
-::: tip 检查将同步的内容
-在运行 `lingua:sync-to-database` 之前，您可以通过查看 `lang/` 来预览将处理的文件数量和语言环境：
+---
+
+## `lingua:add`
+
+安装一个或多个语言区域，并从内置数据集填充翻译。
 
 ```bash
-ls lang/
-# en  fr  it  vendor
+php artisan lingua:add fr
+php artisan lingua:add fr de it es pt_BR
 ```
+
+**行为：**
+
+- 在 `languages` 表中创建语言记录
+- 从内置数据集（26 个语言区域，5902 个字符串）填充翻译
+- 设置正确的元数据（名称、本地名称、方向）
+- **不**从网络下载文件
+- **不**写入 `lang/` 目录（数据库驱动）
+
+---
+
+## `lingua:remove`
+
+卸载语言区域，并从所有翻译行的 `text` JSON 列中移除该语言区域的值。
+
+```bash
+php artisan lingua:remove fr
+```
+
+::: danger 不可逆操作
+此操作会永久删除该语言区域的所有翻译数据。在移除之前，通过传输页面导出翻译进行备份。
+:::
+
+---
+
+## `lingua:update-lang`
+
+用内置数据集中的最新翻译更新指定语言区域——仅填充**缺失**的键，不覆盖已有翻译。
+
+```bash
+php artisan lingua:update-lang fr
+```
+
+适用场景：升级 Lingua 后，新增的翻译键需要填充到现有语言区域中。
+
+---
+
+## `lingua:sync-to-database`
+
+将 `lang/` 目录中的所有 PHP 和 JSON 翻译文件导入数据库。
+
+```bash
+php artisan lingua:sync-to-database
+
+# 只同步特定语言区域
+php artisan lingua:sync-to-database --locale=fr
+
+# 干运行（预览变更，不实际写入）
+php artisan lingua:sync-to-database --dry-run
+```
+
+仅适用于**数据库驱动**模式。
+
+---
+
+## `lingua:sync-to-local`
+
+将数据库中的所有翻译导出为 PHP 和 JSON 文件到 `lang/` 目录。
+
+```bash
+php artisan lingua:sync-to-local
+
+# 只导出特定语言区域
+php artisan lingua:sync-to-local --locale=fr
+```
+
+仅适用于**数据库驱动**模式。使用 `AtomicFileWriter` 进行原子性写入（`opcache_invalidate` 保护）。
+
+---
+
+## `lingua:uninstall`
+
+安全地移除 Lingua——可选地回滚迁移、移除已发布的文件、移除 Composer 依赖。
+
+```bash
+php artisan lingua:uninstall
+```
+
+该命令是交互式的：会在执行每个破坏性操作之前请求确认。
+
+::: danger 不可逆操作
+回滚迁移会永久删除所有翻译、语言和设置数据。卸载前请先备份数据。
 :::

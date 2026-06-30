@@ -1,21 +1,44 @@
 # Sincronizzazione bidirezionale
 
-Lingua può importare le traduzioni dai file locali nel database e riesportarle - offrendoti il meglio di entrambi i mondi: **runtime basato su database** e **controllo versione basato su file**.
+Lingua può importare le traduzioni dai file `lang/` nel database e
+riesportarle — offrendo il meglio di entrambi i mondi: **runtime database** e
+**controllo versione basato su file**.
 
-## Le due direzioni
+## Il dataset integrato <Badge type="tip" text="Novità in 2.0" />
+
+Lingua 2.0 include tutti i dati delle locale nel pacchetto — nessuna
+dipendenza da `laravel-lang` o download da internet:
+
+- **`LocaleRegistry`** — metadati per 129+ locale (nome, nome nativo,
+  direzione, codice regionale)
+- **Traduzioni integrate** — 26 locale × 7 gruppi, 5902 stringhe, allineate
+  a Laravel **v13.14.0**
+- `lingua:add` popola istantaneamente dal dataset; `lingua:update-lang`
+  ri-popola le locale già installate
+
+```
+Dataset integrato (26 locale × 7 gruppi)
+    │
+    ▼
+lingua:add {locale}   ──►  language_lines (DB)  oppure  lang/{locale}/ (file)
+lingua:update-lang    ──►  aggiorna le stringhe installate
+                           (nessuna chiamata di rete)
+```
+
+## Le due direzioni di sincronizzazione
 
 ```
 lang/en/*.php        ──┐
-lang/en.json           │  lingua:sync-to-database ──►  language_lines (DB)
+lang/en.json           │  lingua:sync-to-database  ──►  language_lines (DB)
 lang/it/*.php          │
 lang/it.json           │
-lang/vendor/…          │  ◄── lingua:sync-to-local
+lang/vendor/…          │  ◄──  lingua:sync-to-local
                       ─┘
 ```
 
 ## Sincronizza nel database
 
-Importa tutti i file di traduzione da `lang/` (e le sue sottodirectory) nella tabella `language_lines`.
+Importa tutti i file di traduzione da `lang/` nella tabella `language_lines`.
 
 ```bash
 php artisan lingua:sync-to-database
@@ -23,16 +46,19 @@ php artisan lingua:sync-to-database
 
 ### Cosa viene importato
 
-- `lang/{locale}/*.php` - file di traduzione PHP standard
-- `lang/{locale}.json` - file di traduzione JSON
-- `lang/vendor/{package}/{locale}/*.php` - traduzioni dei pacchetti vendor
+- `lang/{locale}/*.php` — file di traduzione PHP standard
+- `lang/{locale}.json` — file di traduzione JSON
+- `lang/vendor/{package}/{locale}/*.php` — traduzioni dei pacchetti vendor
 
 ### Comportamento di upsert
 
-Lingua usa `updateOrCreate` abbinando su `group` + `key`. Questo significa:
+Lingua usa `updateOrCreate` abbinando su `group + key`:
+
 - Le **nuove chiavi** vengono inserite
-- Le **chiavi esistenti** hanno il loro JSON `text` unito - i valori delle locale che hai modificato nell'interfaccia vengono **preservati**
-- Il **rilevamento del tipo** viene eseguito sul valore per determinare `text` / `html` / `markdown`
+- Le **chiavi esistenti** hanno il loro JSON `text` unito — i valori delle
+  locale che hai modificato nell'interfaccia vengono **preservati**
+- Il **rilevamento del tipo** viene eseguito sul valore per determinare il
+  tipo `text` / `html` / `markdown`
 
 ### Rilevamento automatico del tipo
 
@@ -42,9 +68,11 @@ Lingua usa `updateOrCreate` abbinando su `group` + `key`. Questo significa:
 | La stringa viene analizzata come Markdown (titoli, elenchi, ecc.) | `markdown` |
 | Nessuno dei due | `text` |
 
-::: tip
-Il rilevamento del tipo è conservativo - assegna `html` o `markdown` solo quando il contenuto corrisponde chiaramente. Le stringhe semplici ricevono sempre `text`. Puoi cambiare il tipo manualmente tramite la modale di modifica.
-:::
+### Invalidazione chirurgica della cache
+
+Dopo ogni sincronizzazione, `Cache::forget('lingua.trans.{locale}.{gruppo}')`
+viene chiamato solo per le coppie `(locale, gruppo)` interessate — nessun
+`cache:clear` globale.
 
 ### Tramite il facade
 
@@ -54,15 +82,12 @@ use Rivalex\Lingua\Facades\Lingua;
 Lingua::syncToDatabase();
 ```
 
-::: warning
-Il facade chiama `Translation::syncToDatabase()` internamente, che è una chiamata statica. Nei comandi Artisan e nei componenti Livewire, viene usato invece `app(Translation::class)->syncToDatabase()` in modo che Mockery possa intercettarla nei test.
-:::
-
 ---
 
 ## Sincronizza in locale
 
-Esporta tutte le traduzioni da `language_lines` nei file PHP e JSON di `lang/`.
+Esporta tutte le traduzioni da `language_lines` nei file PHP e JSON di
+`lang/`.
 
 ```bash
 php artisan lingua:sync-to-local
@@ -74,12 +99,19 @@ php artisan lingua:sync-to-local
 - Chiavi del gruppo JSON (`single`) → `lang/{locale}.json`
 - Traduzioni vendor → `lang/vendor/{vendor}/{locale}/{group}.php`
 
+::: warning Consapevolezza del driver
+In modalità di archiviazione `file` questo comando è un **no-op senza
+`--force`** — la modalità file scrive già su disco, quindi non è necessaria
+nessuna esportazione separata.
+:::
+
 ### Casi d'uso
 
-- **Controllo versione** - commetti i file esportati per tracciare le modifiche alle traduzioni nel tempo
-- **Pipeline di deployment** - esporta prima del deployment se gli strumenti downstream si aspettano traduzioni basate su file
-- **Backup** - crea uno snapshot in un determinato momento di tutte le traduzioni
-- **Altri strumenti** - esporta per l'uso in un servizio di gestione delle traduzioni o in un importatore CSV
+- **Controllo versione** — esegui il commit dei file esportati per tracciare
+  le modifiche alle traduzioni nel tempo
+- **Pipeline di deployment** — esporta prima del deployment se gli strumenti
+  downstream si aspettano traduzioni basate su file
+- **Backup** — snapshot in un determinato momento di tutte le traduzioni
 
 ### Tramite il facade
 
@@ -89,64 +121,69 @@ Lingua::syncToLocal();
 
 ---
 
-## Aggiorna da Laravel Lang
+## Aggiornamento <Badge type="tip" text="Modificato in 2.0" />
 
-Recupera le ultime stringhe di traduzione dall'ecosistema `laravel-lang` e le sincronizza nel database. Utile dopo aver aggiornato Laravel o aggiunto un nuovo pacchetto che include traduzioni.
+Ri-popola le locale installate dal **dataset integrato** (nessun download da
+internet) e poi unisce dall'eventuale `lang/` locale.
 
 ```bash
 php artisan lingua:update-lang
 ```
 
-Questo esegue `lang:update` (da `laravel-lang/common`) seguito da `lingua:sync-to-database`.
+Esegui questo dopo:
+
+- Aver aggiornato Lingua (nuovo allineamento del dataset integrato)
+- Aver installato un nuovo pacchetto che include le proprie traduzioni
+
+::: tip Nessuna dipendenza da laravel-lang
+In 2.0 questo comando **non** chiama più `lang:update` da
+`laravel-lang/common`. Il dataset integrato serve come fonte di verità locale.
+:::
 
 ---
 
 ## Flussi di lavoro di sincronizzazione automatizzata
 
-### Al deployment
-
-Aggiungi un passaggio post-deploy per mantenere il database sincronizzato con i file lang che hai committato:
+### Al deployment (driver database)
 
 ```bash
-# Nel tuo script di deploy o nella pipeline CI/CD
+# Nel tuo script di deploy o pipeline CI/CD
+php artisan migrate
 php artisan lingua:sync-to-database
 php artisan optimize:clear
 ```
 
 ### Tramite lo scheduler
 
-Se il tuo team di traduzione modifica i file direttamente (anziché tramite l'interfaccia), pianifica una sincronizzazione periodica:
+Se il tuo team di traduzione modifica i file direttamente, pianifica una
+sincronizzazione periodica:
 
 ```php
 // routes/console.php
 Schedule::command('lingua:sync-to-database')->hourly();
 ```
 
-### All'installazione di un pacchetto
+### Ciclo completo
 
-Quando esegui `composer require` per un nuovo pacchetto che include traduzioni, esegui:
+Un modo sicuro per riorganizzare le traduzioni:
 
-```bash
-php artisan lingua:update-lang
-```
-
-Questo recupera le nuove stringhe dal pacchetto installato.
+1. `lingua:sync-to-local` — esporta tutto
+2. Modifica i file su disco
+3. `lingua:sync-to-database` — reimporta
 
 ---
 
 ## Consigli e avvertenze
 
 ::: tip Mantieni il DB come fonte di verità
-Tratta il database come la fonte primaria. Sincronizza in locale solo quando hai bisogno dei file (controllo versione, deployment, ecc.). Evita di modificare i file locali direttamente mentre il DB è in uso - la prossima sincronizzazione nel database sovrascriverà le tue modifiche se le chiavi esistono già.
+Tratta il database come la fonte primaria. Sincronizza in locale solo quando
+hai bisogno dei file. Evita di modificare i file locali direttamente mentre
+il DB è in uso — la prossima sincronizzazione nel database unirà i valori
+file ma i valori DB preesistenti hanno la precedenza.
 :::
 
 ::: warning File locale e DB non sincronizzati
-Se aggiungi manualmente nuovi file PHP di locale senza eseguire `lingua:sync-to-database`, le nuove chiavi saranno disponibili solo tramite il file loader (priorità inferiore rispetto al DB). Esegui la sincronizzazione per importarle correttamente.
-:::
-
-::: tip Ciclo completo
-Un modo sicuro per riorganizzare le traduzioni:
-1. `lingua:sync-to-local` - esporta tutto
-2. Modifica i file su disco
-3. `lingua:sync-to-database` - reimporta
+Se aggiungi nuovi file PHP di locale senza eseguire `lingua:sync-to-database`,
+le nuove chiavi saranno disponibili solo tramite il file loader. Esegui la
+sincronizzazione per importarle correttamente nel DB.
 :::

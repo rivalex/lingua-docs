@@ -1,128 +1,97 @@
 # 语言管理
 
-语言页面（`/lingua/languages`）是管理所有已安装语言环境的控制中心。
+语言页面（`/lingua/languages`）是 Lingua 的主页面，用于管理已安装的语言区域。
 
-<Screenshot src="/screenshots/languages-page.png" alt="Lingua 语言管理页面" caption="语言页面 - 显示已安装的语言环境及其完成度统计。" />
+## 工具栏
+
+工具栏有两行：
+
+**第一行（搜索与添加）：**
+- 搜索框——按名称或代码筛选语言
+- **新增语言**按钮——打开添加对话框
+
+**第二行（同步操作）：**
+- **从文件同步**（`lingua:sync-to-database`）——将 `lang/` 中的翻译导入数据库
+- **同步到文件**（`lingua:sync-to-local`）——将数据库翻译导出到 `lang/`
+
+::: tip 文件模式下的同步按钮
+在文件驱动模式下，同步按钮会根据驱动能力动态显示或禁用。
+:::
 
 ## 添加语言
 
-### 通过界面
+点击**新增语言**按钮，在搜索框中输入语言名称或代码（例如 `fr`、`French`、`pt_BR`），从 129+ 个内置语言区域中选择，然后确认添加。
 
-点击**添加语言**，从 70+ 个可用语言环境中选择一个，然后确认。Lingua 将：
-
-1. 从 Laravel Lang 下载语言文件
-2. 在数据库中创建 `Language` 记录
-3. 将所有新字符串同步到 `language_lines`
-4. 刷新表格显示新语言环境
-
-<Screenshot src="/screenshots/language-add-modal.png" alt="添加语言模态框" caption="添加语言模态框，带有可搜索的语言环境选择器。" width="640px" :center="true"/>
-
-### 通过命令行
+或者使用 Artisan 命令：
 
 ```bash
-php artisan lingua:add it
-php artisan lingua:add pt_BR
-php artisan lingua:add ar
+php artisan lingua:add fr
+php artisan lingua:add pt_BR zh de it
 ```
 
-### 以编程方式
+`lingua:add` 命令会：
 
-```php
-use Rivalex\Lingua\Facades\Lingua;
+1. 在 `languages` 表中创建语言记录
+2. 从内置数据集填充该语言的翻译字符串
+3. 设置正确的元数据（名称、本地名称、方向、RTL 标志）
 
-// 安装语言文件（lang:add 的封装）
-Lingua::addLanguage('fr');
-
-// 然后创建数据库记录 + 同步（Artisan 命令完整流程）
-// → 使用 lingua:add 获得完整的协调流程
-```
-
-::: tip
-使用 `Lingua::notInstalled()` 获取可用但尚未安装的语言环境列表：
-
-```php
-$available = Lingua::notInstalled(); // ['af', 'ar', 'az', …]
-```
-:::
-
-## 删除语言
-
-点击任意非默认语言行上的垃圾桶图标。确认模态框会防止意外删除--您必须输入语言名称来确认。
-
-在后台，删除操作将：
-1. 通过 `lang:rm {locale} --force` 删除语言文件
-2. 从 `language_lines.text` JSON 列中移除所有 `{locale}` 条目
-3. 删除 `Language` 记录
-4. 重新排序剩余语言的排序值
-
-::: warning
-**默认语言不能被删除**。请先将另一种语言设置为默认语言。
-:::
-
-```bash
-# 通过命令行
-php artisan lingua:remove fr
-```
+**不**从 GitHub 下载文件，也**不**写入 `lang/` 目录（数据库驱动模式下）。
 
 ## 设置默认语言
 
-点击任意语言行上的星形图标（⭐）。同一时间只能有一种语言为默认语言。更改操作包含在数据库事务中，以防止出现没有语言被标记为默认的情况。
+每个已安装语言旁边的星形图标（☆/★）用于将其设为默认语言。
 
-```php
-// 以编程方式
-Lingua::setDefaultLocale('fr');
+- 只有**一种**语言可以是默认语言
+- 默认语言的翻译作为其他语言的翻译基准
+- 删除默认语言的翻译会删除整条记录（包含所有语言区域）
+- 删除非默认语言的翻译只会清除该语言区域的值
 
-// 或通过模型
-$french = Language::where('code', 'fr')->first();
-Language::setDefault($french);
-```
+## 重新排序
 
-::: warning 更换默认语言
-如果您设置了新的默认语言，请确保该语言环境的翻译至少已部分完成。默认语言在界面编辑器中用作备用参考（左列显示默认值作为参考）。
+拖动语言行左侧的拖动手柄可以重新排序。排列顺序会存储在 `languages.sort` 列中，并会影响：
+
+- 语言页面和翻译页面中语言的显示顺序
+- 语言选择器组件中语言的显示顺序
+
+## 语言统计
+
+每一行显示该语言的翻译完成度统计：
+
+- **总字符串数**——数据库中该语言应有的翻译总数
+- **已翻译**——有实际值的字符串数量
+- **缺失**——尚未翻译的字符串数量（以红色进度条显示）
+
+详细的覆盖率分析请访问[统计页面](/zh/features/statistics)。
+
+## 删除语言
+
+点击语言行末尾的删除按钮（垃圾桶图标）可以删除语言。
+
+::: danger 不可逆操作
+删除语言会从 `languages` 表中移除该语言记录，并从所有翻译的 `text` JSON 列中移除该语言区域的值。**此操作无法撤销。**如需保留数据，请先通过传输页面导出翻译。
 :::
-
-## 重新排序语言
-
-拖放语言行以控制其在整个应用中的显示顺序--包括语言选择器小部件、翻译语言环境切换器，以及任何使用 `Lingua::languages()` 的地方。
-
-排序顺序存储在 `sort` 整数列中，每次拖放后按顺序重新分配。
-
-## 查看完成度统计
-
-每个语言行显示：
-
-| 指标 | 描述 |
-|---|---|
-| **完成度 %** | `已翻译 / 总数 * 100`，保留两位小数 |
-| **缺失** | 该语言环境没有值的字符串数量 |
-
-这些数据通过针对 `language_lines` 表的数据库子查询在查询时计算，因此始终是最新的。
-
-```php
-// 获取特定语言环境的统计数据
-$stats = Lingua::getLocaleStats('fr');
-// [
-//   'total'      => 1240,
-//   'translated' => 980,
-//   'missing'    => 260,
-//   'percentage' => 79.03,
-// ]
-
-// 或在一次查询中获取所有语言及其统计数据
-$languages = Lingua::languagesWithStatistics();
-foreach ($languages as $lang) {
-    echo "{$lang->name}: {$lang->completion_percentage}%";
-}
-```
 
 ## 同步控制
 
-语言页面工具栏提供三个同步按钮：
+### 从文件同步到数据库
 
-| 按钮 | 操作 |
-|---|---|
-| **同步到数据库** | 将本地 `lang/` 文件导入 `language_lines` |
-| **同步到本地** | 将所有数据库翻译导出回 `lang/` 文件 |
-| **通过 Laravel Lang 更新** | 运行 `lang:update` 从上游拉取最新字符串，然后同步到数据库 |
+```bash
+php artisan lingua:sync-to-database
+```
 
-所有三个操作都**异步运行**（Livewire `#[Async]` 属性），因此在长时间运行的同步过程中界面保持响应。
+将 `lang/` 目录中的所有 PHP 和 JSON 翻译文件导入数据库。适用于：
+
+- 初次将现有项目迁移到 Lingua 数据库模式
+- 从 CI/CD 流程中推送更新的翻译文件
+
+### 同步到本地文件
+
+```bash
+php artisan lingua:sync-to-local
+```
+
+将数据库中的所有翻译导出为 PHP 和 JSON 文件到 `lang/` 目录。适用于：
+
+- 备份翻译到版本控制
+- 为部署到只读文件系统准备翻译文件
+- 在切换到文件驱动之前导出数据

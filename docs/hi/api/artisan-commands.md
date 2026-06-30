@@ -1,197 +1,123 @@
 # Artisan Commands
 
-Lingua terminal-driven भाषा और translation प्रबंधन के लिए छह Artisan commands के साथ आता है।
-
-## भाषा प्रबंधन
-
-### `lingua:add {locale}`
-
-एक नई भाषा install करता है - files download करता है, DB record बनाता है, translations sync करता है।
-
-```bash
-php artisan lingua:add it
-php artisan lingua:add pt_BR
-php artisan lingua:add ar
-```
-
-**यह क्या करता है:**
-1. `laravel-lang/locales` से locale metadata लाता है
-2. Language files install करने के लिए `lang:add {locale}` चलाता है
-3. डेटाबेस में एक `Language` record बनाता है
-4. नई strings import करने के लिए `lingua:sync-to-database` चलाता है
-
-**Output:**
-```
-Adding language: it...
-Installing language files via Laravel Lang...
-Creating language record in database...
-Syncing translations to database...
-Language 'it' added successfully.
-```
-
-::: tip
-भाषा जोड़ने के बाद, यह देखने के लिए `/lingua/translations/it` पर जाएँ कि कौन सी strings अभी translate होनी बाकी हैं।
-:::
+Lingua 8 Artisan commands प्रदान करता है।
 
 ---
 
-### `lingua:remove {locale}`
+## `lingua:install`
 
-एक भाषा remove करता है - files delete करता है, database clean करता है, शेष भाषाओं को reorder करता है।
-
-```bash
-php artisan lingua:remove fr
-```
-
-**यह क्या करता है:**
-1. जाँचता है कि भाषा default नहीं है (यदि है तो error के साथ abort करता है)
-2. Language files remove करने के लिए `lang:rm {locale} --force` चलाता है
-3. `language_lines.text` से सभी `{locale}` values remove करता है
-4. `Language` record delete करता है
-5. शेष भाषाओं के sort values को reorder करता है
-6. `lingua:sync-to-database` चलाता है
-
-::: warning Default language सुरक्षा
-आप default language remove नहीं कर सकते। पहले दूसरी भाषा को default set करें:
-```bash
-php artisan lingua:add fr       # नया default जोड़ें
-# फिर UI के माध्यम से: French को default set करें
-php artisan lingua:remove en    # अब English को safely remove करें
-```
-:::
-
----
-
-### `lingua:update-lang`
-
-Laravel Lang के माध्यम से सभी installed language files update करता है, फिर database में फिर से sync करता है।
-
-```bash
-php artisan lingua:update-lang
-```
-
-इसे इन स्थितियों में चलाएँ:
-- Laravel upgrade करने के बाद (नए validation messages, आदि)
-- Translations ship करने वाला नया package install करने के बाद
-- `laravel-lang/*` packages update करने के बाद
-
----
-
-## Translation sync
-
-### `lingua:sync-to-database`
-
-सभी local PHP/JSON translation files को `language_lines` टेबल में import करता है।
-
-```bash
-php artisan lingua:sync-to-database
-```
-
-**क्या import होता है:**
-- `lang/{locale}/*.php` - PHP files
-- `lang/{locale}.json` - JSON files
-- `lang/vendor/{package}/{locale}/*.php` - vendor package files
-
-`group + key` पर match करते हुए `updateOrCreate` का उपयोग करता है, इसलिए UI से मौजूदा edits preserved रहती हैं।
-
-**सामान्य उपयोग के मामले:**
-```bash
-# Fresh clone के बाद - committed lang files से DB populate करें
-php artisan lingua:sync-to-database
-
-# lang:update के बाद - नई strings import करें
-php artisan lingua:sync-to-database
-
-# Deployment script में
-php artisan migrate
-php artisan lingua:sync-to-database
-php artisan optimize
-```
-
----
-
-### `lingua:sync-to-local`
-
-सभी database translations को वापस local PHP/JSON files में export करता है।
-
-```bash
-php artisan lingua:sync-to-local
-```
-
-**क्या export होता है:**
-- DB translations → `lang/{locale}/{group}.php`
-- JSON group (`single`) → `lang/{locale}.json`
-- Vendor translations → `lang/vendor/{vendor}/{locale}/{group}.php`
-
-**सामान्य उपयोग के मामले:**
-```bash
-# Commit करने से पहले - version control के लिए DB state को files में export करें
-php artisan lingua:sync-to-local
-git add lang/
-git commit -m "chore: sync translations"
-
-# Files से read करने वाले server पर deploy करने से पहले
-php artisan lingua:sync-to-local
-```
-
----
-
-### `lingua:install`
-
-Interactive first-time setup wizard। `composer require` के बाद एक बार चलाएँ।
+इंटरैक्टिव इंस्टॉलेशन विज़ार्ड।
 
 ```bash
 php artisan lingua:install
 ```
 
-Initial setup के बाद फिर से चलाने का इरादा नहीं है। यदि आपको individual assets फिर से publish करने हों, तो `vendor:publish` tags का उपयोग करें।
+**क्या करता है:**
+1. Arrow-key selector से storage driver (`database` / `file`) चुनाता है
+2. Config publish करता है → `config/lingua.php`
+3. Driver-aware migrations publish करता है
+4. Migrations run करने के लिए पूछता है
+5. Default language install और seed करता है
+6. वैकल्पिक GitHub star prompt
 
 ---
 
-## Commands का quick reference
+## `lingua:storage` <Badge type="tip" text="2.0 में नया" />
 
-<div class="command-table">
+Storage driver switch करता है।
 
-| Command | विवरण |
-|---|---|
-| `lingua:add {locale}` | भाषा install करें (files + DB + sync) |
-| `lingua:remove {locale}` | भाषा remove करें (files + DB + sync) |
-| `lingua:update-lang` | Laravel Lang के माध्यम से lang files update करें + sync |
-| `lingua:sync-to-database` | Local files → database import करें |
-| `lingua:sync-to-local` | Database → local files export करें |
-| `lingua:install` | Interactive first-time setup wizard |
+```bash
+php artisan lingua:storage
+```
 
-</div>
+**क्या करता है:**
+1. Arrow-key selector से नया driver चुनाता है
+2. Driver-specific migrations publish और run करता है
+3. `.env` में `LINGUA_STORAGE_DRIVER` update का निर्देश देता है
+
+::: warning Data migration
+Driver switch से पहले data manually migrate करें। देखें [Storage Drivers](/hi/guide/storage#switching-between-drivers)।
+:::
 
 ---
 
-## Tips
+## `lingua:add`
 
-::: tip CI/CD में sync automate करना
-Database को अपने repository के साथ sync में रखने के लिए deployment pipeline में sync जोड़ें:
-
-```yaml
-# GitHub Actions deploy step (उदाहरण)
-- name: Sync translations
-  run: php artisan lingua:sync-to-database
-```
-:::
-
-::: tip एक साथ कई भाषाएँ जोड़ना
-कोई bulk-add command नहीं है, लेकिन आप shell loop में calls chain कर सकते हैं:
+एक locale install करता है।
 
 ```bash
-for locale in fr it de es pt_BR; do
-  php artisan lingua:add $locale
-done
+php artisan lingua:add {locale}
+php artisan lingua:add fr
+php artisan lingua:add it es de pt_BR
 ```
-:::
 
-::: tip क्या sync होगा यह जाँचना
-`lingua:sync-to-database` चलाने से पहले, `lang/` जाँचकर process होने वाली files और locales की संख्या preview कर सकते हैं:
+Bundled dataset से seed करता है — **कोई internet download नहीं**।
+
+---
+
+## `lingua:remove`
+
+एक locale uninstall करता है।
 
 ```bash
-ls lang/
-# en  fr  it  vendor
+php artisan lingua:remove {locale}
+php artisan lingua:remove fr
 ```
+
+Language record और उस locale की सभी translation values remove करता है।
+
+---
+
+## `lingua:update-lang`
+
+Bundled dataset से नई keys merge करता है।
+
+```bash
+php artisan lingua:update-lang {locale}
+php artisan lingua:update-lang fr
+```
+
+Existing translations overwrite नहीं होती — केवल missing keys add होती हैं। Laravel update के बाद नई validation keys पाने के लिए उपयोग करें।
+
+---
+
+## `lingua:sync-to-database`
+
+`lang/` files → DB।
+
+```bash
+php artisan lingua:sync-to-database
+```
+
+`lang_dir` में सभी PHP और JSON files पढ़ता है, `language_lines` में upsert करता है, और affected cache keys bust करता है।
+
+---
+
+## `lingua:sync-to-local`
+
+DB → `lang/` files।
+
+```bash
+php artisan lingua:sync-to-local
+```
+
+DB से `lang/{locale}/{group}.php` और `lang/{locale}.json` files generate करता है। Atomic writes, opcache invalidation।
+
+---
+
+## `lingua:uninstall` <Badge type="tip" text="2.0 में नया" />
+
+Lingua को पूरी तरह remove करता है।
+
+```bash
+php artisan lingua:uninstall
+```
+
+**क्या करता है:**
+- `languages`, `language_lines`, `lingua_settings` tables drop करता है
+- Published config, migrations, views remove करता है
+- `lang/vendor/lingua` clean करता है
+
+::: danger Irreversible
+यह command data destroy करता है। पहले backup लें।
 :::

@@ -1,66 +1,100 @@
-# Statistiche di traduzione
+# Statistiche
 
-La pagina Statistiche offre una panoramica in tempo reale della copertura delle traduzioni per tutte le lingue installate.
+La pagina Statistiche (`/lingua/statistics`) offre una panoramica immediata
+dello stato delle traduzioni nella tua app.
 
-```blade
-<a href="{{ route('lingua.statistics') }}">Statistiche di traduzione</a>
+<Screenshot src="/screenshots/statistics-page.png" alt="Pagina Statistiche di Lingua" caption="Pagina Statistiche — KPI in cima, copertura per lingua e drill-down delle chiavi mancanti." />
+
+## Contatori panoramica
+
+Nella parte alta della pagina sono presenti quattro KPI:
+
+| Metrica | Descrizione |
+|---|---|
+| **Lingue installate** | Numero di record `Language` nel database |
+| **Stringhe totali** | Numero di chiavi distinte nel set di riferimento (locale predefinita) |
+| **Traduzioni completate** | Numero di coppie (locale, chiave) con un valore |
+| **Copertura media** | Media semplice delle percentuali di completamento tra tutte le locale non predefinite |
+
+```php
+use Rivalex\Lingua\Facades\Lingua;
+
+$overview = Lingua::statistics();
+// [
+//   'languages'    => 5,
+//   'total'        => 1240,
+//   'completed'    => 4876,
+//   'avg_coverage' => 78.6,
+// ]
 ```
-
-<Screenshot src="/screenshots/statistics-page.png" alt="Pagina Statistiche di traduzione" caption="La pagina delle statistiche mostra la copertura per lingua, la suddivisione per gruppo e le chiavi mancanti." />
-
-## Panoramica
-
-La pagina mostra tre contatori riassuntivi in cima:
-
-- **Chiavi totali** — numero totale di stringhe di traduzione nel database
-- **Gruppi totali** — numero di gruppi di traduzione distinti
-- **Lingue installate** — numero di lingue registrate nel sistema
-
-Puoi attivare **Includi traduzioni vendor** per includere o escludere le traduzioni dei pacchetti da tutte le statistiche.
 
 ## Copertura per lingua
 
-<Screenshot src="/screenshots/statistics-coverage.png" alt="Sezione copertura per lingua" caption="Ogni riga della lingua mostra una barra di avanzamento, la percentuale e il conteggio delle chiavi mancanti." />
+La sezione centrale mostra una riga per ogni lingua installata con:
 
-Per ogni lingua installata puoi vedere:
+- **Nome** della lingua e **codice** locale
+- **Barra di avanzamento** che riflette la percentuale di completamento
+- **Stringhe tradotte / totali** (es. `980 / 1240`)
+- **Percentuale** arrotondata a 2 decimali
 
-| Colonna | Descrizione |
-|---|---|
-| Lingua | Nome e bandiera della lingua |
-| Copertura | Barra di avanzamento con percentuale di completamento |
-| Tradotte | Numero di chiavi che hanno un valore per questa locale |
-| Mancanti | Numero di chiavi senza valore — clicca per espandere il pannello delle chiavi mancanti |
+La lingua predefinita mostra sempre il 100% in quanto è il set di riferimento.
 
-La **lingua predefinita** è evidenziata con un badge. Poiché la locale predefinita determina il set di chiavi di riferimento, mostra sempre il 100% di copertura.
+```php
+$languages = Lingua::languagesWithStatistics();
+foreach ($languages as $lang) {
+    echo "{$lang->name}: {$lang->completion_percentage}%\n";
+    echo "  Tradotte: {$lang->translated_strings} / {$lang->total_strings}\n";
+}
+```
 
-## Dettaglio chiavi mancanti
+## Chiavi mancanti — drill-down
 
-Clicca il **badge del conteggio mancanti** su qualsiasi riga della lingua per espandere inline il pannello delle chiavi mancanti.
+Clicca su qualsiasi riga della lingua per espandere il pannello di drill-down.
+Mostra ogni chiave per cui manca la traduzione in quella locale, raggruppate
+per gruppo.
 
-<Screenshot src="/screenshots/statistics-missing.png" alt="Pannello chiavi mancanti espanso" caption="Il pannello delle chiavi mancanti mostra gruppo, chiave e un link diretto all'editor delle traduzioni." />
+```
+auth
+  ├── auth.failed               ← mancante in fr
+  └── auth.throttle             ← mancante in fr
 
-Ogni riga nel pannello mostra:
+validation
+  ├── validation.email          ← mancante in fr
+  └── validation.required       ← mancante in fr
+```
 
-- **Gruppo** — il gruppo di traduzione (es. `validation`, `auth`)
-- **Chiave** — la chiave di traduzione (es. `required`, `failed`)
-- **Traduci →** link — apre la pagina Traduzioni pre-filtrata per quella locale
+Ogni chiave mancante ha un link diretto alla pagina Traduzioni filtrata al
+gruppo corrispondente così puoi iniziare immediatamente a tradurre.
 
-Clicca di nuovo sulla stessa riga della lingua per chiudere il pannello.
-
-## Suddivisione per gruppo
-
-<Screenshot src="/screenshots/statistics-breakdown.png" alt="Tabella di suddivisione per gruppo" caption="La tabella di suddivisione mostra il conteggio delle chiavi tradotte per locale per ogni gruppo." />
-
-La tabella di suddivisione elenca ogni gruppo di traduzione con il numero di chiavi tradotte per ogni lingua installata. Usala per identificare quali gruppi sono completamente tradotti e quali necessitano attenzione.
+```php
+$missing = Lingua::missingTranslations('fr');
+// [
+//   'auth'       => ['auth.failed', 'auth.throttle'],
+//   'validation' => ['validation.email', 'validation.required'],
+// ]
+```
 
 ## Toggle traduzioni vendor
 
-Per impostazione predefinita, le traduzioni vendor (da pacchetti come `laravel/framework`) sono escluse dalle statistiche. Attiva **Includi traduzioni vendor** per includerle.
+Per impostazione predefinita le traduzioni vendor sono escluse dalle statistiche.
+Attiva **Includi traduzioni vendor** per includerle.
 
 ::: info
-Le traduzioni vendor sono spesso mantenute a monte dall'autore del pacchetto. Includerle nelle statistiche potrebbe abbassare la copertura apparente se non hai aggiunto override specifici per la locale.
+Le traduzioni vendor sono spesso mantenute a monte dall'autore del pacchetto.
+Includerle potrebbe abbassare la copertura apparente se non hai aggiunto
+override specifici per la locale.
 :::
 
-::: tip Lavorare in modo efficiente
-Ordina per conteggio mancanti per dare priorità al tuo lavoro di traduzione. Le lingue con più chiavi mancanti in cima alla lista necessitano della maggiore attenzione.
-:::
+## Statistiche in tempo reale
+
+Le statistiche vengono calcolate dal [driver di archiviazione](/it/guide/storage)
+attivo:
+
+- In modalità **database** i contatori sono calcolati tramite query Eloquent
+  e aggregati in PHP (nessuna funzione SQL JSON — constraint multi-DB)
+- In modalità **file** i contatori vengono derivati leggendo e confrontando
+  i file PHP e JSON in `lang/`
+
+Le statistiche non sono memorizzate nella cache separatamente — la cache di
+traduzione per `(locale, gruppo)` serve come proxy. Modificare o sincronizzare
+le traduzioni rende le statistiche aggiornate nella stessa richiesta.

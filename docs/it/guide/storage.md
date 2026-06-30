@@ -1,30 +1,134 @@
-# Archiviazione delle traduzioni
+# Driver di archiviazione
 
-Capire come vengono archiviate le traduzioni ti aiuta a interrogarle, importarle ed esportarle correttamente.
+<Badge type="tip" text="Novità in 2.0" /> Lingua 2.0 introduce un sistema di
+**driver di archiviazione** a plugin. Scegli dove risiedono le traduzioni: nel
+**database** (il default ricco di funzionalità) o nei normali **file `lang/`**.
 
-## La tabella `language_lines`
-
-Ogni riga in `language_lines` rappresenta una **stringa** traducibile - non una locale. Tutti i valori delle locale sono memorizzati insieme in un'unica colonna JSON `text`:
-
-```
-group      | key        | type | text
------------|------------|------|---------------------------------------------------
-validation | required   | text | {"en":"The :attribute field is required.","fr":"Le champ :attribute est obligatoire."}
-auth       | failed     | text | {"en":"These credentials do not match.","it":"Le credenziali non corrispondono."}
-single     | Welcome    | text | {"en":"Welcome","fr":"Bienvenue","de":"Willkommen"}
-emails     | subject    | html | {"en":"<b>Welcome</b> to our platform!"}
+```php
+// config/lingua.php
+'storage' => [
+    'driver' => env('LINGUA_STORAGE_DRIVER', 'database'),
+],
 ```
 
-### Vantaggi di questo design
+## Scegliere un driver
 
-- **Una riga per stringa** - nessuna riga per-locale da gestire
-- **Aggiungere una locale è non distruttivo** - basta aggiungere una nuova chiave all'oggetto JSON
-- **Le traduzioni mancanti sono esplicite** - se `fr` è assente dal JSON, la stringa non è ancora tradotta
-- **Query singola** - una `SELECT` recupera tutti i valori per ogni locale di una chiave
+| Funzionalità | `database` | `file` |
+|---|:---:|:---:|
+| Store di supporto | Tabella `language_lines` | `lang/` PHP + JSON |
+| Tipi HTML / Markdown | ✅ | ❌ (appiattiti a testo semplice) |
+| Statistiche di traduzione | ✅ | ✅ (calcolate dai file) |
+| Import / export (Transfer) | ✅ | ✅ |
+| Protezione vendor | ✅ | ✅ |
+| Cache chirurgica per (locale, gruppo) | ✅ | n/a |
+| Pulsanti di sincronizzazione nell'UI | ✅ | nascosti |
+| Modifica traduzioni nell'UI | ✅ | ✅ |
 
-### Interrogazione diretta
+::: tip Regola empirica
+Usa **database** per l'esperienza più ricca e gli override a runtime. Usa
+**file** quando le traduzioni devono rimanere nel controllo versione o il
+filesystem è la fonte di verità.
+:::
 
-Puoi interrogare `language_lines` usando la sintassi standard Eloquent per colonne JSON:
+## Driver database
+
+Il default, identico al comportamento della versione 1.x.
+
+- Traduzioni archiviate nella tabella `language_lines`, tutte le locale in
+  un'unica colonna JSON `text` per riga
+- Supporta i tipi `text`, `html` e `markdown`, ognuno con il proprio editor
+- Cache chirurgica: `Cache::forget('lingua.trans.{locale}.{gruppo}')` ad
+  ogni scrittura — nessun flush globale
+- Statistiche complete, import/export e protezione vendor
+- Gli override a runtime vincono sui file `lang/` tramite
+  `array_replace_recursive`
+
+## Driver file
+
+Legge e scrive direttamente i file PHP e JSON in `lang/`. Non esiste
+**alcuna** tabella `language_lines`.
+
+::: danger Perdita di tipo in modalità file
+Il driver `file` archivia solo stringhe semplici. I **tipi HTML e Markdown
+vengono appiattiti a testo semplice** — l'editor per tipo e i metadati del
+tipo non sono disponibili. Se fai affidamento sulle traduzioni HTML/Markdown,
+usa il driver database.
+:::
+
+- Nessuna query al database; si comporta come il `FileLoader` standard di
+  Laravel
+- I pulsanti di sincronizzazione sono **nascosti** nell'UI (i file *sono* lo
+  store)
+- `lingua:sync-to-local` è un **no-op senza `--force`** (il DB da cui
+  esporterebbe non è lo store attivo)
+- Le modifiche nell'UI vengono scritte direttamente sui file tramite
+  `AtomicFileWriter` (rinomina atomica + `opcache_invalidate` — vedi
+  [Sicurezza](/it/guide/security#sicurezza-modalità-file))
+
+::: warning Avvertenza deployment
+Su piattaforme che ricostruiscono `lang/` dal repository ad ogni deployment
+(es. Forge, Envoyer, immagini container), le modifiche UI effettuate in
+modalità file potrebbero essere **sovrascritte** al prossimo deployment.
+Esegui il commit delle modifiche nel tuo repo, oppure usa il driver database.
+:::
+
+## Cambiare driver
+
+Usa il comando `lingua:storage` per cambiare in qualsiasi momento. **Sincronizza
+prima di cambiare** così nulla viene perso.
+
+```bash
+php artisan lingua:storage file
+php artisan lingua:storage database
+```
+
+| Flag | Effetto |
+|---|---|
+| `--force` | Salta le conferme |
+| `--write-env` | Aggiorna `LINGUA_STORAGE_DRIVER` in `.env` |
+| `--no-migrate` | Salta il passaggio di verifica migrazione |
+
+### Database → file
+
+Lingua **esporta** prima il database in `lang/`, avvisando di eventuali
+stringhe HTML/Markdown che perderanno il tipo, poi cambia il driver attivo.
+
+### File → database
+
+Lingua **sincronizza** `lang/` nel database e verifica che la migrazione
+`language_lines` sia stata eseguita, poi cambia.
+
+## Installazione con scelta del driver
+
+Il programma di installazione interattivo chiede quale driver usare e pubblica
+le migrazioni **driver-aware** — il driver `file` salta completamente la
+migrazione `language_lines`:
+
+```bash
+php artisan lingua:install
+```
+
+Vedi [Installazione](/it/guide/installation).
+
+## Disinstallazione
+
+`lingua:uninstall` rimuove Lingua in modo sicuro:
+
+```bash
+php artisan lingua:uninstall
+```
+
+**Esporta prima il database in `lang/`**, poi elimina le tre tabelle Lingua
+(`language_lines`, `languages`, `lingua_settings`). La directory `lang/`
+viene preservata.
+
+| Flag | Effetto |
+|---|---|
+| `--force` | Salta le conferme |
+| `--keep-config` | Lascia `config/lingua.php` al suo posto |
+| `--keep-published` | Lascia le viste/migrazioni pubblicate al loro posto |
+
+## Query dirette (driver database)
 
 ```php
 use Rivalex\Lingua\Models\Translation;
@@ -35,67 +139,9 @@ Translation::whereNotNull('text->fr')->get();
 // Solo le traduzioni francesi mancanti
 Translation::whereNull('text->fr')->get();
 
-// Trova una chiave specifica
-Translation::where('key', 'required')->where('group', 'validation')->first();
-
-// Tutte le stringhe in un gruppo
-Translation::where('group', 'auth')->get();
+// Una chiave specifica
+Translation::where('group', 'validation')->where('key', 'required')->first();
 ```
 
-## Tipi di traduzione
-
-Ogni riga di traduzione ha un `type` che determina l'editor usato nell'interfaccia:
-
-| Tipo | Caso d'uso | Rilevamento automatico durante la sincronizzazione |
-|---|---|---|
-| `text` | Etichette semplici, messaggi, testo dei pulsanti | Default |
-| `html` | Contenuto ricco con tag HTML | La stringa contiene elementi HTML |
-| `markdown` | Contenuto formattato in Markdown | La stringa viene analizzata come Markdown |
-
-Il rilevamento del tipo viene eseguito durante `lingua:sync-to-database`. Puoi cambiare il tipo in qualsiasi momento tramite la modale di modifica nell'interfaccia.
-
-### Esempio: traduzione HTML
-
-```php
-Translation::create([
-    'group' => 'marketing',
-    'key'   => 'hero_subtitle',
-    'type'  => 'html',
-    'text'  => ['en' => '<strong>Build faster</strong> with fewer tools.'],
-]);
-```
-
-### Esempio: traduzione Markdown
-
-```php
-Translation::create([
-    'group' => 'emails',
-    'key'   => 'welcome_body',
-    'type'  => 'markdown',
-    'text'  => ['en' => "# Welcome!\n\nThank you for signing up.\n\n**Your account is now active.**"],
-]);
-```
-
-## Chiavi di traduzione
-
-Lingua usa la stessa convenzione `group.key` in due parti delle traduzioni standard di Laravel:
-
-| Formato | Esempio | Chiamata `trans()` |
-|---|---|---|
-| Chiave file PHP | `auth.failed` | `__('auth.failed')` |
-| Chiave JSON / singola | `Welcome` | `__('Welcome')` |
-| Chiave vendor | `spatie::messages.error` | tramite namespace vendor |
-
-::: tip group vs. key
-La colonna `group` corrisponde al nome del file (`auth` = `lang/en/auth.php`) e la `key` corrisponde alla chiave dell'array all'interno di quel file. Per i file JSON, il gruppo è `'single'`.
-:::
-
-## Traduzioni vendor
-
-Le traduzioni vendor sono contrassegnate con `is_vendor = true` e portano una stringa `vendor` (es. `'spatie'`, `'laravel'`). Vengono sincronizzate dalle directory `lang/vendor/{vendor}/{locale}/`.
-
-- Possono essere **modificate** nell'interfaccia (per sovrascrivere il testo del vendor)
-- **Non possono essere eliminate** - il tentativo di farlo genera l'evento `vendor_translation_protected`
-- I campi `group` e `key` sono **bloccati** nella modale di aggiornamento
-
-Vedi [Traduzioni Vendor](/it/features/vendor-translations) per tutti i dettagli.
+Vedi [Traduzioni vendor](/it/features/vendor-translations) per come le
+stringhe dei pacchetti sono protette in entrambi i driver.

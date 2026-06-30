@@ -1,77 +1,75 @@
 # Configuración
 
-La página de Configuración te permite configurar el comportamiento UI de Lingua desde el navegador — sin editar archivos de configuración ni necesidad de redespliegue.
+La página de Configuración (`/lingua/settings`) permite gestionar opciones de Lingua
+desde el navegador sin editar archivos de configuración. Comparte el
+[menú de navegación](#menu-de-navegacion) con las demás páginas de Lingua.
 
-Navega a `/lingua/settings` o enlaza desde tu panel de administración:
-
-```blade
-<a href="{{ route('lingua.settings') }}">Configuración de Lingua</a>
-```
-
-<Screenshot src="/screenshots/settings-page.png" alt="Página de Configuración de Lingua" caption="La página de configuración con los controles de modo selector e iconos de banderas." />
+<Screenshot src="/screenshots/settings-page.png" alt="Página de configuración de Lingua" caption="Página de configuración — tarjeta de Enrutamiento y Navegación con el interruptor del menú de navegación." />
 
 ## Cómo funcionan las configuraciones
 
-Las configuraciones se almacenan en la tabla de base de datos `lingua_settings` como pares clave/valor tipados. En cada solicitud, Lingua lee primero desde la base de datos, luego recurre a `config/lingua.php`, y luego a los valores por defecto del código.
+Las configuraciones se almacenan en la tabla `lingua_settings` como pares clave/valor
+tipados. Cadena de prioridad:
 
-**Cadena de prioridad:**
-1. Tabla DB `lingua_settings` (máxima prioridad — configurada a través de esta UI)
-2. `config/lingua.php` (tu config publicada)
-3. Valores por defecto del paquete (mínima prioridad)
+1. Tabla BD `lingua_settings` (máxima prioridad — configurada vía esta UI)
+2. `config/lingua.php` (tu configuración publicada)
+3. Valores predeterminados del paquete (mínima prioridad)
 
-Puedes mantener tu `config/lingua.php` como línea base y sobreescribir configuraciones específicas por entorno a través de la UI sin tocar archivos.
+## Menú de navegación <Badge type="tip" text="Nuevo en 2.0" />
 
-## Modo selector
+Lingua 2.0 incluye un menú de navegación compartido (`x-lingua::nav`) en la parte
+superior de cada página de Lingua:
 
-Controla cómo se renderiza el componente `<livewire:lingua::language-selector />` para tus usuarios finales.
+```
+Idiomas | Traducciones | Estadísticas | Transfer | Configuración
+```
 
-| Modo | Descripción |
-|---|---|
-| `sidebar` | Se renderiza como una sección de navegación agrupada (por defecto) |
-| `modal` | Se renderiza como un botón que abre un modal completo de selección de idioma |
-| `dropdown` | Se renderiza como un botón dropdown compacto |
-| `headless` | Sin renderizado integrado — implementas la UI tú mismo |
+La página activa se resalta automáticamente.
 
-::: tip Modo headless
-Cuando se establece en `headless`, el selector integrado no renderiza nada. Usa `<livewire:lingua::headless-language-selector />` en su lugar para construir un selector completamente personalizado. Ver [Selector Headless](./language-selector#modo-headless) para la documentación completa.
-:::
+### Desde la UI de Configuración
 
-## Mostrar iconos de banderas
+Activa/desactiva el interruptor **Habilitar menú de navegación** en la tarjeta
+"Enrutamiento y Navegación".
 
-Activa o desactiva la visualización de iconos de banderas de países junto a los nombres de idiomas en el selector. Cuando está desactivado, solo se muestra el nombre del idioma.
+### Desde la configuración
 
-Los iconos de banderas se asocian al código `regional` del idioma (p. ej. `en_US` → 🇺🇸). Si no hay código regional establecido, la bandera recurre de forma elegante.
+```php
+// config/lingua.php
+'nav' => [
+    'enabled' => env('LINGUA_NAV_ENABLED', true),
+],
+```
+
+La opción de BD (interruptor de UI) tiene precedencia sobre la variable de entorno.
+
+## Driver de almacenamiento
+
+La página muestra el driver activo en modo solo-lectura. Para cambiarlo:
+
+```bash
+php artisan lingua:storage file
+php artisan lingua:storage database
+```
+
+Consulta [Drivers de almacenamiento](/es/guide/storage) para el flujo completo.
+
+## Constantes disponibles
+
+| Constante | Clave DB | Tipo | Descripción |
+|---|---|---|---|
+| `LinguaSetting::KEY_NAV_ENABLED` | `lingua.nav.enabled` | bool | Mostrar/ocultar el menú de navegación compartido |
 
 ## Acceso programático
-
-Puedes leer y escribir configuraciones en PHP usando el modelo `LinguaSetting`:
 
 ```php
 use Rivalex\Lingua\Models\LinguaSetting;
 
-// Leer con fallback config()
-$mode = LinguaSetting::get(
-    LinguaSetting::KEY_SELECTOR_MODE,
-    config('lingua.selector.mode', 'sidebar')
-);
-
-$showFlags = LinguaSetting::get(
-    LinguaSetting::KEY_SHOW_FLAGS,
-    config('lingua.selector.show_flags', true)
-);
+// Leer
+$navEnabled = LinguaSetting::get(LinguaSetting::KEY_NAV_ENABLED, default: true);
 
 // Escribir
-LinguaSetting::set(LinguaSetting::KEY_SELECTOR_MODE, 'modal');
-LinguaSetting::set(LinguaSetting::KEY_SHOW_FLAGS, false);
+LinguaSetting::set(LinguaSetting::KEY_NAV_ENABLED, false);
 ```
 
-Constantes disponibles:
-
-| Constante | Clave | Tipo |
-|---|---|---|
-| `LinguaSetting::KEY_SELECTOR_MODE` | `selector.mode` | `string` |
-| `LinguaSetting::KEY_SHOW_FLAGS` | `selector.show_flags` | `bool` |
-
-::: warning Migración requerida
-La tabla `lingua_settings` es creada por la migración `create_lingua_settings_table`. Si actualizaste desde la versión 1.0.x, ejecuta `php artisan migrate` para crearla.
-:::
+El componente Livewire `lingua::settings` despacha un evento `settings-saved` después
+de guardar — consulta [Eventos](/es/api/events).

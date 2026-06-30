@@ -1,121 +1,57 @@
 # Vendor Translations
 
-Vendor translations वे strings हैं जो तृतीय-पक्ष packages से संबंधित हैं - Laravel के अपने validation messages, pagination labels, password reset strings, और किसी भी अन्य package के translations जो अपनी `lang/` directory के साथ आते हैं।
+Vendor translations वे strings हैं जो third-party packages से आती हैं — Laravel के अपने validation messages, pagination labels, password reset strings, और किसी भी package के translations जो अपनी `lang/` directory के साथ आते हैं।
 
-## उन्हें कैसे पहचाना जाता है
+## कैसे पहचाना जाता है
 
-`lingua:sync-to-database` के दौरान, Lingua `lang/vendor/` directory structure को scan करता है। वहाँ मिली कोई भी translation file इन के साथ import होती है:
-
-- `is_vendor = true`
-- `vendor` = package का नाम (directory name से derived, उदाहरण: `spatie`, `laravel`, `filament`)
-
-Sync के बाद database rows का उदाहरण:
+Lingua vendor translations को `group` column में `*` namespace prefix से पहचानता है:
 
 ```
-group      | key          | is_vendor | vendor   | text
------------|--------------|-----------|----------|-----------------------------
-validation | required     | false     | null     | {"en":"The :attribute…"}
-passwords  | reset        | true      | laravel  | {"en":"Your password…"}
-auth       | failed       | true      | laravel  | {"en":"These credentials…"}
+group = "*"                    → Lingua का खुद का namespace
+group = "vendor.spatie.*"      → Spatie package
+group = "vendor.filament.*"    → Filament package
 ```
 
-::: tip
-Laravel की अपनी `lang/en/*.php` files (auth, validation, pagination, passwords) को **vendor translations** माना जाता है क्योंकि वे framework से आती हैं, आपके application code से नहीं।
-:::
+Database driver और file driver दोनों में यह distinction maintain होती है।
 
-## Vendor translations के साथ आप क्या कर सकते हैं
+## क्या कर सकते हैं
 
-| कार्य | अनुमति? | नोट्स |
-|---|---|---|
-| **Value संपादित करें** | ✅ हाँ | किसी भी vendor string को अपनी wording से override करें |
-| **Type बदलें** | ✅ हाँ | text / html / markdown के बीच switch करें |
-| **Group या key संपादित करें** | ❌ नहीं | Edit modal में Group और key fields locked हैं |
-| **हटाएँ** | ❌ नहीं | `VendorTranslationProtectedException` द्वारा सुरक्षित |
+**Override करें:**
 
-## एक vendor string को override करना
+Translations पेज पर vendor translation key पर click करके value change करें। Override DB में save होता है और file को छुए बिना active रहता है।
 
-सबसे सामान्य उपयोग का मामला Laravel के validation messages को अपने application के tone से match करने के लिए override करना है:
-
-1. `/lingua/translations` खोलें
-2. String ढूंढें (उदाहरण: `validation.required`)
-3. Update modal खोलने के लिए edit आइकन पर क्लिक करें
-4. किसी भी locale के लिए value बदलें
-5. Save करें - override अगले request पर तुरंत लागू होता है
-
-```php
-// या facade के माध्यम से programmatically:
-use Rivalex\Lingua\Facades\Lingua;
-
-Lingua::setVendorTranslation(
-    vendor: 'laravel',
-    group:  'validation',
-    key:    'required',
-    value:  'Please fill in the :attribute field.',
-    locale: 'en'
-);
-```
-
-## Vendor translations query करना
+**Query करें:**
 
 ```php
 use Rivalex\Lingua\Facades\Lingua;
-use Rivalex\Lingua\Models\Translation;
 
-// सभी vendor translations
-$all = Translation::where('is_vendor', true)->get();
+// एक specific vendor translation पढ़ें
+$value = Lingua::getVendorTranslation('en', 'validation', 'required');
 
-// किसी specific package के सभी vendor translations
-$laravel = Lingua::getVendorTranslations('laravel');
-
-// French values के साथ किसी package के सभी vendor translations
-$frenchLaravel = Lingua::getVendorTranslations('laravel', 'fr');
-
-// Group और key के अनुसार manually filter करें
-$required = Translation::where('is_vendor', true)
-    ->where('vendor', 'laravel')
-    ->where('group', 'validation')
-    ->where('key', 'required')
-    ->first();
+// सभी vendor translations list करें
+$all = Lingua::getVendorTranslationsForGroup('en', 'validation');
 ```
 
-## Protection mechanism
+## Protection Mechanism
 
-किसी vendor translation को delete करने का प्रयास (UI से या `Lingua::forgetTranslation()` के माध्यम से) `VendorTranslationProtectedException` throw करता है:
+Vendor translations को **accidentally delete** करने से बचाया जाता है। Delete attempt पर `VendorTranslationProtectedException` throw होता है — UI यह error gracefully दिखाता है।
 
-```php
-use Rivalex\Lingua\Facades\Lingua;
-use Rivalex\Lingua\Exceptions\VendorTranslationProtectedException;
+यह दोनों storage drivers में enforce होता है:
+- **Database:** `DatabaseRepository::delete()` में check
+- **File:** `FileRepository::delete()` में check
 
-try {
-    Lingua::forgetTranslation('required', 'en'); // key एक vendor translation से संबंधित है
-} catch (VendorTranslationProtectedException $e) {
-    // Gracefully handle करें
-}
-```
+## Re-syncing
 
-Livewire UI में, deletion attempts एक `vendor_translation_protected` event dispatch करते हैं और बिना कुछ delete किए modal बंद कर देते हैं। Event को अपने Livewire components या Alpine.js code में सुना जा सकता है:
-
-```js
-// Alpine.js / Livewire event listener
-window.addEventListener('vendor_translation_protected', () => {
-    alert('This translation is protected and cannot be deleted.');
-});
-```
-
-## Vendor translations फिर से sync करना
-
-यदि आप जिस package पर निर्भर हैं वह version bump में नई translation keys जोड़ता है, तो उन्हें import करने के लिए फिर से sync करें:
+यदि आपने vendor package update किया है और नई vendor strings चाहिए:
 
 ```bash
-# laravel-lang से latest pull करें और DB में sync करें
-php artisan lingua:update-lang
-
-# या अपनी मौजूदा lang/ files से manually फिर से sync करें
 php artisan lingua:sync-to-database
 ```
 
-Lingua sync करते समय `updateOrCreate` का उपयोग करता है, इसलिए मौजूदा overrides (संपादित values) preserved रहते हैं।
+यह existing vendor overrides को preserve करते हुए नई keys add करता है।
 
-## Vendor translation imports disable करना
+## दोनों Drivers में Vendor Support
 
-यदि आप डेटाबेस में vendor translations बिल्कुल नहीं चाहते, तो `lang/vendor/` directory हटाने के बाद sync करें। Lingua केवल वही import करता है जो disk पर मिलता है।
+**Database driver:** Vendor strings `language_lines` में `*` namespace prefix के साथ store होती हैं। Cache `CacheKey::forVendorGroup()` के माध्यम से bust होती है।
+
+**File driver:** Vendor strings `lang/vendor/{package}/` directories में रहती हैं। Same protection और override mechanics apply होती हैं।

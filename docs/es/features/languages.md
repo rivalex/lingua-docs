@@ -1,21 +1,38 @@
 # Gestión de Idiomas
 
-La página de Idiomas (`/lingua/languages`) es tu panel de control para todos los idiomas instalados.
+La página de Idiomas (`/lingua/languages`) es tu panel de control para todos los locales
+instalados. Comparte el [menú de navegación](/es/features/settings#menu-de-navegacion)
+con las demás páginas de Lingua, con la página actual resaltada.
 
-<Screenshot src="/screenshots/languages-page.png" alt="Página de gestión de idiomas de Lingua" caption="Página de idiomas - muestra los idiomas instalados con estadísticas de completitud." />
+<Screenshot src="/screenshots/languages-page.png" alt="Página de gestión de idiomas de Lingua" caption="Página de idiomas — locales instalados con estadísticas de completitud y la barra de herramientas de dos filas." />
+
+## La barra de herramientas
+
+La barra de herramientas se reorganiza en dos filas para que los controles sean
+utilizables a cualquier ancho:
+
+- **Fila superior** — el campo de **búsqueda** de locale y el botón **Agregar idioma**.
+- **Fila inferior** — los tres botones de **sincronización** (Sincronizar desde archivos, Sincronizar a archivos, Actualizar).
 
 ## Agregar un idioma
 
 ### Desde la interfaz
 
-Haz clic en **Add Language**, selecciona cualquiera de los más de 70 idiomas disponibles y confirma. Lingua:
+Haz clic en **Add Language**, busca entre los más de 129 locales del registro,
+elige uno y confirma. Lingua entonces:
 
-1. Descargará los archivos de idioma desde Laravel Lang
-2. Creará un registro `Language` en la base de datos
-3. Sincronizará todas las cadenas nuevas en `language_lines`
-4. Actualizará la tabla con el nuevo idioma
+1. Crea un registro `Language` para el locale
+2. Inicializa sus cadenas desde el **conjunto de datos integrado** (sin descarga de internet)
+3. Actualiza la tabla con el nuevo locale
 
-<Screenshot src="/screenshots/language-add-modal.png" alt="Modal para agregar idioma" caption="El modal de agregar idioma con selector de idioma con búsqueda." width="640px" :center="true"/>
+<Screenshot src="/screenshots/language-add-modal.png" alt="Modal para agregar idioma" caption="El modal de agregar idioma con un selector de locale con búsqueda." width="640px" :center="true"/>
+
+::: tip <Badge type="tip" text="Nuevo en 2.0" /> Sin descargas requeridas
+`lingua:add` ya no obtiene archivos de GitHub ni de `laravel-lang`. Los locales se
+inicializan instantáneamente desde el conjunto de datos incluido en el paquete
+(26 locales × 7 grupos, 5902 cadenas, alineados con Laravel v13.14.0). Consulta
+[Sincronización Bidireccional](/es/features/sync#el-conjunto-de-datos-integrado).
+:::
 
 ### Desde la línea de comandos
 
@@ -30,15 +47,12 @@ php artisan lingua:add ar
 ```php
 use Rivalex\Lingua\Facades\Lingua;
 
-// Instalar archivos de idioma (wrapper de lang:add)
+// Crear el registro Language e inicializar su almacenamiento para el locale
 Lingua::addLanguage('fr');
-
-// Luego crear el registro en BD + sincronizar (lo que el comando Artisan hace completamente)
-// → usa lingua:add para el flujo completo y orquestado
 ```
 
 ::: tip
-Usa `Lingua::notInstalled()` para obtener la lista de idiomas disponibles pero aún no instalados:
+Usa `Lingua::notInstalled()` para obtener los locales disponibles pero aún no instalados:
 
 ```php
 $available = Lingua::notInstalled(); // ['af', 'ar', 'az', …]
@@ -47,16 +61,15 @@ $available = Lingua::notInstalled(); // ['af', 'ar', 'az', …]
 
 ## Eliminar un idioma
 
-Haz clic en el icono de papelera de cualquier fila de idioma que no sea el predeterminado. Un modal de confirmación previene eliminaciones accidentales - debes escribir el nombre del idioma para confirmar.
+Haz clic en el icono de papelera de cualquier fila de idioma que no sea el predeterminado.
+Un paso de confirmación previene eliminaciones accidentales.
 
-Internamente, la operación de eliminación:
-1. Elimina los archivos de idioma mediante `lang:rm {locale} --force`
-2. Elimina todas las entradas `{locale}` de la columna JSON `language_lines.text`
-3. Elimina el registro `Language`
-4. Reordena los valores de orden de los idiomas restantes
+Eliminar un idioma borra el registro `Language` **y cada valor de traducción para ese
+locale**, luego reordena los valores de orden de los idiomas restantes.
 
 ::: warning
-**El idioma predeterminado no puede eliminarse**. Establece otro idioma como predeterminado primero.
+**El idioma predeterminado no puede eliminarse**. Establece otro idioma como
+predeterminado primero.
 :::
 
 ```bash
@@ -64,42 +77,54 @@ Internamente, la operación de eliminación:
 php artisan lingua:remove fr
 ```
 
-## Establecer el idioma predeterminado
-
-Haz clic en el icono de estrella (⭐) de cualquier fila de idioma. Solo un idioma puede ser el predeterminado a la vez. El cambio está envuelto en una transacción de base de datos para evitar un instante en que ningún idioma esté marcado como predeterminado.
-
 ```php
 // Programáticamente
-Lingua::setDefaultLocale('fr');
-
-// O mediante el modelo
-$french = Language::where('code', 'fr')->first();
-Language::setDefault($french);
+Lingua::removeLanguage('fr');
 ```
 
-::: warning Eliminar el idioma predeterminado
-Si estableces un nuevo idioma predeterminado, asegúrate de que todas tus traducciones estén al menos parcialmente completas para ese idioma. El idioma predeterminado se usa como referencia en el editor de la interfaz (la columna de la izquierda muestra el valor predeterminado como referencia).
+## Establecer el idioma predeterminado
+
+Haz clic en el icono de estrella (⭐) de cualquier fila de idioma. Solo un idioma puede
+ser el predeterminado a la vez, y el cambio está envuelto en una transacción de base de
+datos para que nunca haya un instante sin predeterminado.
+
+```php
+use Rivalex\Lingua\Facades\Lingua;
+
+Lingua::setDefaultLocale('fr');
+```
+
+::: warning El idioma predeterminado define el conjunto de claves de referencia
+El locale predeterminado define el conjunto canónico de claves. La cobertura de todos
+los demás locales se mide contra él, por lo que el predeterminado siempre muestra el
+100%. Asegúrate de que esté razonablemente completo antes de cambiar.
 :::
 
 ## Reordenar idiomas
 
-Arrastra y suelta las filas de idioma para controlar su orden de presentación en toda la aplicación - en el widget selector de idioma, en el selector de idioma de traducciones y en cualquier lugar donde uses `Lingua::languages()`.
+Arrastra y suelta las filas de idioma para controlar su orden de presentación en todos
+los lugares donde aparecen — el widget selector de idioma, el selector de locale de
+traducciones y cualquier lugar donde llames a `Lingua::languages()`.
 
-El orden de clasificación se almacena en la columna entera `sort` y se reasigna secuencialmente después de cada arrastre.
+El orden de clasificación se almacena en la columna entera `sort` y se reasigna
+secuencialmente después de cada arrastre.
 
-## Ver estadísticas de completitud
+## Estadísticas de completitud
 
 Cada fila de idioma muestra:
 
 | Métrica | Descripción |
 |---|---|
+| **Total de cadenas** | El número de claves en el conjunto de claves de referencia |
+| **Traducidas** | Número de cadenas con un valor para este locale |
 | **Completitud %** | `traducidas / total * 100`, redondeado a 2 decimales |
-| **Faltantes** | Número de cadenas sin valor para este idioma |
 
-Se calculan en tiempo de consulta mediante subconsultas a la base de datos contra la tabla `language_lines`, por lo que siempre están actualizadas.
+Las estadísticas se calculan a través del [driver de almacenamiento](/es/guide/storage)
+activo, por lo que son correctas tanto en el modo `database` como en el modo `file`.
 
 ```php
-// Obtener estadísticas para un idioma específico
+use Rivalex\Lingua\Facades\Lingua;
+
 $stats = Lingua::getLocaleStats('fr');
 // [
 //   'total'      => 1240,
@@ -108,7 +133,7 @@ $stats = Lingua::getLocaleStats('fr');
 //   'percentage' => 79.03,
 // ]
 
-// O obtener todos los idiomas con estadísticas en una sola consulta
+// Todos los idiomas con estadísticas en una sola pasada
 $languages = Lingua::languagesWithStatistics();
 foreach ($languages as $lang) {
     echo "{$lang->name}: {$lang->completion_percentage}%";
@@ -117,12 +142,20 @@ foreach ($languages as $lang) {
 
 ## Controles de sincronización
 
-La barra de herramientas de la página de Idiomas tiene tres botones de sincronización:
+La fila inferior de la barra de herramientas tiene tres botones de sincronización:
 
-| Botón | Acción |
-|---|---|
-| **Sync to database** | Importa todos los archivos `lang/` locales en `language_lines` |
-| **Sync to local** | Exporta todas las traducciones de la BD de vuelta a archivos `lang/` |
-| **Update via Laravel Lang** | Ejecuta `lang:update` para obtener las últimas cadenas del upstream, luego sincroniza a la BD |
+| Botón | Comando | Acción |
+|---|---|---|
+| **Sincronizar desde archivos** | `lingua:sync-to-database` | Importa todos los archivos `lang/` locales (núcleo + vendor) en `language_lines` |
+| **Sincronizar a archivos** | `lingua:sync-to-local` | Escribe todas las traducciones de la BD de vuelta a archivos PHP y JSON en `lang/` |
+| **Actualizar** | `lingua:update-lang` | Re-inicializa los locales instalados desde el conjunto de datos integrado y `lang/` local |
 
-Las tres operaciones se ejecutan de forma **asíncrona** (atributo `#[Async]` de Livewire) para que la interfaz permanezca responsiva durante las sincronizaciones de larga duración.
+Consulta [Sincronización Bidireccional](/es/features/sync) para la mecánica completa,
+incluyendo la invalidación de caché quirúrgica por `(locale, grupo)` que se ejecuta
+después de cada operación.
+
+::: tip Consciencia del driver
+En el modo de almacenamiento `file`, el botón **Sincronizar a archivos** está bloqueado
+— el modo archivo ya escribe en disco, por lo que solo se ejecuta con el flag `--force`
+desde la CLI. Consulta [Drivers de almacenamiento](/es/guide/storage).
+:::

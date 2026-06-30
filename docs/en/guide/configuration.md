@@ -1,143 +1,108 @@
 # Configuration
 
-After installation, `config/lingua.php` is the single source of truth for all Lingua settings.
+After installation, `config/lingua.php` is the single source of truth for
+all Lingua settings. This page documents every key, grouped by concern.
+Keys marked <Badge type="tip" text="New in 2.0" /> did not exist in 1.x.
+
+## Locale settings
 
 ```php
 // config/lingua.php
 
-return [
-
-    /*
-    |--------------------------------------------------------------------------
-    | Language Files Directory
-    |--------------------------------------------------------------------------
-    | The path where local PHP/JSON translation files are stored.
-    | Used by lingua:sync-to-database and lingua:sync-to-local.
-    */
-    'lang_dir' => lang_path(),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Default Locale
-    |--------------------------------------------------------------------------
-    | The fallback locale code used during installation and when the database
-    | has no default language configured.
-    */
-    'default_locale' => config('app.locale', 'en'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Fallback Locale
-    |--------------------------------------------------------------------------
-    | When a translation is missing in the active locale, Laravel will try
-    | this locale next.
-    */
-    'fallback_locale' => config('app.fallback_locale', 'en'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Route Middleware
-    |--------------------------------------------------------------------------
-    | Middleware applied to all Lingua management routes.
-    | Add 'auth' (and role/permission guards) before going to production.
-    */
-    'middleware' => ['web'],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Route Prefix
-    |--------------------------------------------------------------------------
-    | URL prefix for Lingua's management pages.
-    | Default: /lingua/languages and /lingua/translations
-    */
-    'routes_prefix' => 'lingua',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Session Variable
-    |--------------------------------------------------------------------------
-    | The session key used to persist the user's active locale across requests.
-    */
-    'session_variable' => 'locale',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Language Selector
-    |--------------------------------------------------------------------------
-    | Controls the default behaviour of the <livewire:lingua::language-selector>
-    | component. Both options can be overridden per-instance via props.
-    */
-    'selector' => [
-        'mode'       => 'sidebar',   // 'sidebar' | 'modal' | 'dropdown' | 'headless'
-        'show_flags' => true,
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Rich-text Editor Toolbar
-    |--------------------------------------------------------------------------
-    | Defines which formatting options are available in the TipTap editor
-    | for HTML and Markdown translation types.
-    */
-    'editor' => [
-        'headings'      => false,
-        'bold'          => true,
-        'italic'        => true,
-        'underline'     => true,
-        'strikethrough' => false,
-        'subscript'     => true,
-        'superscript'   => true,
-        'blockquote'    => false,
-        'code-line'     => false,
-        'code-block'    => false,
-        'bullet'        => true,
-        'ordered'       => true,
-        'clear'         => true,
-        'code-mode'     => false,
-    ],
-
-];
+'lang_dir'         => lang_path(),
+'base_translations_path' => null, // ★ New in 2.0
+'default_locale'   => config('app.locale', 'en'),
+'fallback_locale'  => config('app.fallback_locale', 'en'),
+'session_variable' => 'locale',
 ```
-
----
-
-## Option reference
 
 ### `lang_dir`
 
-**Default:** `lang_path()` (resolves to `{project_root}/lang/`)
+**Default:** `lang_path()` — resolves to `{project_root}/lang/`.
 
-The directory Lingua reads when syncing files to the database and writes to when exporting back to files. Change this if your translation files live in a non-standard location.
+The directory Lingua reads when syncing files to the database and writes
+to when exporting back to files.
+
+### `base_translations_path` <Badge type="tip" text="New in 2.0" />
+
+**Default:** `null`
+
+Optional override for the path Lingua reads the **bundled** translation
+dataset from. Leave `null` to use the dataset shipped inside the package.
 
 ### `default_locale`
 
 **Default:** `config('app.locale', 'en')`
 
-Used as a fallback during installation and when the `languages` table is empty. After installation, the authoritative default is the row in the `languages` table with `is_default = true`.
+Used as a fallback during installation and when the `languages` table is
+empty. After installation, the authoritative default is the row in the
+`languages` table with `is_default = true`.
 
 ### `fallback_locale`
 
 **Default:** `config('app.fallback_locale', 'en')`
 
-Standard Laravel fallback behaviour - when a key is missing in the active locale, this locale is tried next.
+Standard Laravel fallback — when a key is missing in the active locale,
+this locale is tried next.
+
+### `session_variable`
+
+**Default:** `'locale'`
+
+The session key where Lingua stores the user's chosen locale.
+
+---
+
+## Security & access
+
+```php
+'middleware' => ['web', 'auth'],
+'gate'       => env('LINGUA_GATE', null), // ★ New in 2.0
+```
 
 ### `middleware`
 
-**Default:** `['web']`
+**Default:** `['web', 'auth']` <Badge type="warning" text="Changed in 2.0" />
 
-::: danger Production requirement
-Always add at least `'auth'` before deploying. Without it, anyone who knows the URL can modify your translations.
+::: tip Secure by default
+In 2.0 the default is `['web', 'auth']` — the management UI is **not**
+publicly reachable out of the box. This was `['web']` in 1.x.
 :::
 
 ```php
-// Typical production setup
-'middleware' => ['web', 'auth'],
-
 // With Spatie Laravel Permission
 'middleware' => ['web', 'auth', 'role:admin'],
 
 // With a custom Gate policy
 'middleware' => ['web', 'auth', 'can:manage-translations'],
+```
+
+### `gate` <Badge type="tip" text="New in 2.0" />
+
+**Default:** `env('LINGUA_GATE', null)`
+
+When set, Lingua appends `can:{gate}` to all admin routes. Define the gate
+in a service provider:
+
+```ini
+LINGUA_GATE=manage-translations
+```
+
+```php
+Gate::define('manage-translations', fn (User $u) => $u->hasRole('admin'));
+```
+
+See the [Security reference](/en/guide/security#authentication).
+
+---
+
+## Routing
+
+```php
+'routes_prefix'           => 'lingua',
+'routes_extra_parameters' => null,  // ★ New in 2.0
+'navigate'                => false, // ★ New in 2.0 (default changed)
+'layout'                  => null,  // ★ New in 2.0
 ```
 
 ### `routes_prefix`
@@ -149,55 +114,217 @@ Changes the URL prefix for all Lingua management pages:
 ```php
 'routes_prefix' => 'admin/translations',
 // → /admin/translations/languages
-// → /admin/translations/translations
 ```
 
-### `session_variable`
+### `routes_extra_parameters` <Badge type="tip" text="New in 2.0" />
 
-**Default:** `'locale'`
+**Default:** `null`
 
-The session key where Lingua stores the user's chosen locale. Change it if it conflicts with another package.
+Optional parameterized suffix appended to the route prefix — useful for
+tenant- or section-scoped prefixes.
+
+### `navigate` <Badge type="tip" text="New in 2.0" />
+
+**Default:** `false` <Badge type="warning" text="Changed in 2.0" />
+
+Controls `wire:navigate` on Lingua's internal links. The default is now
+`false` (full-page redirects), which avoids SPA-navigation edge cases. Opt
+in with `'navigate' => true`.
+
+### `layout` <Badge type="tip" text="New in 2.0" />
+
+**Default:** `null`
+
+Provide a custom Blade layout for Lingua's views. Leave `null` to use the
+package's built-in layout.
+
+---
+
+## Navigation
+
+```php
+'nav' => [
+    'enabled' => true, // ★ New in 2.0
+],
+'links' => [
+    'translations' => [          // ★ New in 2.0
+        'enabled' => true,
+        'route'   => 'lingua.translations',
+    ],
+],
+```
+
+### `nav.enabled` <Badge type="tip" text="New in 2.0" />
+
+**Default:** `true`
+
+Toggles the shared `x-lingua::nav` navigation menu that appears on all
+five Lingua pages. Can also be toggled from the Settings UI.
+
+### `links.translations` <Badge type="tip" text="New in 2.0" />
+
+Controls the "Translations" entry in the shared nav: whether it is shown
+(`enabled`) and which route it points to (`route`).
+
+---
+
+## UI
+
+```php
+'ui' => [
+    'sticky_top' => 0, // ★ New in 2.0
+],
+'selector' => [
+    'mode'       => 'sidebar',  // 'sidebar' | 'modal' | 'dropdown' | 'headless'
+    'show_flags' => true,
+],
+'editor' => [
+    'headings' => false, 'bold' => true, 'italic' => true,
+    'underline' => true, 'strikethrough' => false,
+    'subscript' => true, 'superscript' => true,
+    'blockquote' => false, 'code-line' => false, 'code-block' => false,
+    'bullet' => true, 'ordered' => true, 'clear' => true, 'code-mode' => false,
+],
+```
+
+### `ui.sticky_top` <Badge type="tip" text="New in 2.0" />
+
+**Default:** `0`
+
+Pixel offset for Lingua's sticky toolbars. Increase it if your app has a
+fixed header so toolbars don't slide underneath it.
 
 ### `selector.mode`
 
 **Default:** `'sidebar'`
 
-Controls the default render mode of the `<livewire:lingua::language-selector>` component:
-
 | Value | Description |
 |---|---|
-| `sidebar` | Renders as a grouped sidebar navigation item |
-| `dropdown` | Renders as a compact dropdown button |
-| `modal` | Renders as a button that opens a locale picker modal |
-| `headless` | No built-in rendering — use `<livewire:lingua::headless-language-selector />` |
+| `sidebar` | Grouped sidebar navigation item |
+| `dropdown` | Compact dropdown button |
+| `modal` | Button that opens a locale picker modal |
+| `headless` | No built-in rendering — use the headless component |
 
 ### `selector.show_flags`
 
 **Default:** `true`
 
-Whether to show country flag icons next to language names in the selector. Requires the `outhebox/blade-flags` package (installed automatically as a dependency).
+Whether to show country flag icons next to language names.
 
 ### `editor`
 
-Controls the TipTap toolbar for HTML and Markdown translation types. Each option maps to a TipTap extension:
+Controls the rich-text toolbar for HTML and Markdown translation types
+(database driver only). Each key toggles one formatting option:
+`headings`, `bold`, `italic`, `underline`, `strikethrough`, `subscript`,
+`superscript`, `blockquote`, `code-line`, `code-block`, `bullet`,
+`ordered`, `clear`, `code-mode`.
 
-| Key | Description |
+---
+
+## Storage driver <Badge type="tip" text="New in 2.0" />
+
+```php
+'storage' => [
+    'driver' => env('LINGUA_STORAGE_DRIVER', 'database'),
+],
+```
+
+### `storage.driver`
+
+**Default:** `env('LINGUA_STORAGE_DRIVER', 'database')`
+
+Selects where translations live:
+
+| Driver | Behaviour |
 |---|---|
-| `headings` | H1–H3 heading buttons |
-| `bold` | **Bold** |
-| `italic` | *Italic* |
-| `underline` | Underline |
-| `strikethrough` | ~~Strikethrough~~ |
-| `subscript` | Subscript (X₂) |
-| `superscript` | Superscript (X²) |
-| `blockquote` | Block quote |
-| `code-line` | Inline code |
-| `code-block` | Code block |
-| `bullet` | Unordered list |
-| `ordered` | Ordered list |
-| `clear` | Clear formatting button |
-| `code-mode` | Toggle raw HTML/Markdown source mode |
+| `database` | The full 1.x behaviour: `language_lines` table, HTML/Markdown types, stats, import/export, vendor guard, surgical cache. |
+| `file` | Reads/writes `lang/` PHP+JSON directly; no `language_lines` table; types flatten to plain text. |
 
-::: tip
-The editor toolbar is global - all HTML/Markdown translation fields share the same configuration. If you need per-field control, publish the views and customise the editor component directly.
-:::
+This is a major feature — see [Storage Drivers](/en/guide/storage) for the
+full comparison and the `lingua:storage` switch command.
+
+---
+
+## Cache
+
+```php
+'cache' => [
+    'store'  => env('LINGUA_CACHE_STORE', null),       // ★ New in 2.0
+    'prefix' => env('LINGUA_CACHE_PREFIX', 'lingua.trans'), // ★ New in 2.0
+],
+```
+
+### `cache.store` <Badge type="tip" text="New in 2.0" />
+
+**Default:** `env('LINGUA_CACHE_STORE', null)`
+
+Which cache store Lingua uses for translation caching. `null` uses your
+application's default store.
+
+### `cache.prefix` <Badge type="tip" text="New in 2.0" />
+
+**Default:** `env('LINGUA_CACHE_PREFIX', 'lingua.trans')`
+
+Prefix for cache keys. Lingua caches translations **surgically** per
+`(locale, group)` and forgets only the affected key on write — there is no
+global `cache:clear`. See
+[Cache architecture](/en/guide/architecture#cache-architecture).
+
+---
+
+## Translation loaders
+
+```php
+'translation_loaders' => [
+    // Rivalex\Lingua\Loaders\YourCustomLoader::class,
+],
+'model'               => Rivalex\Lingua\Models\Translation::class,
+'translation_manager' => Rivalex\Lingua\TranslationManager\LinguaManager::class,
+```
+
+### `translation_loaders`
+
+Register additional loaders implementing
+`Rivalex\Lingua\Contracts\TranslationLoader`. The contract signature is
+`loadTranslations(string $locale, string $group, ?string $namespace = null): array`.
+
+### `model`
+
+The Eloquent model backing `language_lines`. Override to extend
+`Translation` with your own logic.
+
+### `translation_manager`
+
+The translation loader class. Defaults to
+`Rivalex\Lingua\TranslationManager\LinguaManager`, which extends
+`Illuminate\Translation\FileLoader`.
+
+---
+
+## Extensions
+
+```php
+'extensions' => [
+    'enabled' => env('LINGUA_EXTENSIONS_ENABLED', true), // ★ New in 2.0
+],
+'suppress_pro_nudge' => env('LINGUA_SUPPRESS_PRO_NUDGE', false), // ★ New in 2.0
+'pro_upgrade_url'    => env('LINGUA_PRO_UPGRADE_URL', 'https://lingua.rivalex.dev'), // ★ New in 2.0
+```
+
+### `extensions.enabled` <Badge type="tip" text="New in 2.0" />
+
+**Default:** `true`
+
+Master switch for optional Lingua extensions.
+
+### `suppress_pro_nudge` <Badge type="tip" text="New in 2.0" />
+
+**Default:** `false`
+
+Set to `true` to hide upgrade hints in the UI.
+
+### `pro_upgrade_url` <Badge type="tip" text="New in 2.0" />
+
+**Default:** `https://lingua.rivalex.dev`
+
+URL used by upgrade hints when shown.

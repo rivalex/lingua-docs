@@ -1,12 +1,15 @@
 # Comandos Artisan
 
-O Lingua inclui seis comandos Artisan para gerenciamento de idiomas e traduções pelo terminal.
+O Lingua inclui **oito comandos Artisan** para gerenciamento de idiomas e
+traduções pelo terminal. <Badge type="tip" text="Novidade na versão 2.0" />
+`lingua:storage` e `lingua:uninstall` foram adicionados na versão 2.0.
 
 ## Gerenciamento de idiomas
 
 ### `lingua:add {locale}`
 
-Instala um novo idioma - baixa arquivos, cria o registro no BD, sincroniza traduções.
+Instala um novo idioma — popula strings do conjunto de dados empacotado, cria o
+registro no BD. **Nenhum download do GitHub** é feito.
 
 ```bash
 php artisan lingua:add it
@@ -15,65 +18,61 @@ php artisan lingua:add ar
 ```
 
 **O que ele faz:**
-1. Busca metadados do locale em `laravel-lang/locales`
-2. Executa `lang:add {locale}` para instalar arquivos de idioma
-3. Cria um registro `Language` no banco de dados
-4. Executa `lingua:sync-to-database` para importar as novas strings
+1. Resolve metadados do locale via `LocaleRegistry` interno
+2. Cria um registro `Language` no banco de dados
+3. Popula strings do conjunto de dados empacotado (26 locales × 7 grupos, 5902 strings)
+4. Invalida o cache por `(locale, group)` para cada grupo adicionado
 
-**Saída:**
 ```
-Adding language: it...
-Installing language files via Laravel Lang...
-Creating language record in database...
-Syncing translations to database...
+✓ Language record created: it (Italian / Italiano)
+✓ Bundled translations seeded: 187 strings
 Language 'it' added successfully.
 ```
 
 ::: tip
-Após adicionar um idioma, acesse `/lingua/translations/it` para ver quais strings ainda precisam de tradução.
+Após adicionar, acesse `/lingua/translations/it` para ver quais strings ainda
+precisam de tradução manual.
 :::
 
 ---
 
 ### `lingua:remove {locale}`
 
-Remove um idioma - exclui arquivos, limpa o banco de dados, reordena os idiomas restantes.
+Remove um idioma — exclui o registro e todos os valores de tradução para aquele
+locale, depois reordena os idiomas restantes.
 
 ```bash
 php artisan lingua:remove fr
 ```
 
-**O que ele faz:**
-1. Verifica se o idioma não é o padrão (aborta com erro se for)
-2. Executa `lang:rm {locale} --force` para remover os arquivos de idioma
-3. Remove todos os valores `{locale}` de `language_lines.text`
-4. Exclui o registro `Language`
-5. Reordena os valores de sort dos idiomas restantes
-6. Executa `lingua:sync-to-database`
-
 ::: warning Proteção do idioma padrão
-Você não pode remover o idioma padrão. Defina outro idioma como padrão primeiro:
+Não é possível remover o idioma padrão. Defina outro como padrão primeiro:
+
 ```bash
-php artisan lingua:add fr       # adicionar o novo padrão
-# então pela interface: definir francês como padrão
-php artisan lingua:remove en    # agora seguro remover inglês
+# Definir francês como padrão pela UI de configurações, depois:
+php artisan lingua:remove en
 ```
 :::
 
 ---
 
-### `lingua:update-lang`
+### `lingua:install`
 
-Atualiza todos os arquivos de idioma instalados via Laravel Lang e depois ressincroniza para o banco de dados.
+Assistente interativo de configuração inicial com seletor de driver por setas.
 
 ```bash
-php artisan lingua:update-lang
+php artisan lingua:install
 ```
 
-Execute após:
-- Atualizar o Laravel (novas mensagens de validação, etc.)
-- Instalar um novo pacote que inclui traduções
-- Atualizar pacotes `laravel-lang/*`
+**O que ele faz:**
+1. Apresenta um seletor de driver (`database` | `file`) via Laravel Prompts
+2. Publica `config/lingua.php`
+3. Publica migrations **cientes do driver** (o driver `file` pula `language_lines`)
+4. Pergunta se deve executar as migrations automaticamente
+5. Popula o idioma padrão e suas traduções do conjunto de dados empacotado
+
+Destinado a ser executado **uma vez** após `composer require`. Use as tags
+`vendor:publish` individuais para re-publicar assets depois.
 
 ---
 
@@ -81,28 +80,22 @@ Execute após:
 
 ### `lingua:sync-to-database`
 
-Importa todos os arquivos de tradução PHP/JSON locais para a tabela `language_lines`.
+Importa todos os arquivos de tradução PHP/JSON locais para `language_lines`.
 
 ```bash
 php artisan lingua:sync-to-database
 ```
 
 **O que é importado:**
-- `lang/{locale}/*.php` - arquivos PHP
-- `lang/{locale}.json` - arquivos JSON
-- `lang/vendor/{package}/{locale}/*.php` - arquivos de pacotes de vendor
+- `lang/{locale}/*.php` — arquivos PHP
+- `lang/{locale}.json` — arquivos JSON
+- `lang/vendor/{package}/{locale}/*.php` — traduções de vendor
 
-Usa `updateOrCreate` com correspondência em `group + key`, portanto edições existentes da interface são preservadas.
+Usa `updateOrCreate` com correspondência em `group + key` — edições da UI são
+preservadas. Invalida o cache cirurgicamente por `(locale, group)`.
 
-**Casos de uso típicos:**
 ```bash
-# Após um clone novo - popular o BD a partir dos arquivos lang commitados
-php artisan lingua:sync-to-database
-
-# Após lang:update - importar novas strings
-php artisan lingua:sync-to-database
-
-# Em um script de deployment
+# Típico em scripts de deploy
 php artisan migrate
 php artisan lingua:sync-to-database
 php artisan optimize
@@ -112,86 +105,105 @@ php artisan optimize
 
 ### `lingua:sync-to-local`
 
-Exporta todas as traduções do banco de dados de volta para arquivos PHP/JSON locais.
+Exporta todas as traduções do banco de dados para arquivos PHP/JSON em `lang/`.
 
 ```bash
 php artisan lingua:sync-to-local
 ```
 
 **O que é exportado:**
-- Traduções do BD → `lang/{locale}/{group}.php`
+- Não-vendor → `lang/{locale}/{group}.php`
 - Grupo JSON (`single`) → `lang/{locale}.json`
-- Traduções de vendor → `lang/vendor/{vendor}/{locale}/{group}.php`
+- Vendor → `lang/vendor/{vendor}/{locale}/{group}.php`
 
-**Casos de uso típicos:**
+Usa `AtomicFileWriter` (renomeação atômica + `opcache_invalidate`).
+
 ```bash
-# Antes de fazer commit - exportar estado do BD para arquivos para controle de versão
+# Exportar antes de commit
 php artisan lingua:sync-to-local
 git add lang/
 git commit -m "chore: sync translations"
-
-# Antes de fazer deploy para um servidor que lê a partir de arquivos
-php artisan lingua:sync-to-local
 ```
 
 ---
 
-### `lingua:install`
+### `lingua:update-lang`
 
-O assistente interativo de configuração inicial. Execute uma vez após `composer require`.
+Re-popula locales instalados a partir do conjunto de dados empacotado e depois
+mescla os arquivos `lang/` locais por cima.
 
 ```bash
-php artisan lingua:install
+php artisan lingua:update-lang
 ```
 
-Não é destinado a ser re-executado após a configuração inicial. Se precisar re-publicar assets individuais, use as tags `vendor:publish` em vez disso.
+Execute após atualizar o Lingua via Composer para receber strings de tradução
+novas ou atualizadas.
 
 ---
 
-## Referência rápida de comandos
+## Driver de armazenamento <Badge type="tip" text="Novidade na versão 2.0" />
 
-<div class="command-table">
+### `lingua:storage {driver}`
+
+Alterna o driver de armazenamento. **Sincroniza antes de alternar** para que
+nada seja perdido.
+
+```bash
+php artisan lingua:storage file
+php artisan lingua:storage database
+```
+
+| Flag | Efeito |
+|---|---|
+| `--force` | Pular prompts de confirmação |
+| `--write-env` | Atualizar `LINGUA_STORAGE_DRIVER` no `.env` |
+| `--no-migrate` | Pular a etapa de garantia de migration |
+
+**BD → arquivo:** exporta o banco de dados para `lang/`, avisa sobre quaisquer
+strings HTML/Markdown que perderão tipo, depois alterna.
+
+**Arquivo → BD:** sincroniza `lang/` para o banco de dados e garante que a
+migration `language_lines` foi executada, depois alterna.
+
+---
+
+## Desinstalação <Badge type="tip" text="Novidade na versão 2.0" />
+
+### `lingua:uninstall`
+
+Desmonta o Lingua com segurança.
+
+```bash
+php artisan lingua:uninstall
+```
+
+**O que ele faz:**
+1. **Exporta o banco de dados para `lang/`** (preserva os dados)
+2. Descarta as três tabelas do Lingua (`language_lines`, `languages`, `lingua_settings`)
+3. Opcionalmente remove `config/lingua.php` e assets publicados
+
+| Flag | Efeito |
+|---|---|
+| `--force` | Pular prompts de confirmação |
+| `--keep-config` | Manter `config/lingua.php` |
+| `--keep-published` | Manter views/migrations publicadas |
+
+::: danger Irreversível
+Este comando descarta tabelas do banco de dados. Verifique que o export de `lang/`
+foi concluído antes de confirmar.
+:::
+
+---
+
+## Referência rápida
 
 | Comando | Descrição |
 |---|---|
-| `lingua:add {locale}` | Instalar um idioma (arquivos + BD + sync) |
-| `lingua:remove {locale}` | Remover um idioma (arquivos + BD + sync) |
-| `lingua:update-lang` | Atualizar arquivos lang via Laravel Lang + sync |
+| `lingua:add {locale}` | Instalar idioma (BD + conjunto de dados empacotado) |
+| `lingua:remove {locale}` | Remover idioma (BD + reordenação) |
+| `lingua:install` | Assistente de configuração inicial |
 | `lingua:sync-to-database` | Importar arquivos locais → banco de dados |
 | `lingua:sync-to-local` | Exportar banco de dados → arquivos locais |
-| `lingua:install` | Assistente interativo de configuração inicial |
-
-</div>
-
----
-
-## Dicas
-
-::: tip Automatizando sync no CI/CD
-Adicione sync ao seu pipeline de deployment para manter o banco de dados sincronizado com seu repositório:
-
-```yaml
-# Passo de deploy no GitHub Actions (exemplo)
-- name: Sync translations
-  run: php artisan lingua:sync-to-database
-```
-:::
-
-::: tip Adicionando vários idiomas de uma vez
-Não há comando de adição em lote, mas você pode encadear chamadas em um loop de shell:
-
-```bash
-for locale in fr it de es pt_BR; do
-  php artisan lingua:add $locale
-done
-```
-:::
-
-::: tip Verificando o que será sincronizado
-Antes de executar `lingua:sync-to-database`, você pode visualizar o número de arquivos e locales que serão processados verificando `lang/`:
-
-```bash
-ls lang/
-# en  fr  it  vendor
-```
-:::
+| `lingua:update-lang` | Re-popular locales do conjunto de dados empacotado |
+| `lingua:storage {driver}` | Alternar driver de armazenamento com sync automático |
+| `lingua:uninstall` | Desmontar o Lingua com segurança (exportar + descartar tabelas) |

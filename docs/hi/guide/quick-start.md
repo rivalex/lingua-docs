@@ -1,15 +1,19 @@
 # त्वरित शुरुआत
 
-यह गाइड आपको कुछ ही मिनटों में एक नई Lingua इंस्टॉल से एक पूर्णतः बहुभाषी एप्लिकेशन तक ले जाती है।
+यह गाइड आपको कुछ ही मिनटों में एक नई Lingua इंस्टॉल से एक पूरी तरह बहुभाषी एप्लिकेशन तक ले जाती है।
 
-## 1. इंस्टॉल और seed करें
+## 1. इंस्टॉल करें और सीड करें
 
 ```bash
 composer require rivalex/lingua
 php artisan lingua:install
 ```
 
-अंग्रेज़ी अब आपकी डिफ़ॉल्ट भाषा है, और सभी Laravel/vendor translation strings डेटाबेस में आयात हो गए हैं।
+संकेत मिलने पर **database** ड्राइवर चुनें (अनुशंसित)। अंग्रेज़ी आपकी डिफ़ॉल्ट भाषा बन जाती है, और बंडल ट्रांसलेशन स्ट्रिंग डेटाबेस में आयात हो जाते हैं — कोई GitHub डाउनलोड नहीं।
+
+::: tip डिफ़ॉल्ट रूप से सुरक्षित
+प्रबंधन रूट स्वचालित रूप से `['web', 'auth']` द्वारा सुरक्षित हैं। रोल-आधारित पहुंच के लिए `LINGUA_GATE` सेट करें — देखें [Installation](/hi/guide/installation#protecting-the-management-ui)।
+:::
 
 ## 2. अपनी दूसरी भाषा जोड़ें
 
@@ -17,20 +21,17 @@ php artisan lingua:install
 php artisan lingua:add fr
 ```
 
-यह कमांड:
-- Laravel Lang के माध्यम से French translation फ़ाइलें डाउनलोड करती है
-- डेटाबेस में एक `Language` रिकॉर्ड बनाती है
-- नई डाउनलोड की गई सभी strings को `language_lines` में sync करती है
+यह कमांड **DB-native** है: यह बंडल डेटासेट से French स्ट्रिंग सीड करता है और एक `Language` रिकॉर्ड बनाता है। यह फ़ाइलें डाउनलोड **नहीं** करता और `lang/` में **नहीं** लिखता।
 
-जितने लोकेल चाहिए उनके लिए दोहराएँ:
+जितने लोकेल चाहिए उनके लिए दोहराएं:
 
 ```bash
 php artisan lingua:add it es de pt_BR ar
 ```
 
-## 3. अपने layout में language selector जोड़ें
+## 3. अपने लेआउट में language selector जोड़ें
 
-अपनी मुख्य Blade layout खोलें (उदाहरण `resources/views/layouts/app.blade.php`) और:
+अपनी मुख्य Blade लेआउट खोलें (जैसे `resources/views/layouts/app.blade.php`):
 
 **a) `<html>` टैग पर `lang` और `dir` सेट करें:**
 
@@ -48,9 +49,13 @@ php artisan lingua:add it es de pt_BR ar
 <livewire:lingua::language-selector mode="dropdown" />
 ```
 
+::: tip लोकेल स्विच वर्तमान पेज रीलोड करता है
+जब कोई उपयोगकर्ता लोकेल स्विच करता है, Lingua **उसी पेज** को रीलोड करता है जिस पर वे हैं (होम पेज नहीं), open-redirects से गार्ड किया हुआ। देखें [Security](/hi/guide/security#open-redirect-protection)।
+:::
+
 ## 4. अपने एप्लिकेशन में अनुवाद का उपयोग करें
 
-Lingua पारदर्शी है - हमेशा की तरह मानक Laravel helpers का उपयोग करें:
+Lingua पारदर्शी है — हमेशा की तरह मानक Laravel helpers का उपयोग करें:
 
 ```blade
 {{ __('messages.welcome') }}
@@ -62,22 +67,31 @@ trans('validation.required')
 __('pagination.next')
 ```
 
-कस्टम `LinguaManager` स्वचालित रूप से फ़ाइल-आधारित अनुवादों के ऊपर डेटाबेस अनुवादों को merge करता है। कोड में कोई बदलाव नहीं करना पड़ता।
+database मोड में, `LinguaManager` स्वचालित रूप से file-based अनुवादों के ऊपर database अनुवादों को merge करता है। कोड में कोई बदलाव आवश्यक नहीं।
 
 ## 5. UI के माध्यम से अनुवाद करें
 
-सभी translation strings देखने के लिए `/lingua/translations` पर जाएँ। प्रत्येक भाषा के लिए:
+सभी translation strings देखने के लिए `/lingua/translations` पर जाएं। प्रत्येक भाषा के लिए:
 
 1. लक्ष्य भाषा चुनने के लिए locale switcher (ऊपर दाईं ओर) का उपयोग करें
-2. Inline मान संपादित करने के लिए किसी भी पंक्ति पर क्लिक करें
+2. मान inline संपादित करने के लिए किसी भी पंक्ति पर क्लिक करें
 3. अनुवाद न हुई strings पर ध्यान केंद्रित करने के लिए **Show only missing** का उपयोग करें
-4. HTML या Markdown types के लिए rich-text editor स्वचालित रूप से सक्रिय होता है
+4. HTML या Markdown प्रकारों के लिए rich-text editor स्वचालित रूप से सक्रिय होता है
 
-<Screenshot src="/screenshots/translations-page.png" alt="Lingua अनुवाद प्रबंधन पेज" caption="locale switcher, group filter, और inline editor के साथ translations पेज।" />
+<Screenshot src="/screenshots/translations-page.png" alt="Lingua translations management page" caption="locale switcher, group filter, और inline editor के साथ translations पेज।" />
 
-## 6. फ़ाइलों में वापस sync करें (वैकल्पिक)
+## 6. Transfer पेज के साथ आयात / निर्यात करें
 
-यदि आपको disk पर translation फ़ाइलें चाहिए (version control, CI/CD, या अन्य tools के लिए):
+क्या आपको spreadsheet में अनुवादों को bulk-edit करना है, या किसी translation agency को फ़ाइल सौंपनी है? `/lingua/transfer` पर जाएं:
+
+- **Export** CSV, JSON, XLSX, या ODS में — bilingual, multi-locale, या JSON-native लेआउट
+- **Import** कुछ भी लिखे जाने से पहले **diff preview** के साथ ड्राई-रन
+
+XLSX/ODS के लिए वैकल्पिक `openspout/openspout` पैकेज आवश्यक है; CSV और JSON बॉक्स से बाहर काम करते हैं।
+
+## 7. फ़ाइलों में वापस sync करें (वैकल्पिक)
+
+यदि आपको disk पर translation files चाहिए (version control या CI/CD के लिए):
 
 ```bash
 php artisan lingua:sync-to-local
@@ -93,9 +107,8 @@ php artisan lingua:sync-to-local
 
 ```php
 use Rivalex\Lingua\Facades\Lingua;
+use Rivalex\Lingua\Models\Translation;
 
-// डिफ़ॉल्ट locale के लिए डेटाबेस में अनुवाद बनाएँ
-// (यह सामान्यतः UI के माध्यम से किया जाता है, लेकिन आप script भी कर सकते हैं)
 Translation::create([
     'group' => 'emails',
     'key'   => 'welcome_subject',
@@ -103,35 +116,30 @@ Translation::create([
     'text'  => ['en' => 'Welcome to our platform!'],
 ]);
 
-// बाद में, अन्य locales के लिए अनुवाद जोड़ें:
 Lingua::setTranslation('welcome_subject', 'Bienvenue sur notre plateforme !', 'fr');
-Lingua::setTranslation('welcome_subject', 'Benvenuto nella nostra piattaforma!', 'it');
 ```
 
-### अनुवाद पूर्णता जाँचें
+### एक लोकेल की जांच करें
 
 ```php
-$stats = Lingua::getLocaleStats('fr');
-// [
-//   'total'      => 1240,
-//   'translated' => 980,
-//   'missing'    => 260,
-//   'percentage' => 79.03,
-// ]
+use Rivalex\Lingua\Facades\Lingua;
+
+$info = Lingua::info('fr');
+
+if ($info !== null) {
+    $info->name;      // "French"
+    $info->native;    // "Français"
+    $info->direction; // "ltr"
+}
 ```
 
-### प्रोग्रामेटिक रूप से locale बदलें
+::: warning 2.0 में बदला
+`Lingua::info()` अब `?LocaleInfo` return करता है और अज्ञात locales के लिए `null` देता है (पहले exception throw करता था)। हमेशा `if ($info !== null)` के साथ guard करें।
+:::
+
+### प्रोग्रामेटिक रूप से लोकेल बदलें
 
 ```php
-// Controller, middleware, या service में
 app()->setLocale('fr');
 session()->put(config('lingua.session_variable'), 'fr');
 ```
-
-::: tip
-`LanguageSelector` कंपोनेंट end users के लिए locale switching स्वचालित रूप से संभालता है। उपरोक्त मैनुअल तरीका console commands या jobs में उपयोगी है।
-:::
-
-### केवल specific groups निर्यात करें
-
-यदि आप केवल अनुवादों का एक subset फ़ाइलों में निर्यात करना चाहते हैं, तो पहले local में sync करें, फिर जिन groups की ज़रूरत नहीं है उन्हें `lang/` से हटाएँ - रनटाइम पर डेटाबेस हमेशा source of truth होता है।

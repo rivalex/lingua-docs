@@ -8,7 +8,7 @@ Lingua поставляется с несколькими группами пу�
 php artisan vendor:publish --provider="Rivalex\Lingua\LinguaServiceProvider"
 ```
 
-## Отдельные теги
+## Доступные теги
 
 ### `lingua-config`
 
@@ -20,7 +20,9 @@ php artisan vendor:publish --tag="lingua-config"
 
 **Результат:** `config/lingua.php`
 
-Используйте для настройки маршрутов, middleware, режима переключателя, панели инструментов редактора и других параметров.
+Используйте для настройки маршрутов, middleware, драйвера хранилища, режима
+переключателя, панели инструментов редактора, кеша и других параметров. См.
+[Конфигурация](/ru/guide/configuration).
 
 ---
 
@@ -32,19 +34,29 @@ php artisan vendor:publish --tag="lingua-config"
 php artisan vendor:publish --tag="lingua-migrations"
 ```
 
-**Результат:** `database/migrations/YYYY_MM_DD_HHMMSS_create_lingua_table.php`
+<Badge type="tip" text="Новое в 2.0" /> Миграции теперь **учитывают драйвер**
+и разделены на три отдельных файла:
 
-Используйте, если вам нужно изменить схему `languages` или `language_lines` - например, добавить индексы или изменить типы столбцов. После публикации запустите `php artisan migrate` как обычно.
+| Миграция | Публикуется для |
+|---|---|
+| `create_language_lines_table` | только database-драйвер |
+| `create_languages_table` | оба драйвера |
+| `create_lingua_settings_table` | оба драйвера |
+
+Драйвер `file` пропускает `create_language_lines_table`. Мастер `lingua:install`
+публикует правильный набор для выбранного драйвера, поэтому этот тег нужен только если
+вы хотите настроить схему перед запуском миграций.
 
 ::: warning
-Мастер `lingua:install` публикует и запускает миграции автоматически. Публикуйте вручную только если вам нужно настроить схему до их запуска.
+Мастер `lingua:install` публикует и запускает миграции автоматически.
+Публикуйте вручную только если нужно настроить схему до их запуска.
 :::
 
 ---
 
 ### `lingua-translations`
 
-Публикует собственные строки UI-переводов пакета.
+Публикует собственные строки UI-переводов пакета (9 UI-локалей).
 
 ```bash
 php artisan vendor:publish --tag="lingua-translations"
@@ -52,22 +64,16 @@ php artisan vendor:publish --tag="lingua-translations"
 
 **Результат:** `lang/vendor/lingua/{locale}/lingua.php`
 
-Это открывает доступ к каждой метке, заголовку, кнопке и сообщению, используемым в интерфейсе Lingua. Переопределите любую строку, чтобы:
-- Перевести интерфейс на язык вашего приложения
-- Адаптировать формулировки к стилю вашего проекта (например, «Add language» → «Install locale»)
-
-Опубликованные файлы следуют стандартной структуре переводов vendor в Laravel:
+Переопределите любую метку, заголовок, кнопку или сообщение, используемые в UI Lingua,
+чтобы перевести интерфейс или адаптировать формулировки под стиль вашего проекта.
 
 ```
 lang/
 └── vendor/
     └── lingua/
-        ├── en/
-        │   └── lingua.php
-        ├── fr/
-        │   └── lingua.php
-        └── it/
-            └── lingua.php
+        ├── en/lingua.php
+        ├── fr/lingua.php
+        └── it/lingua.php
 ```
 
 ---
@@ -82,58 +88,39 @@ php artisan vendor:publish --tag="lingua-views"
 
 **Результат:** `resources/views/vendor/lingua/`
 
-Используйте для кастомизации layout-ов, модальных окон или компонента выбора языка. Laravel автоматически использует ваши опубликованные представления вместо стандартных из пакета.
-
-```
-resources/views/vendor/lingua/
-├── components/
-│   ├── autocomplete.blade.php
-│   ├── clipboard.blade.php
-│   ├── editor.blade.php
-│   ├── language-flag.blade.php
-│   ├── menu-group.blade.php
-│   └── message.blade.php
-└── livewire/
-    ├── languages.blade.php
-    ├── language-selector.blade.php
-    ├── translations.blade.php
-    └── translation/
-        ├── create.blade.php
-        ├── delete.blade.php
-        ├── row.blade.php
-        └── update.blade.php
-```
+Используйте для кастомизации layout-ов, модальных окон или переключателя языков. Laravel
+автоматически использует ваши опубликованные представления вместо стандартных из пакета.
 
 ::: tip
-Публикуйте только те представления, которые намерены изменить. Неопубликованные представления обслуживаются напрямую из пакета и автоматически получают обновления.
+Публикуйте только те представления, которые намерены изменить. Неопубликованные представления
+обслуживаются напрямую из пакета и автоматически получают обновления.
 :::
 
 ---
 
-### `lingua-assets`
+### `lingua-assets` (удалён) <Badge type="warning" text="Удалено в 2.0" />
 
-Публикует скомпилированные CSS и JavaScript в `public/`.
-
-```bash
-php artisan vendor:publish --tag="lingua-assets"
-```
-
-**Результат:** `public/vendor/lingua/`
-
-Необходимо только если вы раздаёте ресурсы напрямую из `public/`, а не через Vite или CDN. **Перезапускайте после каждого обновления Lingua**, чтобы синхронизировать ресурсы.
+Тег публикации `lingua-assets` **больше не существует**. В 2.0 скомпилированные CSS/JS
+Lingua обслуживаются внутренне через маршрут `lingua.assets`
+(за realpath-jail — см.
+[Безопасность](/ru/guide/security#asset-security)). В `public/` ничего публиковать
+или копировать не нужно, и повторная публикация после обновления не требуется.
 
 ---
 
 ## Обновление после апгрейдов
 
-После обновления Lingua через Composer повторно публикуйте изменённые ресурсы:
+После обновления Lingua через Composer повторно опубликуйте UI-переводы, если вы
+их не кастомизировали, и слейте новые ключи конфигурации:
 
 ```bash
-# Всегда публикуйте скомпилированные ресурсы повторно
-php artisan vendor:publish --tag="lingua-assets" --force
-
-# Повторно публикуйте UI-переводы, если вы их не кастомизировали
+# Повторно опубликовать UI-переводы (перезапись)
 php artisan vendor:publish --tag="lingua-translations" --force
+
+# Повторно опубликовать конфигурацию для получения новых ключей, затем слить вручную
+php artisan vendor:publish --tag="lingua-config" --force
 ```
 
-Флаг `--force` перезаписывает существующие файлы. Опускайте его для `lingua-views` и `lingua-config`, чтобы сохранить локальные настройки.
+Флаг `--force` перезаписывает существующие файлы. Опускайте его для `lingua-views`
+и `lingua-config`, чтобы сохранить локальные настройки, и вручную добавляйте новые ключи.
+См. [Руководство по обновлению](/ru/guide/upgrade) для полного чеклиста 1.x → 2.0.

@@ -1,6 +1,7 @@
-# Fonctionnement interne
+# Comment ça fonctionne
 
-Comprendre les mécanismes internes de Lingua facilite sa configuration, son débogage et son extension.
+Comprendre les mécanismes internes de Lingua facilite sa configuration, son débogage
+et son extension.
 
 ## Cycle de vie d'une requête
 
@@ -10,20 +11,20 @@ Requête du navigateur
     ▼
 ┌─────────────────────────────┐
 │      LinguaMiddleware       │  Lit 'locale' depuis la session
-│  app()->setLocale($locale)  │  Retombe sur la valeur par défaut en DB
+│  app()->setLocale($locale)  │  Repli sur la locale par défaut de la DB
 └───┬─────────────────────────┘
     │
     ▼
 ┌─────────────────────────────┐
-│        Votre contrôleur     │
-│  __('auth.failed')          │  Helper standard de Laravel
+│        Votre Contrôleur     │
+│  __('auth.failed')          │  Helper Laravel standard
 └───┬─────────────────────────┘
     │
     ▼
 ┌─────────────────────────────┐
-│       LinguaManager         │  TranslationLoaderManager personnalisé
-│  1. Chargeur DB (Spatie)    │  La DB gagne toujours en cas de chevauchement
-│  2. Chargeur fichier (repli)│
+│       LinguaManager         │  étend Illuminate FileLoader
+│  Traductions DB fusionnées  │  La DB gagne toujours en cas de chevauchement
+│  sur les fichiers (mode DB) │  (mode fichier = FileLoader standard)
 └───┬─────────────────────────┘
     │
     ▼
@@ -32,18 +33,33 @@ Chaîne traduite retournée
 
 ## Chargement des traductions
 
-`LinguaManager` étend le `TranslationLoaderManager` de Spatie. Au moment de l'exécution, il fusionne deux sources :
+`LinguaManager` étend le propre `Illuminate\Translation\FileLoader` de Laravel —
+il n'y a **aucune** dépendance à Spatie. Il est enregistré en décorant le binding
+du chargeur du framework :
 
-1. **Chargeur de fichiers** - lit depuis `lang/` comme Laravel le fait normalement
-2. **Chargeur de base de données** (chargeur `Db` de Spatie) - lit depuis `language_lines`
+```php
+$app->extend('translation.loader', function ($original, $app) {
+    return new LinguaManager($app, $original);
+});
+```
 
-Lorsque la même clé existe dans les deux sources, **la valeur en base de données gagne**. Cela vous permet de remplacer n'importe quelle traduction de package ou de fichier sans toucher aux fichiers sources.
+En **mode base de données**, pour chaque `(locale, group)` il charge les traductions
+basées sur les fichiers via le chargeur original, puis fusionne les valeurs de la base de
+données par-dessus en utilisant `array_replace_recursive`. **La valeur de la base de
+données gagne toujours** en cas de chevauchement, vous pouvez donc remplacer n'importe
+quelle chaîne vendor ou de fichier sans toucher aux fichiers sources.
 
-Si la table `language_lines` n'existe pas encore (ex. avant l'exécution des migrations), `LinguaManager` retombe gracieusement en mode fichier uniquement.
+Si la table `language_lines` n'existe pas encore (p. ex. avant que les migrations aient
+été exécutées), une `QueryException` est interceptée et `LinguaManager` revient
+gracieusement au mode fichiers uniquement.
+
+En **mode fichier**, `LinguaManager` se comporte comme le `FileLoader` standard —
+aucune requête base de données n'est effectuée. Voir [Pilotes de stockage](/fr/guide/storage).
 
 ## Middleware
 
-`LinguaMiddleware` est automatiquement ajouté au groupe de middleware `web` au démarrage via `LinguaServiceProvider`. Il s'exécute à chaque requête web :
+`LinguaMiddleware` est automatiquement ajouté au groupe de middleware `web`
+au démarrage via `LinguaServiceProvider`. Il s'exécute à chaque requête web :
 
 ```php
 // Logique simplifiée
@@ -58,64 +74,89 @@ session()->put(config('lingua.session_variable'), $locale);
 
 ## Fournisseur de services
 
-`LinguaServiceProvider` effectue trois choses au démarrage :
+`LinguaServiceProvider` effectue les opérations suivantes au démarrage :
 
 1. **Enregistre les composants Blade anonymes** sous le préfixe `lingua::`
 2. **Enregistre les composants Livewire** sous l'espace de noms `lingua::`
-3. **Remplace les singletons `translator` et `translation.loader`** dans le conteneur IoC par les implémentations personnalisées de Lingua
+3. **Décore le binding `translation.loader`** via `$app->extend(...)`,
+   enveloppant le chargeur de Laravel avec `LinguaManager`
 
-Comme le fournisseur de services remplace la liaison du traducteur principal, il est important qu'il démarre *après* le `TranslationServiceProvider` de Laravel. L'ordre de chargement automatique de Composer gère cela automatiquement.
+Parce que le fournisseur *décore* plutôt que *remplace* le chargeur principal,
+il se compose proprement avec le `TranslationServiceProvider` de Laravel. L'ordre
+d'autoload de Composer gère automatiquement l'ordre de démarrage.
 
 ## Schéma de base de données
 
-Deux tables sont utilisées :
+Trois tables sont utilisées (le pilote `file` omet `language_lines`) :
 
 ### `languages`
 
 | Colonne | Type | Notes |
 |---|---|---|
-| `id` | bigint (auto-increment) | Clé primaire |
+| `id` | bigint | Clé primaire |
 | `code` | string | Code ISO 639-1 (`en`, `fr`, `pt_BR`) |
 | `regional` | string, nullable | Code régional complet (`en_US`, `pt_BR`) |
 | `type` | string | `'regional'` ou `'standard'` |
 | `name` | string | Nom d'affichage en anglais (`French`) |
 | `native` | string | Nom natif (`Français`) |
 | `direction` | string | `'ltr'` ou `'rtl'` |
-| `is_default` | boolean | Une seule ligne doit être `true` |
-| `sort` | integer | Ordre d'affichage (attribué automatiquement) |
+| `is_default` | boolean | Une seule ligne devrait être `true` |
+| `sort` | integer | Ordre d'affichage (assigné automatiquement) |
 
-### `language_lines` (Spatie)
+### `language_lines`
 
 | Colonne | Type | Notes |
 |---|---|---|
-| `id` | bigint (auto-increment) | Clé primaire |
+| `id` | bigint | Clé primaire |
 | `group` | string | Groupe de traduction (`auth`, `validation`, `single`) |
 | `key` | string | Clé de traduction (`failed`, `required`) |
-| `text` | json | `{"en": "…", "fr": "…", "it": "…"}` |
+| `text` | json, **nullable** | `{"en": "…", "fr": "…"}` |
 | `type` | string | `'text'`, `'html'` ou `'markdown'` |
 | `is_vendor` | boolean | `true` pour les chaînes de packages tiers |
-| `vendor` | string, nullable | Nom du package (ex. `spatie`, `laravel`) |
+| `vendor` | string, nullable | Nom du vendor (p. ex. `laravel`) |
 
-La colonne JSON `text` stocke **toutes les locales dans une seule ligne**. Cette conception signifie :
-- L'ajout d'une nouvelle locale ne modifie jamais le schéma
+La colonne JSON `text` stocke **toutes les locales dans une seule ligne** :
+
+- Ajouter une nouvelle locale ne modifie jamais le schéma
 - Une seule requête récupère toutes les valeurs de locale pour une clé
 - Les locales manquantes n'ont simplement pas de clé dans l'objet JSON
 
-## Seeder
+### `lingua_settings`
 
-`LinguaSeeder` est appelé une seule fois pendant `lingua:install`. Il :
+Table clé/valeur soutenant l'interface des paramètres (p. ex. le toggle de navigation partagée).
 
-1. Lit `config('lingua.default_locale')` (par défaut `config('app.locale')`)
-2. Récupère les métadonnées de locale depuis `laravel-lang/locales`
-3. Crée un enregistrement `Language` avec `is_default = true`
-4. Appelle `lingua:add {locale}` pour installer les fichiers de langue
-5. Appelle `lingua:sync-to-database` pour importer toutes les chaînes
+## Jeu de données groupé
+
+Lingua 2.0 embarque toutes les données de locale dans le package :
+
+- **`LocaleRegistry`** (`Rivalex\Lingua\Locales\LocaleRegistry`) — métadonnées
+  pour 129+ locales. `Lingua::info($locale)` retourne un objet valeur `LocaleInfo`
+  en lecture seule (`->name`, `->native`, `->direction`,
+  `->regional`, `->code`, `->type`), ou `null` pour les locales inconnues.
+- **Traductions groupées** — 26 locales × 7 groupes, 5902 chaînes, alignées
+  sur Laravel **v13.14.0**. Un `NotificationProjector` dérive les chaînes de notification.
+  `lingua:add` initialise depuis ce jeu de données sans appels réseau.
+
+## Architecture du cache
+
+En mode base de données, Lingua met en cache les traductions **chirurgicalement** par
+`(locale, group)` :
+
+- Les clés ressemblent à `lingua.trans.{locale}.{group}`
+- Lors d'un enregistrement/suppression d'une `Translation`, seul `Cache::forget('lingua.trans.{locale}.{group}')`
+  pour les clés affectées s'exécute — il n'y a **pas** de `cache:clear` global dans aucun
+  chemin de synchronisation
+- Le magasin et le préfixe sont configurables via `cache.store` / `cache.prefix`
 
 ## Modèles
 
 | Modèle | Table | Étend |
 |---|---|---|
 | `Language` | `languages` | `Illuminate\Database\Eloquent\Model` |
-| `Translation` | `language_lines` | `LanguageLine` de Spatie |
+| `Translation` | `language_lines` | `Illuminate\Database\Eloquent\Model` |
 
-`Translation` hérite des méthodes `setTranslation()` et `forgetTranslation()` de Spatie et ajoute des scopes, des méthodes de synchronisation et des helpers de statistiques propres à Lingua.
+`Translation` fournit `getTranslationsForGroup()`, des helpers de synchronisation,
+des helpers de statistiques et `forgetTranslation()` — qui lève
+`VendorTranslationProtectedException` pour les lignes vendor. Le scope de requête
+`scopeOrdered()` remplace l'ancien `scopeActive()` (un délégué est conservé pour
+la compatibilité descendante).

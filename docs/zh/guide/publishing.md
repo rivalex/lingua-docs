@@ -1,139 +1,110 @@
-# 发布资源
+# 发布资产
 
-Lingua 提供多个可发布的分组，让您只覆盖需要修改的部分。
+Lingua 使用 Laravel 的标准 `vendor:publish` 机制将文件发布到您的应用中。本页列出了所有可用的发布标签。
 
-## 一次性发布所有内容
+## 标签概览
 
-```bash
-php artisan vendor:publish --provider="Rivalex\Lingua\LinguaServiceProvider"
-```
+| 标签 | 发布内容 | 必须？ |
+|---|---|---|
+| `lingua-config` | `config/lingua.php` | 是 |
+| `lingua-migrations` | `database/migrations/` | 是（数据库驱动） |
+| `lingua-translations` | 内置翻译到 `lang/vendor/lingua/` | 可选 |
+| `lingua-views` | Blade 视图到 `resources/views/vendor/lingua/` | 可选 |
 
-## 按标签单独发布
-
-### `lingua-config`
-
-发布配置文件。
-
-```bash
-php artisan vendor:publish --tag="lingua-config"
-```
-
-**输出：** `config/lingua.php`
-
-用于自定义路由、中间件、选择器模式、编辑器工具栏或任何其他选项。
-
----
-
-### `lingua-migrations`
-
-发布数据库迁移文件。
-
-```bash
-php artisan vendor:publish --tag="lingua-migrations"
-```
-
-**输出：** `database/migrations/YYYY_MM_DD_HHMMSS_create_lingua_table.php`
-
-当您需要修改 `languages` 或 `language_lines` 的数据库结构时使用--例如，添加索引或更改字段类型。发布后，像往常一样运行 `php artisan migrate`。
-
-::: warning
-`lingua:install` 向导会自动发布并运行迁移。只有在需要在运行之前自定义数据库结构时，才需要手动发布。
+::: tip lingua:install 已处理
+`lingua:install` 交互向导会自动发布 `lingua-config` 和 `lingua-migrations`。只有在需要覆盖默认行为时才需要手动运行这些命令。
 :::
 
 ---
 
-### `lingua-translations`
-
-发布扩展包自身的界面翻译字符串。
+## `lingua-config`
 
 ```bash
-php artisan vendor:publish --tag="lingua-translations"
+php artisan vendor:publish --tag=lingua-config
 ```
 
-**输出：** `lang/vendor/lingua/{locale}/lingua.php`
+将 `config/lingua.php` 发布到您的应用配置目录。这是所有 Lingua 设置的主配置文件，必须发布。
 
-这会暴露 Lingua 界面中使用的每个标签、标题、按钮和消息。覆盖任意字符串以：
-- 将界面翻译成您的应用语言
-- 根据项目风格调整措辞（例如将 "Add language" 改为 "Install locale"）
-
-发布的文件遵循标准 Laravel 扩展包翻译目录结构：
-
-```
-lang/
-└── vendor/
-    └── lingua/
-        ├── en/
-        │   └── lingua.php
-        ├── fr/
-        │   └── lingua.php
-        └── it/
-            └── lingua.php
-```
-
----
-
-### `lingua-views`
-
-发布所有 Blade 和 Livewire 视图。
+要强制覆盖已有的配置文件：
 
 ```bash
-php artisan vendor:publish --tag="lingua-views"
+php artisan vendor:publish --tag=lingua-config --force
 ```
 
-**输出：** `resources/views/vendor/lingua/`
-
-用于自定义布局、模态框或语言选择器组件。Laravel 会自动使用您发布的视图替代扩展包默认视图。
-
-```
-resources/views/vendor/lingua/
-├── components/
-│   ├── autocomplete.blade.php
-│   ├── clipboard.blade.php
-│   ├── editor.blade.php
-│   ├── language-flag.blade.php
-│   ├── menu-group.blade.php
-│   └── message.blade.php
-└── livewire/
-    ├── languages.blade.php
-    ├── language-selector.blade.php
-    ├── translations.blade.php
-    └── translation/
-        ├── create.blade.php
-        ├── delete.blade.php
-        ├── row.blade.php
-        └── update.blade.php
-```
-
-::: tip
-只发布您打算修改的视图。未发布的视图直接从扩展包提供，可自动获得上游更新。
+::: warning 升级时
+升级 Lingua 后，建议用 `--force` 重新发布配置，然后将新增的键手动合并到您的自定义配置中。参见[配置参考](/zh/guide/configuration)。
 :::
 
 ---
 
-### `lingua-assets`
-
-将编译后的 CSS 和 JavaScript 发布到 `public/` 目录。
+## `lingua-migrations`
 
 ```bash
-php artisan vendor:publish --tag="lingua-assets"
+php artisan vendor:publish --tag=lingua-migrations
 ```
 
-**输出：** `public/vendor/lingua/`
+将数据库迁移文件发布到 `database/migrations/` 目录。包含三个文件：
 
-仅当您直接从 `public/` 提供资源（而非通过 Vite 或 CDN）时才需要。**每次升级 Lingua 后请重新运行**以保持资源同步。
+1. 创建 `languages` 表
+2. 创建 `language_lines` 表（仅数据库驱动）
+3. 创建 `lingua_settings` 表
+
+`lingua:install` 和 `lingua:storage` 命令均为**驱动感知**：
+
+- **数据库驱动**：发布全部三个迁移
+- **文件驱动**：跳过 `language_lines` 迁移（因为文件模式不使用该表）
+
+发布后运行迁移：
+
+```bash
+php artisan migrate
+```
 
 ---
 
-## 升级后的更新
-
-通过 Composer 更新 Lingua 后，重新发布已更改的资源：
+## `lingua-translations`
 
 ```bash
-# 始终重新发布编译后的资源
-php artisan vendor:publish --tag="lingua-assets" --force
-
-# 如果您尚未自定义界面翻译，重新发布
-php artisan vendor:publish --tag="lingua-translations" --force
+php artisan vendor:publish --tag=lingua-translations
 ```
 
-`--force` 标志会覆盖现有文件。对于 `lingua-views` 和 `lingua-config`，请省略此标志以保留您的本地自定义。
+将 Lingua 的内置翻译（UI 字符串）发布到 `lang/vendor/lingua/`，供自定义使用。
+
+发布的文件结构如下：
+
+```
+lang/vendor/lingua/
+  en/
+    lingua.php       ← Lingua UI 字符串（英语）
+  fr/
+    lingua.php       ← 法语翻译
+  ...（所有 26 个内置语言区域）
+```
+
+这通常是**可选的**。只有当您需要修改 Lingua 管理 UI 中的标签或消息时才需要发布。
+
+---
+
+## `lingua-views`
+
+```bash
+php artisan vendor:publish --tag=lingua-views
+```
+
+将所有 Blade 视图发布到 `resources/views/vendor/lingua/`，供自定义使用。
+
+::: warning 谨慎使用
+发布视图后，Lingua 的视图升级不会自动应用到您的应用。每次升级 Lingua 后，您需要手动将视图变更合并到已发布的文件中。建议仅在必须自定义视图时才发布。
+:::
+
+---
+
+## 已移除的标签
+
+### `lingua-assets` <Badge type="warning" text="2.0 已移除" />
+
+在 Lingua 1.x 中，CSS 和 JS 资产通过 `lingua-assets` 标签发布。
+
+**2.0 中已移除。** 资产现在通过 `lingua.assets` 路由（`/lingua/assets/{file}`）按需提供，无需手动发布。
+
+如果您在部署流程中引用了 `--tag=lingua-assets`，请将其移除。

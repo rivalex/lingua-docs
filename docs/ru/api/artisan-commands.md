@@ -1,105 +1,119 @@
 # Artisan-команды
 
-Lingua поставляется с шестью Artisan-командами для управления языками и переводами из терминала.
+Lingua поставляется с восемью Artisan-командами для управления языками, переводами
+и драйвером хранилища.
 
-## Управление языками
+## Краткий справочник
 
-### `lingua:add {locale}`
+| Команда | Описание |
+|---|---|
+| `lingua:install` | Интерактивный мастер первоначальной настройки |
+| `lingua:storage {driver}` | Переключить драйвер хранилища (**Новое в 2.0**) |
+| `lingua:add {locale}` | Установить язык (БД + встроенные данные) |
+| `lingua:remove {locale}` | Удалить язык |
+| `lingua:update-lang` | Обновить строки из встроенного набора данных |
+| `lingua:sync-to-database` | Импорт `lang/` → БД |
+| `lingua:sync-to-local` | Экспорт БД → `lang/` |
+| `lingua:uninstall` | Безопасное удаление Lingua (**Новое в 2.0**) |
 
-Устанавливает новый язык - скачивает файлы, создаёт запись в БД, синхронизирует переводы.
+---
+
+## `lingua:install`
+
+Интерактивный мастер первоначальной настройки. Запускается один раз после `composer require`.
 
 ```bash
-php artisan lingua:add it
+php artisan lingua:install
+```
+
+Выбирает драйвер хранилища с помощью стрелок, публикует конфигурацию, публикует
+учитывающие драйвер миграции, опционально запускает миграции и заполняет язык по умолчанию
+из встроенного набора данных — без сетевых вызовов.
+
+---
+
+## `lingua:storage {driver}` <Badge type="tip" text="Новое в 2.0" />
+
+Переключает активный драйвер хранилища. Синхронизирует перед переключением, чтобы
+ничего не потерялось.
+
+```bash
+php artisan lingua:storage database
+php artisan lingua:storage file
+```
+
+| Флаг | Действие |
+|---|---|
+| `--force` | Пропустить запросы подтверждения |
+| `--write-env` | Обновить `LINGUA_STORAGE_DRIVER` в `.env` |
+| `--no-migrate` | Пропустить шаг обеспечения миграции |
+
+**database → file:** Сначала экспортирует БД в `lang/`, предупреждает о строках HTML/Markdown.
+
+**file → database:** Синхронизирует `lang/` в БД, обеспечивает запуск миграции `language_lines`.
+
+---
+
+## `lingua:add {locale}` <Badge type="warning" text="Изменено в 2.0" />
+
+Устанавливает новый язык из встроенного набора данных Lingua.
+
+```bash
+php artisan lingua:add fr
 php artisan lingua:add pt_BR
 php artisan lingua:add ar
 ```
 
-**Что делает:**
-1. Получает метаданные локали из `laravel-lang/locales`
-2. Запускает `lang:add {locale}` для установки языковых файлов
-3. Создаёт запись `Language` в базе данных
-4. Запускает `lingua:sync-to-database` для импорта новых строк
-
-**Вывод:**
-```
-Adding language: it...
-Installing language files via Laravel Lang...
-Creating language record in database...
-Syncing translations to database...
-Language 'it' added successfully.
-```
-
-::: tip
-После добавления языка перейдите на `/lingua/translations/it`, чтобы увидеть, какие строки ещё требуют перевода.
+::: tip Изменено в 2.0
+Больше не вызывает `lang:add` и не скачивает файлы. Чисто нативная работа с БД —
+строки заполняются из встроенного набора данных (26 локалей × 7 групп, Laravel v13.14.0).
+Локали вне встроенного набора можно добавить вручную.
 :::
 
 ---
 
-### `lingua:remove {locale}`
+## `lingua:remove {locale}`
 
-Удаляет язык - удаляет файлы, очищает базу данных, переупорядочивает оставшиеся языки.
+Удаляет язык из БД.
 
 ```bash
 php artisan lingua:remove fr
 ```
 
-**Что делает:**
-1. Проверяет, что язык не является основным (прерывается с ошибкой, если является)
-2. Запускает `lang:rm {locale} --force` для удаления языковых файлов
-3. Удаляет все значения `{locale}` из `language_lines.text`
-4. Удаляет запись `Language`
-5. Переупорядочивает значения `sort` для оставшихся языков
-6. Запускает `lingua:sync-to-database`
-
 ::: warning Защита языка по умолчанию
-Нельзя удалить язык по умолчанию. Сначала сделайте другой язык основным:
-```bash
-php artisan lingua:add fr       # добавить новый основной язык
-# затем через интерфейс: установить французский как основной
-php artisan lingua:remove en    # теперь можно удалить английский
-```
+Нельзя удалить язык по умолчанию. Сначала сделайте другой язык основным через UI
+или `Lingua::setDefaultLocale('fr')`.
 :::
 
 ---
 
-### `lingua:update-lang`
+## `lingua:update-lang`
 
-Обновляет все установленные языковые файлы через Laravel Lang, затем повторно синхронизирует в базу данных.
+Загружает последние строки переводов из встроенного набора данных Lingua для всех
+установленных языков, не перезаписывая существующие пользовательские переводы.
 
 ```bash
 php artisan lingua:update-lang
 ```
 
-Запускайте после:
-- Обновления Laravel (новые сообщения валидации и т.д.)
-- Установки нового пакета с переводами
-- Обновления пакетов `laravel-lang/*`
+Используйте после выхода новой версии Lingua с обновлённым набором строк.
 
 ---
 
-## Синхронизация переводов
+## `lingua:sync-to-database`
 
-### `lingua:sync-to-database`
-
-Импортирует все локальные PHP/JSON файлы переводов в таблицу `language_lines`.
+Импортирует все PHP/JSON файлы из `lang/` в таблицу `language_lines`.
 
 ```bash
 php artisan lingua:sync-to-database
 ```
 
-**Что импортируется:**
-- `lang/{locale}/*.php` - PHP-файлы
-- `lang/{locale}.json` - JSON-файлы
-- `lang/vendor/{package}/{locale}/*.php` - файлы пакетов
+Использует `updateOrCreate` по `group + key` — существующие правки из UI **сохраняются**.
 
-Использует `updateOrCreate` с сопоставлением по `group + key`, поэтому существующие правки из интерфейса сохраняются.
+Типичные сценарии:
 
-**Типичные сценарии:**
 ```bash
-# После свежего клона - заполнить БД из закоммиченных файлов lang
-php artisan lingua:sync-to-database
-
-# После lang:update - импортировать новые строки
+# После свежего клона репозитория
 php artisan lingua:sync-to-database
 
 # В скрипте деплоя
@@ -110,88 +124,56 @@ php artisan optimize
 
 ---
 
-### `lingua:sync-to-local`
+## `lingua:sync-to-local`
 
-Экспортирует все переводы из базы данных обратно в локальные PHP/JSON файлы.
+Экспортирует все переводы из БД обратно в `lang/` в формате PHP/JSON.
 
 ```bash
 php artisan lingua:sync-to-local
 ```
 
-**Что экспортируется:**
-- Переводы из БД → `lang/{locale}/{group}.php`
-- JSON-группа (`single`) → `lang/{locale}.json`
-- Переводы пакетов → `lang/vendor/{vendor}/{locale}/{group}.php`
+Типичные сценарии:
 
-**Типичные сценарии:**
 ```bash
-# Перед коммитом - экспортировать состояние БД в файлы для версионного контроля
+# Перед коммитом в репозиторий
 php artisan lingua:sync-to-local
 git add lang/
 git commit -m "chore: sync translations"
-
-# Перед деплоем на сервер, читающий из файлов
-php artisan lingua:sync-to-local
 ```
 
 ---
 
-### `lingua:install`
+## `lingua:uninstall` <Badge type="tip" text="Новое в 2.0" />
 
-Интерактивный мастер первоначальной настройки. Запускается один раз после `composer require`.
+Безопасно удаляет Lingua: экспортирует БД в `lang/`, затем удаляет таблицы
+(`language_lines`, `languages`, `lingua_settings`). Директория `lang/` сохраняется.
 
 ```bash
-php artisan lingua:install
+php artisan lingua:uninstall
 ```
 
-Не предназначен для повторного запуска после первоначальной настройки. Если нужно повторно опубликовать отдельные ресурсы, используйте теги `vendor:publish`.
-
----
-
-## Краткий справочник команд
-
-<div class="command-table">
-
-| Команда | Описание |
+| Флаг | Действие |
 |---|---|
-| `lingua:add {locale}` | Установить язык (файлы + БД + синхронизация) |
-| `lingua:remove {locale}` | Удалить язык (файлы + БД + синхронизация) |
-| `lingua:update-lang` | Обновить файлы lang через Laravel Lang + синхронизация |
-| `lingua:sync-to-database` | Импорт локальных файлов → база данных |
-| `lingua:sync-to-local` | Экспорт базы данных → локальные файлы |
-| `lingua:install` | Интерактивный мастер первоначальной настройки |
-
-</div>
+| `--force` | Пропустить запросы подтверждения |
+| `--keep-config` | Оставить `config/lingua.php` |
+| `--keep-published` | Оставить опубликованные представления/миграции |
 
 ---
 
 ## Советы
 
 ::: tip Автоматизация синхронизации в CI/CD
-Добавьте синхронизацию в пайплайн деплоя для поддержания актуальности базы данных:
-
 ```yaml
-# Шаг деплоя GitHub Actions (пример)
+# GitHub Actions (пример)
 - name: Sync translations
   run: php artisan lingua:sync-to-database
 ```
 :::
 
-::: tip Добавление нескольких языков сразу
-Команды массового добавления нет, но можно связать вызовы в цикле оболочки:
-
+::: tip Добавление нескольких языков
 ```bash
 for locale in fr it de es pt_BR; do
   php artisan lingua:add $locale
 done
-```
-:::
-
-::: tip Проверка того, что будет синхронизировано
-Перед запуском `lingua:sync-to-database` можно посмотреть количество файлов и локалей, которые будут обработаны, проверив `lang/`:
-
-```bash
-ls lang/
-# en  fr  it  vendor
 ```
 :::

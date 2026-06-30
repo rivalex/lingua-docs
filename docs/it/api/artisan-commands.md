@@ -1,12 +1,14 @@
 # Comandi Artisan
 
-Lingua include sei comandi Artisan per la gestione delle lingue e delle traduzioni da terminale.
+Lingua include otto comandi Artisan per la gestione delle lingue, delle
+traduzioni, del driver di archiviazione e del ciclo di vita dell'installazione.
 
 ## Gestione delle lingue
 
 ### `lingua:add {locale}`
 
-Installa una nuova lingua - scarica i file, crea il record DB, sincronizza le traduzioni.
+Installa una nuova lingua — popola dal dataset integrato, crea il record DB,
+sincronizza le traduzioni.
 
 ```bash
 php artisan lingua:add it
@@ -15,65 +17,55 @@ php artisan lingua:add ar
 ```
 
 **Cosa fa:**
-1. Recupera i metadati della locale da `laravel-lang/locales`
-2. Esegue `lang:add {locale}` per installare i file della lingua
-3. Crea un record `Language` nel database
+
+1. Recupera i metadati della locale dal `LocaleRegistry` integrato
+2. Crea un record `Language` nel database
+3. Popola le stringhe dal **dataset integrato** (nessun download da internet)
 4. Esegue `lingua:sync-to-database` per importare le nuove stringhe
 
-**Output:**
-```
-Adding language: it...
-Installing language files via Laravel Lang...
-Creating language record in database...
-Syncing translations to database...
-Language 'it' added successfully.
-```
-
-::: tip
-Dopo aver aggiunto una lingua, visita `/lingua/translations/it` per vedere quali stringhe necessitano ancora di traduzione.
+::: tip <Badge type="tip" text="Modificato in 2.0" /> Nessuna dipendenza da laravel-lang
+`lingua:add` non chiama più `lang:add` da `laravel-lang/common`. Le locale
+vengono popolate istantaneamente dal dataset integrato del pacchetto.
 :::
 
 ---
 
 ### `lingua:remove {locale}`
 
-Rimuove una lingua - elimina i file, pulisce il database, riordina le lingue rimanenti.
+Rimuove una lingua — elimina i file, pulisce il database, riordina le lingue
+rimanenti.
 
 ```bash
 php artisan lingua:remove fr
 ```
 
 **Cosa fa:**
-1. Verifica che la lingua non sia quella predefinita (interrompe con un errore se lo è)
-2. Esegue `lang:rm {locale} --force` per rimuovere i file della lingua
-3. Rimuove tutti i valori `{locale}` da `language_lines.text`
-4. Elimina il record `Language`
-5. Riordina i valori di ordinamento delle lingue rimanenti
-6. Esegue `lingua:sync-to-database`
+
+1. Verifica che la lingua non sia quella predefinita (interrompe con un errore
+   se lo è)
+2. Rimuove tutti i valori `{locale}` da `language_lines.text`
+3. Elimina il record `Language`
+4. Riordina i valori `sort` delle lingue rimanenti
 
 ::: warning Protezione della lingua predefinita
-Non puoi rimuovere la lingua predefinita. Imposta prima un'altra lingua come predefinita:
-```bash
-php artisan lingua:add fr       # aggiungi la nuova predefinita
-# poi tramite l'interfaccia: imposta il francese come predefinito
-php artisan lingua:remove en    # ora è sicuro rimuovere l'inglese
-```
+Non puoi rimuovere la lingua predefinita. Imposta prima un'altra lingua come
+predefinita tramite l'interfaccia, poi rimuovi quella precedente.
 :::
 
 ---
 
 ### `lingua:update-lang`
 
-Aggiorna tutti i file della lingua installati tramite Laravel Lang, poi risincronizza nel database.
+Ri-popola le locale installate dal dataset integrato (5902 stringhe, 26
+locale, allineate a Laravel v13.14.0). Poi unisce dall'eventuale `lang/`
+locale.
 
 ```bash
 php artisan lingua:update-lang
 ```
 
-Esegui questo dopo:
-- Aver aggiornato Laravel (nuovi messaggi di validazione, ecc.)
-- Aver installato un nuovo pacchetto che include traduzioni
-- Aver aggiornato i pacchetti `laravel-lang/*`
+Esegui questo dopo aver aggiornato Lingua o installato un nuovo pacchetto
+che include le proprie traduzioni.
 
 ---
 
@@ -81,31 +73,26 @@ Esegui questo dopo:
 
 ### `lingua:sync-to-database`
 
-Importa tutti i file di traduzione PHP/JSON locali nella tabella `language_lines`.
+Importa tutti i file di traduzione PHP/JSON locali nella tabella
+`language_lines`.
 
 ```bash
 php artisan lingua:sync-to-database
 ```
 
 **Cosa viene importato:**
-- `lang/{locale}/*.php` - file PHP
-- `lang/{locale}.json` - file JSON
-- `lang/vendor/{package}/{locale}/*.php` - file dei pacchetti vendor
 
-Usa `updateOrCreate` abbinando su `group + key`, quindi le modifiche esistenti dall'interfaccia vengono preservate.
+- `lang/{locale}/*.php` — file PHP
+- `lang/{locale}.json` — file JSON
+- `lang/vendor/{package}/{locale}/*.php` — file dei pacchetti vendor
 
-**Casi d'uso tipici:**
+Usa `updateOrCreate` abbinando su `group + key`, quindi le modifiche
+esistenti dall'interfaccia vengono preservate.
+
 ```bash
-# Dopo un clone fresco - popola il DB dai file lang committati
-php artisan lingua:sync-to-database
-
-# Dopo lang:update - importa le nuove stringhe
-php artisan lingua:sync-to-database
-
-# In uno script di deployment
-php artisan migrate
-php artisan lingua:sync-to-database
-php artisan optimize
+# Esempi tipici
+php artisan lingua:sync-to-database           # dopo un clone fresco
+php artisan migrate && php artisan lingua:sync-to-database  # in un deploy
 ```
 
 ---
@@ -119,56 +106,103 @@ php artisan lingua:sync-to-local
 ```
 
 **Cosa viene esportato:**
+
 - Traduzioni DB → `lang/{locale}/{group}.php`
 - Gruppo JSON (`single`) → `lang/{locale}.json`
 - Traduzioni vendor → `lang/vendor/{vendor}/{locale}/{group}.php`
 
-**Casi d'uso tipici:**
 ```bash
-# Prima del commit - esporta lo stato DB nei file per il controllo versione
+# Prima del commit — esporta per il controllo versione
 php artisan lingua:sync-to-local
 git add lang/
 git commit -m "chore: sync translations"
-
-# Prima del deployment su un server che legge dai file
-php artisan lingua:sync-to-local
 ```
+
+::: warning Driver file
+In modalità di archiviazione `file` questo comando è un no-op senza
+`--force` — la modalità file scrive già su disco.
+:::
 
 ---
 
+## Installazione e configurazione
+
 ### `lingua:install`
 
-La procedura guidata interattiva per la prima configurazione. Eseguire una volta dopo `composer require`.
+Procedura guidata interattiva per la prima configurazione. Eseguire una volta
+dopo `composer require`.
 
 ```bash
 php artisan lingua:install
 ```
 
-Non è pensata per essere rieseguita dopo la configurazione iniziale. Se hai bisogno di ripubblicare singoli asset, usa invece i tag `vendor:publish`.
+Il programma di installazione chiede:
+
+1. **Driver di archiviazione** — `database` o `file`
+2. **Pubblica le migrazioni** (driver-aware: `file` salta `language_lines`)
+3. **Esegui `php artisan migrate`**
+4. **Locale predefinita** (con `lingua:add {locale}`)
+5. **Gate di autorizzazione** (facoltativo)
+
+Non è pensata per essere rieseguita dopo la configurazione iniziale. Per
+ripubblicare singoli asset usa invece `vendor:publish`.
+
+---
+
+### `lingua:storage {driver}`
+
+<Badge type="tip" text="Novità in 2.0" /> Cambia il driver di archiviazione
+attivo. Sincronizza automaticamente prima di cambiare driver così nessuna
+traduzione viene persa.
+
+```bash
+php artisan lingua:storage file
+php artisan lingua:storage database
+```
+
+| Opzione | Descrizione |
+|---|---|
+| `--force` | Salta le conferme |
+| `--write-env` | Aggiorna `LINGUA_STORAGE_DRIVER` in `.env` |
+| `--no-migrate` | Salta il passaggio di verifica migrazione |
+
+---
+
+### `lingua:uninstall`
+
+<Badge type="tip" text="Novità in 2.0" /> Rimuove Lingua in modo sicuro:
+esporta prima il database in `lang/`, poi elimina le tre tabelle Lingua.
+
+```bash
+php artisan lingua:uninstall
+```
+
+| Opzione | Descrizione |
+|---|---|
+| `--force` | Salta le conferme |
+| `--keep-config` | Lascia `config/lingua.php` al suo posto |
+| `--keep-published` | Lascia le viste/migrazioni pubblicate al loro posto |
 
 ---
 
 ## Riferimento rapido comandi
 
-<div class="command-table">
-
 | Comando | Descrizione |
 |---|---|
-| `lingua:add {locale}` | Installa una lingua (file + DB + sincronizzazione) |
-| `lingua:remove {locale}` | Rimuove una lingua (file + DB + sincronizzazione) |
-| `lingua:update-lang` | Aggiorna i file lang tramite Laravel Lang + sincronizzazione |
+| `lingua:add {locale}` | Installa una lingua (dataset + DB + sincronizzazione) |
+| `lingua:remove {locale}` | Rimuove una lingua (DB + riordinamento) |
+| `lingua:update-lang` | Ri-popola le locale installate dal dataset integrato |
 | `lingua:sync-to-database` | Importa i file locali → database |
 | `lingua:sync-to-local` | Esporta database → file locali |
 | `lingua:install` | Procedura guidata interattiva per la prima configurazione |
-
-</div>
+| `lingua:storage {driver}` | Cambia il driver di archiviazione (database/file) |
+| `lingua:uninstall` | Rimuove Lingua in modo sicuro con backup |
 
 ---
 
 ## Consigli
 
 ::: tip Automatizzare la sincronizzazione in CI/CD
-Aggiungi la sincronizzazione alla tua pipeline di deployment per mantenere il database sincronizzato con il tuo repository:
 
 ```yaml
 # Passo di deployment GitHub Actions (esempio)
@@ -178,20 +212,10 @@ Aggiungi la sincronizzazione alla tua pipeline di deployment per mantenere il da
 :::
 
 ::: tip Aggiungere più lingue in una volta
-Non esiste un comando di aggiunta in blocco, ma puoi concatenare le chiamate in un loop shell:
 
 ```bash
 for locale in fr it de es pt_BR; do
   php artisan lingua:add $locale
 done
-```
-:::
-
-::: tip Verificare cosa verrà sincronizzato
-Prima di eseguire `lingua:sync-to-database`, puoi visualizzare in anteprima il numero di file e locale che verranno elaborati controllando `lang/`:
-
-```bash
-ls lang/
-# en  fr  it  vendor
 ```
 :::

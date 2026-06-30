@@ -1,104 +1,85 @@
-# Gestion des traductions
+# Page Traductions
 
-La page Traductions (`/lingua/translations/{locale?}`) vous permet de parcourir, filtrer et modifier chaque chaîne de traduction.
+La page **Traductions** (`/lingua/translations`) est l'endroit où les chaînes de traduction
+sont visualisées et modifiées. Elle prend en charge l'édition en ligne, le filtrage et les
+statistiques de complétude.
 
-<Screenshot src="/screenshots/translations-page.png" alt="Page des traductions Lingua" caption="Page des traductions - avec le sélecteur de locale, le filtre de groupe et l'éditeur en ligne." />
+## Interface
 
-## Navigation dans les traductions
+La page est divisée en trois zones :
 
-### Sélecteur de locale
+1. **Barre d'outils** — sélecteur de locale, filtre de groupe, filtre de type, toggle
+   « Manquantes uniquement »
+2. **Tableau de traductions** — liste des clés avec leurs valeurs
+3. **Éditeur en ligne** — s'active quand vous cliquez sur une ligne
 
-Les onglets de locale en haut de la page vous permettent de basculer entre les langues installées. L'URL est mise à jour vers `/lingua/translations/{locale}` pour que chaque vue soit mémorisable et partageable.
+## Sélecteur de locale
 
-La colonne de la **locale par défaut** est toujours affichée à gauche comme référence - vous modifiez la locale sélectionnée à droite.
+En haut à droite de la barre d'outils. Sélectionnez la langue cible pour afficher et
+modifier ses traductions. Langue par défaut sélectionnée automatiquement.
 
-### Filtrage
+## Filtre de groupe
 
-| Filtre | Description |
-|---|---|
-| **Recherche** | Recherche dans le nom du groupe, la clé et toutes les valeurs de locale |
-| **Groupe** | Filtre selon un groupe spécifique (ex. `auth`, `validation`, `single`) |
-| **Type** | Filtre par `text`, `html` ou `markdown` |
-| **Afficher uniquement les manquants** | Affiche uniquement les chaînes sans valeur dans la locale sélectionnée |
+Filtre les traductions par groupe (`auth`, `validation`, `pagination`, `single`,
+etc.). Le groupe `single` contient les traductions des fichiers JSON Laravel.
 
-<Screenshot src="/screenshots/translations-filters.png" alt="Filtres de traduction" caption="Filtrage pour afficher uniquement les traductions françaises manquantes dans le groupe validation." />
+## Afficher seulement les manquantes
 
-### Pagination
+Toggle qui masque toutes les traductions qui ont déjà une valeur dans la locale
+sélectionnée. Pratique pour combler les lacunes rapidement.
 
-Les résultats sont paginés avec un nombre d'éléments par page configurable (25 / 50 / 100). La page courante et le paramètre par page sont persistés dans la chaîne de requête URL.
+## Édition en ligne
 
-## Édition des traductions
+Cliquez sur n'importe quelle ligne pour ouvrir l'éditeur en ligne :
 
-### Édition en ligne
+- **Type `text`** — champ de texte simple
+- **Type `html`** — éditeur de texte riche TipTap (voir [Texte riche](/fr/features/rich-text))
+- **Type `markdown`** — éditeur Markdown TipTap
 
-Cliquez directement dans la cellule de traduction pour commencer l'édition. Les modifications sont sauvegardées lors du blur (quand vous cliquez ailleurs ou appuyez sur Tab).
+Appuyez sur **Entrée** ou cliquez ailleurs pour sauvegarder. La valeur est mise à jour
+instantanément et le cache est invalidé chirurgicalement pour `(locale, group)`.
 
-- Les traductions **texte brut** utilisent un simple `<textarea>`
-- Les traductions **HTML** ouvrent l'éditeur de texte enrichi TipTap
-- Les traductions **Markdown** ouvrent l'éditeur Markdown TipTap
-
-<Screenshot src="/screenshots/translation-editor-html.png" alt="Éditeur de traduction HTML" caption="L'éditeur HTML TipTap pour les traductions en texte enrichi." width="512px" :center="true"/>
-
-### Synchroniser depuis la valeur par défaut
-
-Chaque ligne de traduction dispose d'un bouton **Synchroniser depuis la valeur par défaut** (↺). En cliquant dessus, la valeur de la locale par défaut est copiée vers la locale courante - utile comme point de départ quand seules de légères modifications de formulation sont nécessaires.
-
-### Modale de modification
-
-Pour la locale par défaut, cliquez sur l'icône crayon pour ouvrir la modale de modification, où vous pouvez changer le type de traduction (texte / html / markdown) ainsi que la valeur.
-
-::: tip Changer le type de traduction
-Si vous changez une traduction de `text` à `html`, l'éditeur en ligne de la ligne passera immédiatement à TipTap. La valeur stockée n'est pas modifiée - seul le comportement de l'éditeur change.
+::: tip Locale par défaut
+Modifier une traduction dans la **locale par défaut** écrase la valeur de base. Supprimer
+une traduction dans la locale par défaut supprime l'**enregistrement entier** — pour toutes
+les locales.
 :::
 
-## Créer des traductions
+## Créer une nouvelle traduction
 
-Cliquez sur **Nouvelle traduction** pour créer une entrée personnalisée. Renseignez :
+Cliquez sur **Nouvelle traduction** dans la barre d'outils. Un formulaire s'ouvre pour
+saisir le groupe, la clé, le type et la valeur initiale.
 
-- **Groupe** - l'équivalent du nom de fichier (ex. `marketing`, `emails`)
-- **Clé** - la clé au sein du groupe (ex. `hero_title`)
-- **Type** - `text`, `html` ou `markdown`
-- **Valeur** - la traduction pour la locale par défaut
+## Supprimer une traduction
 
-```
-group: marketing
-key:   hero_title
-type:  text
-value: Build faster, together.
-```
+Cliquez sur l'icône corbeille dans la ligne. Un dialogue de confirmation s'affiche.
 
-La nouvelle clé est immédiatement disponible via `__('marketing.hero_title')`.
-
-::: tip Après la sauvegarde
-Le champ **Groupe** est conservé après la création, ce qui vous permet d'ajouter plusieurs clés au même groupe sans avoir à le resélectionner. Seuls les champs **Clé** et **Valeur** sont réinitialisés. Les espaces en début, en fin et les espaces internes redondants dans Groupe et Clé sont normalisés automatiquement avant la sauvegarde.
+::: warning Traductions vendor
+Les traductions marquées comme vendor (`is_vendor = true`) ne peuvent pas être supprimées
+depuis l'UI — elles lèvent une `VendorTranslationProtectedException`. Voir
+[Traductions vendor](/fr/features/vendor-translations).
 :::
 
-::: warning Traductions de packages
-Vous ne pouvez pas créer de traductions directement dans un groupe de package (ex. `validation`, `auth`). Ces groupes sont la propriété de Laravel ou d'autres packages et sont synchronisés automatiquement. Si vous souhaitez remplacer une chaîne de package, modifiez-la directement sur la page des traductions.
-:::
+## Recherche
 
-## Supprimer des traductions
+Le champ de recherche dans la barre d'outils filtre par clé ou par valeur.
 
-### Supprimer pour une locale spécifique
-
-Sur n'importe quelle locale non définie par défaut, le bouton de suppression retire uniquement la valeur de cette locale de la colonne JSON. La clé de traduction continue d'exister ; elle retombe simplement sur la locale par défaut.
-
-### Supprimer entièrement
-
-Sur la vue de la locale par défaut, le bouton de suppression retire l'enregistrement complet de `language_lines`. Utilisez ceci pour nettoyer les clés qui ne sont plus utilisées dans votre base de code.
-
-::: danger Protection des traductions de packages
-Les traductions de packages ne peuvent pas être supprimées. Toute tentative affiche un avertissement et déclenche un événement `vendor_translation_protected`. Vous pouvez uniquement **modifier** les valeurs des traductions de packages.
-:::
-
-## Copier la clé dans le presse-papiers
-
-Chaque ligne possède une icône de presse-papiers qui copie la référence complète `groupe.clé` (ex. `auth.failed`) dans votre presse-papiers - pratique lors du référencement des clés dans Blade ou PHP.
-
-## Raccourcis clavier
+## Navigation au clavier
 
 | Touche | Action |
 |---|---|
-| `Tab` | Sauvegarder le champ courant et passer au suivant |
-| `Shift + Tab` | Sauvegarder le champ courant et revenir au précédent |
-| `Echap` | Annuler les modifications et fermer l'éditeur |
+| `Tab` | Passer à la traduction suivante |
+| `Shift+Tab` | Revenir à la précédente |
+| `Échap` | Fermer l'éditeur sans sauvegarder |
+| `Ctrl+Entrée` | Sauvegarder et passer à la suivante |
+
+## Mode fichier
+
+En pilote `file`, les modifications sont écrites directement dans les fichiers PHP/JSON
+de `lang/` via `AtomicFileWriter` (renommage atomique + `opcache_invalidate`). Les
+types HTML/Markdown ne sont pas disponibles — tout est texte brut.
+
+## Copier la clé
+
+Chaque ligne a une icône presse-papiers qui copie la référence complète `groupe.clé`
+(ex. `auth.failed`) dans le presse-papiers.

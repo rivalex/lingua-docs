@@ -1,8 +1,8 @@
 # Sincronização Bidirecional
 
-O Lingua pode importar traduções de arquivos locais para o banco de dados e exportá-las de volta - oferecendo o melhor dos dois mundos: **tempo de execução orientado a banco de dados** e **controle de versão baseado em arquivos**.
-
-## As duas direções
+O Lingua sincroniza traduções entre o banco de dados e os arquivos `lang/` nos
+dois sentidos — banco de dados para edição ao vivo, arquivos para controle de
+versão ou CI/CD.
 
 ```
 lang/en/*.php        ──┐
@@ -13,140 +13,127 @@ lang/vendor/…          │  ◄── lingua:sync-to-local
                       ─┘
 ```
 
-## Sincronizar para o banco de dados
+## Comandos de sincronização
 
-Importa todos os arquivos de tradução de `lang/` (e seus subdiretórios) para a tabela `language_lines`.
+### `lingua:sync-to-database`
+
+Importa todos os arquivos `lang/` locais para a tabela `language_lines`.
 
 ```bash
 php artisan lingua:sync-to-database
 ```
 
-### O que é importado
+Equivalente UI: botão **Sync from files** na página de Idiomas.
 
-- `lang/{locale}/*.php` - arquivos PHP de tradução padrão
-- `lang/{locale}.json` - arquivos JSON de tradução
-- `lang/vendor/{package}/{locale}/*.php` - traduções de pacotes de vendor
+**O que é importado:**
+- `lang/{locale}/*.php` — arquivos PHP padrão
+- `lang/{locale}.json` — arquivos JSON
+- `lang/vendor/{package}/{locale}/*.php` — traduções de pacotes de vendor
 
-### Comportamento de upsert
+**Comportamento de upsert:** usa `updateOrCreate` com correspondência em
+`group + key`, então edições existentes feitas na interface são **preservadas**.
+A detecção de tipo é executada no valor (`text` / `html` / `markdown`).
 
-O Lingua usa `updateOrCreate` com correspondência em `group` + `key`. Isso significa que:
-- **Novas chaves** são inseridas
-- **Chaves existentes** têm seu JSON `text` mesclado - os valores de locale que você editou na interface são **preservados**
-- **Detecção de tipo** é executada no valor para determinar `text` / `html` / `markdown`
+**Cache:** invalida apenas as chaves afetadas (`lingua.trans.{locale}.{group}`)
+— sem flush global.
 
-### Detecção automática de tipo
+### `lingua:sync-to-local`
 
-| Regra | Tipo atribuído |
-|---|---|
-| String contém tags HTML (`<…>`) | `html` |
-| String é analisada como Markdown (títulos, listas, etc.) | `markdown` |
-| Nenhum dos dois | `text` |
-
-::: tip
-A detecção de tipo é conservadora - atribui `html` ou `markdown` apenas quando o conteúdo claramente corresponde. Strings simples sempre recebem `text`. Você pode alterar o tipo manualmente pelo modal de Edição.
-:::
-
-### Via facade
-
-```php
-use Rivalex\Lingua\Facades\Lingua;
-
-Lingua::syncToDatabase();
-```
-
-::: warning
-O facade chama `Translation::syncToDatabase()` internamente, que é uma chamada estática. Em comandos Artisan e componentes Livewire, `app(Translation::class)->syncToDatabase()` é usado em vez disso para que o Mockery possa interceptá-lo nos testes.
-:::
-
----
-
-## Sincronizar para local
-
-Exporta todas as traduções de `language_lines` de volta para arquivos PHP e JSON em `lang/`.
+Exporta todas as traduções do banco de dados de volta para `lang/`.
 
 ```bash
 php artisan lingua:sync-to-local
 ```
 
-### O que é exportado
+Equivalente UI: botão **Sync to files** na página de Idiomas.
 
+**O que é exportado:**
 - Todas as traduções não-vendor → `lang/{locale}/{group}.php`
-- Chaves de grupo JSON (`single`) → `lang/{locale}.json`
+- Grupo JSON (`single`) → `lang/{locale}.json`
 - Traduções de vendor → `lang/vendor/{vendor}/{locale}/{group}.php`
 
-### Casos de uso
+Usa `AtomicFileWriter` — cada arquivo é escrito em um temp e renomeado
+atomicamente, então requisições concorrentes nunca leem um arquivo parcial.
+Chama `opcache_invalidate()` após cada escrita.
 
-- **Controle de versão** - commit dos arquivos exportados para rastrear alterações de tradução ao longo do tempo
-- **Pipelines de deployment** - exportar antes de fazer deploy se as ferramentas downstream esperam traduções baseadas em arquivos
-- **Backups** - criar um snapshot em um ponto no tempo de todas as traduções
-- **Outras ferramentas** - exportar para uso em um serviço de gerenciamento de traduções ou importador CSV
+::: tip Modo arquivo
+No driver de armazenamento `file`, o botão Sync to files fica bloqueado na UI
+— o modo arquivo já escreve em disco. Só executa com `--force` pela CLI.
+:::
 
-### Via facade
+### `lingua:update-lang` <Badge type="tip" text="Novidade na versão 2.0" />
 
-```php
-Lingua::syncToLocal();
-```
-
----
-
-## Atualizar a partir do Laravel Lang
-
-Busca as strings de tradução mais recentes do ecossistema `laravel-lang` e as sincroniza para o banco de dados. Útil após atualizar o Laravel ou adicionar um novo pacote que inclui traduções.
+Re-popula os locales instalados a partir do **conjunto de dados empacotado** e
+depois mescla os arquivos `lang/` locais por cima.
 
 ```bash
 php artisan lingua:update-lang
 ```
 
-Isso executa `lang:update` (do `laravel-lang/common`) seguido de `lingua:sync-to-database`.
+Equivalente UI: botão **Update** na página de Idiomas.
 
----
+Execute após instalar uma nova versão do Lingua para receber strings de tradução
+atualizadas.
 
-## Fluxos de trabalho de sincronização automatizados
+## O conjunto de dados empacotado <Badge type="tip" text="Novidade na versão 2.0" />
 
-### No deployment
+O Lingua 2.0 inclui um conjunto de dados de tradução interno — **sem dependência
+de `laravel-lang/common` ou downloads do GitHub**.
 
-Adicione uma etapa pós-deploy para manter o banco de dados sincronizado com seus arquivos lang commitados:
+| Detalhe | Valor |
+|---|---|
+| Locales | 26 |
+| Grupos | 7 (auth, passwords, pagination, validation, single + notificações) |
+| Total de strings | 5902 |
+| Alinhado com | Laravel v13.14.0 |
 
-```bash
-# No seu script de deploy ou pipeline CI/CD
-php artisan lingua:sync-to-database
-php artisan optimize:clear
+Quando você executa `lingua:add {locale}`, strings são populadas **instantaneamente**
+a partir deste conjunto. Nenhuma chamada de rede é feita.
+
+## Invalidação de cache cirúrgica
+
+Toda operação de sincronização invalida apenas as chaves de cache afetadas:
+
+```
+Cache::forget("lingua.trans.{$locale}.{$group}")
 ```
 
-### Via scheduler
+Edições em `auth.en` não invalidam `validation.fr` nem qualquer outro par não
+relacionado. Em aplicações de alto tráfego, isso previne ondas de cache frio
+após uma sincronização.
 
-Se sua equipe de tradução edita arquivos diretamente (em vez de pela interface), agende uma sincronização periódica:
+## Fluxos de trabalho típicos
 
-```php
-// routes/console.php
-Schedule::command('lingua:sync-to-database')->hourly();
-```
-
-### Ao instalar um pacote
-
-Quando você fizer `composer require` de um novo pacote que inclui traduções, execute:
+### Edição ao vivo + versionamento
 
 ```bash
+# 1. Editar strings na UI do Lingua
+# 2. Exportar após revisão
+php artisan lingua:sync-to-local
+git add lang/ && git commit -m "chore: sync translations"
+```
+
+### Import de planilha de agência
+
+```
+1. Export via página Transfer → CSV/XLSX bilíngue
+2. Agência preenche valores
+3. Import via página Transfer → prévia dry-run → confirmar
+4. php artisan lingua:sync-to-local  # opcional, se quiser arquivos em disco
+```
+
+### Atualizar conjunto de dados após upgrade do Lingua
+
+```bash
+composer update rivalex/lingua
 php artisan lingua:update-lang
 ```
 
-Isso importa quaisquer novas strings do pacote instalado.
+## Integridade dos dados
 
----
+- **Banco de dados vence sobre arquivos** em runtime (via `array_replace_recursive` no `LinguaManager`)
+- **Sync-to-database vence** para chaves importadas dos arquivos
+- **Valores editados na UI** são preservados entre sincronizações via `updateOrCreate`
 
-## Dicas e pegadinhas
-
-::: tip Mantenha o BD como fonte de verdade
-Trate o banco de dados como fonte primária. Sincronize para local apenas quando precisar de arquivos (controle de versão, deployment, etc.). Evite editar arquivos locais diretamente enquanto o BD estiver em uso - a próxima sincronização-para-banco-de-dados sobrescreverá suas edições se as chaves já existirem.
-:::
-
-::: warning Arquivos de locale e BD fora de sincronia
-Se você adicionar novos arquivos PHP de locale manualmente sem executar `lingua:sync-to-database`, as novas chaves estarão disponíveis apenas via file loader (prioridade menor que o BD). Execute sync para importá-las corretamente.
-:::
-
-::: tip Roundtrip completo
-Uma forma segura de reorganizar traduções:
-1. `lingua:sync-to-local` - exportar tudo
-2. Editar arquivos em disco
-3. `lingua:sync-to-database` - reimportar
-:::
+Veja [Como Funciona](/pt/guide/architecture#carregamento-de-traducoes) para a
+mecânica completa de mesclagem em runtime.

@@ -1,104 +1,207 @@
 # Livewire 事件
 
-Lingua 的 Livewire 组件通过命名事件进行通信。您可以在自己的 Livewire 组件、Alpine.js 代码或 JavaScript 中监听这些事件。
+Lingua 的 Livewire 组件在关键操作时发出命名事件。您可以在自己的 Livewire 组件、Alpine.js 代码或 JavaScript 中监听这些事件。
 
 ## 在 Livewire 中监听
 
 ```php
-use Livewire\Attributes\On;
+use Livewire\Component;
 
 class MyComponent extends Component
 {
-    #[On('language_added')]
-    public function handleLanguageAdded(): void
+    #[On('lingua:language-added')]
+    public function onLanguageAdded(string $locale): void
     {
-        // 当新语言添加时刷新某些内容
+        // 处理新语言添加事件
     }
 }
 ```
 
-## 在 Alpine.js / JavaScript 中监听
+## 在 Alpine.js 中监听
 
-```js
-window.addEventListener('language_added', (event) => {
-    console.log('A new language was added!', event.detail);
-});
+```html
+<div x-data x-on:lingua:translation-saved.window="handleSaved($event.detail)">
+    ...
+</div>
 
-// 或通过 Livewire 的事件系统：
-Livewire.on('language_added', () => {
-    // ...
-});
+<script>
+function handleSaved(detail) {
+    console.log('Translation saved:', detail.key, detail.locale);
+}
+</script>
 ```
 
 ---
 
 ## 语言事件
 
-| 事件 | 触发时机 |
-|---|---|
-| `language_added` | 新语言成功添加时 |
-| `language_added_fail` | 添加语言失败时 |
-| `refreshLanguages` | 任何需要重新渲染语言列表的语言变更 |
-| `language_default_set` | 默认语言被更改时 |
-| `language_default_fail` | 设置默认语言失败时 |
-| `languages_sorted` | 通过拖放重新排序语言时 |
-| `languages_sorted_fail` | 语言重新排序失败时 |
-| `lang_updated` | `lingua:update-lang` 成功完成时 |
-| `lang_updated_fail` | `lingua:update-lang` 失败时 |
-| `synced_database` | 同步到数据库成功完成时 |
-| `synced_database_fail` | 同步到数据库失败时 |
-| `synced_local` | 同步到本地成功完成时 |
-| `synced_local_fail` | 同步到本地失败时 |
+### `lingua:language-added`
+
+语言安装完成后发出。
+
+| 参数 | 类型 | 说明 |
+|---|---|---|
+| `locale` | `string` | 新安装的语言区域代码 |
+| `language` | `array` | 语言记录数据 |
+
+### `lingua:language-removed`
+
+语言卸载完成后发出。
+
+| 参数 | 类型 | 说明 |
+|---|---|---|
+| `locale` | `string` | 已卸载的语言区域代码 |
+
+### `lingua:default-language-changed`
+
+默认语言更改后发出。
+
+| 参数 | 类型 | 说明 |
+|---|---|---|
+| `locale` | `string` | 新的默认语言区域代码 |
+
+### `lingua:languages-reordered`
+
+通过拖拽重新排序语言后发出。
+
+| 参数 | 类型 | 说明 |
+|---|---|---|
+| `order` | `array` | 新的语言区域代码排序数组 |
+
+---
+
+## 数据库同步事件
+
+### `lingua:sync-to-database-started`
+
+`lingua:sync-to-database` 命令开始执行时发出。
+
+### `lingua:sync-to-database-completed`
+
+`lingua:sync-to-database` 命令完成时发出。
+
+| 参数 | 类型 | 说明 |
+|---|---|---|
+| `imported` | `int` | 导入的翻译条数 |
+| `updated` | `int` | 更新的翻译条数 |
+| `skipped` | `int` | 跳过的翻译条数 |
+
+### `lingua:sync-to-local-started`
+
+`lingua:sync-to-local` 命令开始执行时发出。
+
+### `lingua:sync-to-local-completed`
+
+`lingua:sync-to-local` 命令完成时发出。
+
+| 参数 | 类型 | 说明 |
+|---|---|---|
+| `exported` | `int` | 导出的翻译条数 |
 
 ---
 
 ## 翻译事件
 
-| 事件 | 触发时机 |
-|---|---|
-| `translation_deleted` | 翻译记录被完全删除时 |
-| `translation_delete_fail` | 删除翻译失败时 |
-| `translation_locale_deleted` | 单个语言环境的值从翻译中移除时 |
-| `translation_locale_delete_fail` | 移除语言环境值失败时 |
-| `vendor_translation_protected` | 尝试删除扩展包翻译时 |
-| `refreshTranslationsTableDefaults` | 翻译表应重新加载其默认语言环境列时 |
-| `refreshTranslationRow.{id}` | 特定翻译行应刷新时（通过翻译 ID 参数化） |
-| `updateTranslationModal.{id}` | 翻译的更新模态框应刷新时 |
+### `lingua:translation-saved`
+
+翻译值更新后发出。
+
+| 参数 | 类型 | 说明 |
+|---|---|---|
+| `key` | `string` | 翻译键 |
+| `group` | `string` | 翻译分组 |
+| `locale` | `string` | 更新的语言区域代码 |
+
+### `lingua:translation-created`
+
+新翻译记录创建后发出。
+
+| 参数 | 类型 | 说明 |
+|---|---|---|
+| `key` | `string` | 翻译键 |
+| `group` | `string` | 翻译分组 |
+
+### `lingua:translation-deleted`
+
+翻译记录删除后发出。
+
+| 参数 | 类型 | 说明 |
+|---|---|---|
+| `key` | `string` | 翻译键 |
+| `group` | `string` | 翻译分组 |
+
+### `lingua:translation-type-changed`
+
+翻译类型（`text`/`html`/`markdown`）更改后发出。
+
+| 参数 | 类型 | 说明 |
+|---|---|---|
+| `key` | `string` | 翻译键 |
+| `group` | `string` | 翻译分组 |
+| `type` | `string` | 新的翻译类型 |
 
 ---
 
-## 界面刷新事件
+## 设置事件
 
-| 事件 | 触发时机 |
-|---|---|
-| `refreshLanguageRows` | 所有语言行应重新渲染时（例如默认语言变更后） |
+### `lingua:setting-changed`
+
+设置值通过 UI 更新后发出。
+
+| 参数 | 类型 | 说明 |
+|---|---|---|
+| `key` | `string` | 设置键（例如 `'selector_mode'`） |
+| `value` | `mixed` | 新的设置值 |
 
 ---
 
-## 示例：添加语言时显示 Toast 通知
+## 传输事件 <Badge type="tip" text="2.0 新增" />
 
-使用 Alpine.js 和 Toast 库：
+### `lingua:export-completed`
 
-```blade
-<div
-    x-data="{ show: false, message: '' }"
-    x-on:language_added.window="message = 'Language added!'; show = true; setTimeout(() => show = false, 3000)"
->
-    <div x-show="show" class="toast">{{ message }}</div>
-</div>
-```
+导出文件生成完成后发出。
 
-## 示例：语言切换后重定向
+| 参数 | 类型 | 说明 |
+|---|---|---|
+| `format` | `string` | 导出格式（`'csv'`、`'json'`、`'xlsx'`、`'ods'`） |
+| `rows` | `int` | 导出的行数 |
 
-如果您希望语言选择器切换语言环境后重定向到不同的 URL（而非当前页面）：
+### `lingua:import-diff-ready`
 
-```php
-// 发布 LanguageSelector 并覆盖 changeLocale()：
-public function changeLocale($locale): void
-{
-    if (! Lingua::hasLocale($locale)) return;
-    Session::put(config('lingua.session_variable'), $locale);
-    app()->setLocale($locale);
-    $this->redirect(route('home'), navigate: true); // 重定向到首页
-}
-```
+干运行差异计算完成、等待用户确认时发出。
+
+| 参数 | 类型 | 说明 |
+|---|---|---|
+| `added` | `int` | 将新增的行数 |
+| `updated` | `int` | 将更新的行数 |
+| `skipped` | `int` | 将跳过的行数 |
+| `errors` | `int` | 错误行数 |
+
+### `lingua:import-committed`
+
+导入事务提交完成后发出。
+
+| 参数 | 类型 | 说明 |
+|---|---|---|
+| `added` | `int` | 实际新增的行数 |
+| `updated` | `int` | 实际更新的行数 |
+
+---
+
+## UI 刷新事件
+
+### `lingua:refresh-languages`
+
+触发语言列表 Livewire 组件重新渲染（通常在语言操作后由内部发出）。
+
+### `lingua:refresh-translations`
+
+触发翻译列表 Livewire 组件重新渲染（通常在批量操作后由内部发出）。
+
+### `lingua:locale-switched`
+
+用户通过语言选择器切换语言区域时发出（重定向发生前）。
+
+| 参数 | 类型 | 说明 |
+|---|---|---|
+| `locale` | `string` | 新选择的语言区域代码 |

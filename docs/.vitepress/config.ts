@@ -23,10 +23,10 @@ export default defineConfig({
           { text: 'Features', link: '/en/features/languages', activeMatch: '/en/features/' },
           { text: 'API Reference', link: '/en/api/facade', activeMatch: '/en/api/' },
           {
-            text: '1.x',
+            text: '2.x',
             items: [
               { text: 'Changelog', link: 'https://github.com/rivalex/lingua/blob/main/CHANGELOG.md' },
-              // { text: 'Contributing', link: 'https://github.com/rivalex/lingua/blob/main/.github/CONTRIBUTING.md' },
+              { text: 'Contributing', link: 'https://github.com/rivalex/lingua/blob/main/.github/CONTRIBUTING.md' },
             ],
           },
         ],
@@ -39,13 +39,15 @@ export default defineConfig({
                 { text: 'Installation', link: '/en/guide/installation' },
                 { text: 'Configuration', link: '/en/guide/configuration' },
                 { text: 'Quick Start', link: '/en/guide/quick-start' },
+                { text: 'Upgrading from 1.x', link: '/en/guide/upgrade' },
               ],
             },
             {
               text: 'Architecture',
               items: [
                 { text: 'How It Works', link: '/en/guide/architecture' },
-                { text: 'Translation Storage', link: '/en/guide/storage' },
+                { text: 'Storage Drivers', link: '/en/guide/storage' },
+                { text: 'Security', link: '/en/guide/security' },
                 { text: 'Publishing Assets', link: '/en/guide/publishing' },
               ],
             },
@@ -56,6 +58,7 @@ export default defineConfig({
               items: [
                 { text: 'Language Management', link: '/en/features/languages' },
                 { text: 'Translation Management', link: '/en/features/translations' },
+                { text: 'Import / Export', link: '/en/features/transfer' },
                 { text: 'Language Selector', link: '/en/features/language-selector' },
                 { text: 'Translation Statistics', link: '/en/features/statistics' },
                 { text: 'Settings', link: '/en/features/settings' },
@@ -104,7 +107,7 @@ export default defineConfig({
           { text: '功能', link: '/zh/features/languages', activeMatch: '/zh/features/' },
           { text: 'API 参考', link: '/zh/api/facade', activeMatch: '/zh/api/' },
           {
-            text: '1.x',
+            text: '2.x',
             items: [
               { text: '更新日志', link: 'https://github.com/rivalex/lingua/blob/main/CHANGELOG.md' },
               { text: '贡献', link: 'https://github.com/rivalex/lingua/blob/main/.github/CONTRIBUTING.md' },
@@ -120,13 +123,15 @@ export default defineConfig({
                 { text: '安装', link: '/zh/guide/installation' },
                 { text: '配置', link: '/zh/guide/configuration' },
                 { text: '快速开始', link: '/zh/guide/quick-start' },
+                { text: '从 1.x 升级', link: '/zh/guide/upgrade' },
               ],
             },
             {
               text: '架构',
               items: [
                 { text: '工作原理', link: '/zh/guide/architecture' },
-                { text: '翻译存储', link: '/zh/guide/storage' },
+                { text: '存储驱动程序', link: '/zh/guide/storage' },
+                { text: '安全', link: '/zh/guide/security' },
                 { text: '发布资源', link: '/zh/guide/publishing' },
               ],
             },
@@ -137,6 +142,7 @@ export default defineConfig({
               items: [
                 { text: '语言管理', link: '/zh/features/languages' },
                 { text: '翻译管理', link: '/zh/features/translations' },
+                { text: '导入 / 导出', link: '/zh/features/transfer' },
                 { text: '语言选择器', link: '/zh/features/language-selector' },
                 { text: '翻译统计', link: '/zh/features/statistics' },
                 { text: '设置', link: '/zh/features/settings' },
@@ -200,7 +206,7 @@ export default defineConfig({
           { text: 'विशेषताएं', link: '/hi/features/languages', activeMatch: '/hi/features/' },
           { text: 'API संदर्भ', link: '/hi/api/facade', activeMatch: '/hi/api/' },
           {
-            text: '1.x',
+            text: '2.x',
             items: [
               { text: 'परिवर्तन लॉग', link: 'https://github.com/rivalex/lingua/blob/main/CHANGELOG.md' },
               { text: 'योगदान', link: 'https://github.com/rivalex/lingua/blob/main/.github/CONTRIBUTING.md' },
@@ -216,13 +222,15 @@ export default defineConfig({
                 { text: 'स्थापना', link: '/hi/guide/installation' },
                 { text: 'कॉन्फ़िगरेशन', link: '/hi/guide/configuration' },
                 { text: 'त्वरित प्रारंभ', link: '/hi/guide/quick-start' },
+                { text: '1.x से अपग्रेड करें', link: '/hi/guide/upgrade' },
               ],
             },
             {
               text: 'आर्किटेक्चर',
               items: [
                 { text: 'यह कैसे काम करता है', link: '/hi/guide/architecture' },
-                { text: 'अनुवाद भंडारण', link: '/hi/guide/storage' },
+                { text: 'स्टोरेज ड्राइवर', link: '/hi/guide/storage' },
+                { text: 'सुरक्षा', link: '/hi/guide/security' },
                 { text: 'असेट प्रकाशित करें', link: '/hi/guide/publishing' },
               ],
             },
@@ -233,6 +241,7 @@ export default defineConfig({
               items: [
                 { text: 'भाषा प्रबंधन', link: '/hi/features/languages' },
                 { text: 'अनुवाद प्रबंधन', link: '/hi/features/translations' },
+                { text: 'आयात / निर्यात', link: '/hi/features/transfer' },
                 { text: 'भाषा चयनकर्ता', link: '/hi/features/language-selector' },
                 { text: 'अनुवाद सांख्यिकी', link: '/hi/features/statistics' },
                 { text: 'सेटिंग्स', link: '/hi/features/settings' },
@@ -296,7 +305,7 @@ export default defineConfig({
           { text: 'Características', link: '/es/features/languages', activeMatch: '/es/features/' },
           { text: 'Referencia API', link: '/es/api/facade', activeMatch: '/es/api/' },
           {
-            text: '1.x',
+            text: '2.x',
             items: [
               { text: 'Registro de cambios', link: 'https://github.com/rivalex/lingua/blob/main/CHANGELOG.md' },
               { text: 'Contribuir', link: 'https://github.com/rivalex/lingua/blob/main/.github/CONTRIBUTING.md' },
@@ -312,13 +321,15 @@ export default defineConfig({
                 { text: 'Instalación', link: '/es/guide/installation' },
                 { text: 'Configuración', link: '/es/guide/configuration' },
                 { text: 'Inicio rápido', link: '/es/guide/quick-start' },
+                { text: 'Actualizar desde 1.x', link: '/es/guide/upgrade' },
               ],
             },
             {
               text: 'Arquitectura',
               items: [
                 { text: 'Cómo funciona', link: '/es/guide/architecture' },
-                { text: 'Almacenamiento', link: '/es/guide/storage' },
+                { text: 'Controladores de almacenamiento', link: '/es/guide/storage' },
+                { text: 'Seguridad', link: '/es/guide/security' },
                 { text: 'Publicar assets', link: '/es/guide/publishing' },
               ],
             },
@@ -329,6 +340,7 @@ export default defineConfig({
               items: [
                 { text: 'Gestión de idiomas', link: '/es/features/languages' },
                 { text: 'Gestión de traducciones', link: '/es/features/translations' },
+                { text: 'Importar / Exportar', link: '/es/features/transfer' },
                 { text: 'Selector de idioma', link: '/es/features/language-selector' },
                 { text: 'Estadísticas', link: '/es/features/statistics' },
                 { text: 'Configuración', link: '/es/features/settings' },
@@ -393,7 +405,7 @@ export default defineConfig({
           { text: 'المميزات', link: '/ar/features/languages', activeMatch: '/ar/features/' },
           { text: 'مرجع API', link: '/ar/api/facade', activeMatch: '/ar/api/' },
           {
-            text: '1.x',
+            text: '2.x',
             items: [
               { text: 'سجل التغييرات', link: 'https://github.com/rivalex/lingua/blob/main/CHANGELOG.md' },
               { text: 'المساهمة', link: 'https://github.com/rivalex/lingua/blob/main/.github/CONTRIBUTING.md' },
@@ -409,13 +421,15 @@ export default defineConfig({
                 { text: 'التثبيت', link: '/ar/guide/installation' },
                 { text: 'الإعداد', link: '/ar/guide/configuration' },
                 { text: 'البداية السريعة', link: '/ar/guide/quick-start' },
+                { text: 'الترقية من 1.x', link: '/ar/guide/upgrade' },
               ],
             },
             {
               text: 'البنية',
               items: [
                 { text: 'كيف يعمل', link: '/ar/guide/architecture' },
-                { text: 'تخزين الترجمات', link: '/ar/guide/storage' },
+                { text: 'برامج تشغيل التخزين', link: '/ar/guide/storage' },
+                { text: 'الأمان', link: '/ar/guide/security' },
                 { text: 'نشر الموارد', link: '/ar/guide/publishing' },
               ],
             },
@@ -426,6 +440,7 @@ export default defineConfig({
               items: [
                 { text: 'إدارة اللغات', link: '/ar/features/languages' },
                 { text: 'إدارة الترجمات', link: '/ar/features/translations' },
+                { text: 'استيراد / تصدير', link: '/ar/features/transfer' },
                 { text: 'محدد اللغة', link: '/ar/features/language-selector' },
                 { text: 'إحصائيات الترجمة', link: '/ar/features/statistics' },
                 { text: 'الإعدادات', link: '/ar/features/settings' },
@@ -489,7 +504,7 @@ export default defineConfig({
           { text: 'Fonctionnalités', link: '/fr/features/languages', activeMatch: '/fr/features/' },
           { text: 'Référence API', link: '/fr/api/facade', activeMatch: '/fr/api/' },
           {
-            text: '1.x',
+            text: '2.x',
             items: [
               { text: 'Journal des modifications', link: 'https://github.com/rivalex/lingua/blob/main/CHANGELOG.md' },
               { text: 'Contribuer', link: 'https://github.com/rivalex/lingua/blob/main/.github/CONTRIBUTING.md' },
@@ -505,13 +520,15 @@ export default defineConfig({
                 { text: 'Installation', link: '/fr/guide/installation' },
                 { text: 'Configuration', link: '/fr/guide/configuration' },
                 { text: 'Démarrage rapide', link: '/fr/guide/quick-start' },
+                { text: 'Mettre à jour depuis 1.x', link: '/fr/guide/upgrade' },
               ],
             },
             {
               text: 'Architecture',
               items: [
                 { text: 'Comment ça marche', link: '/fr/guide/architecture' },
-                { text: 'Stockage des traductions', link: '/fr/guide/storage' },
+                { text: 'Pilotes de stockage', link: '/fr/guide/storage' },
+                { text: 'Sécurité', link: '/fr/guide/security' },
                 { text: 'Publication des assets', link: '/fr/guide/publishing' },
               ],
             },
@@ -522,6 +539,7 @@ export default defineConfig({
               items: [
                 { text: 'Gestion des langues', link: '/fr/features/languages' },
                 { text: 'Gestion des traductions', link: '/fr/features/translations' },
+                { text: 'Import / Export', link: '/fr/features/transfer' },
                 { text: 'Sélecteur de langue', link: '/fr/features/language-selector' },
                 { text: 'Statistiques', link: '/fr/features/statistics' },
                 { text: 'Paramètres', link: '/fr/features/settings' },
@@ -585,7 +603,7 @@ export default defineConfig({
           { text: 'Recursos', link: '/pt/features/languages', activeMatch: '/pt/features/' },
           { text: 'Referência API', link: '/pt/api/facade', activeMatch: '/pt/api/' },
           {
-            text: '1.x',
+            text: '2.x',
             items: [
               { text: 'Registro de alterações', link: 'https://github.com/rivalex/lingua/blob/main/CHANGELOG.md' },
               { text: 'Contribuir', link: 'https://github.com/rivalex/lingua/blob/main/.github/CONTRIBUTING.md' },
@@ -601,13 +619,15 @@ export default defineConfig({
                 { text: 'Instalação', link: '/pt/guide/installation' },
                 { text: 'Configuração', link: '/pt/guide/configuration' },
                 { text: 'Início rápido', link: '/pt/guide/quick-start' },
+                { text: 'Atualizar do 1.x', link: '/pt/guide/upgrade' },
               ],
             },
             {
               text: 'Arquitetura',
               items: [
                 { text: 'Como funciona', link: '/pt/guide/architecture' },
-                { text: 'Armazenamento', link: '/pt/guide/storage' },
+                { text: 'Drivers de armazenamento', link: '/pt/guide/storage' },
+                { text: 'Segurança', link: '/pt/guide/security' },
                 { text: 'Publicar assets', link: '/pt/guide/publishing' },
               ],
             },
@@ -618,6 +638,7 @@ export default defineConfig({
               items: [
                 { text: 'Gerenciar idiomas', link: '/pt/features/languages' },
                 { text: 'Gerenciar traduções', link: '/pt/features/translations' },
+                { text: 'Importar / Exportar', link: '/pt/features/transfer' },
                 { text: 'Seletor de idioma', link: '/pt/features/language-selector' },
                 { text: 'Estatísticas', link: '/pt/features/statistics' },
                 { text: 'Configurações', link: '/pt/features/settings' },
@@ -681,7 +702,7 @@ export default defineConfig({
           { text: 'Возможности', link: '/ru/features/languages', activeMatch: '/ru/features/' },
           { text: 'Справочник API', link: '/ru/api/facade', activeMatch: '/ru/api/' },
           {
-            text: '1.x',
+            text: '2.x',
             items: [
               { text: 'История изменений', link: 'https://github.com/rivalex/lingua/blob/main/CHANGELOG.md' },
               { text: 'Участие в разработке', link: 'https://github.com/rivalex/lingua/blob/main/.github/CONTRIBUTING.md' },
@@ -697,13 +718,15 @@ export default defineConfig({
                 { text: 'Установка', link: '/ru/guide/installation' },
                 { text: 'Конфигурация', link: '/ru/guide/configuration' },
                 { text: 'Быстрый старт', link: '/ru/guide/quick-start' },
+                { text: 'Обновление с 1.x', link: '/ru/guide/upgrade' },
               ],
             },
             {
               text: 'Архитектура',
               items: [
                 { text: 'Как это работает', link: '/ru/guide/architecture' },
-                { text: 'Хранилище переводов', link: '/ru/guide/storage' },
+                { text: 'Драйверы хранилища', link: '/ru/guide/storage' },
+                { text: 'Безопасность', link: '/ru/guide/security' },
                 { text: 'Публикация ресурсов', link: '/ru/guide/publishing' },
               ],
             },
@@ -714,6 +737,7 @@ export default defineConfig({
               items: [
                 { text: 'Управление языками', link: '/ru/features/languages' },
                 { text: 'Управление переводами', link: '/ru/features/translations' },
+                { text: 'Импорт / Экспорт', link: '/ru/features/transfer' },
                 { text: 'Выбор языка', link: '/ru/features/language-selector' },
                 { text: 'Статистика переводов', link: '/ru/features/statistics' },
                 { text: 'Настройки', link: '/ru/features/settings' },
@@ -777,7 +801,7 @@ export default defineConfig({
           { text: 'Funzionalità', link: '/it/features/languages', activeMatch: '/it/features/' },
           { text: 'Riferimento API', link: '/it/api/facade', activeMatch: '/it/api/' },
           {
-            text: '1.x',
+            text: '2.x',
             items: [
               { text: 'Changelog', link: 'https://github.com/rivalex/lingua/blob/main/CHANGELOG.md' },
               { text: 'Contribuire', link: 'https://github.com/rivalex/lingua/blob/main/.github/CONTRIBUTING.md' },
@@ -789,17 +813,19 @@ export default defineConfig({
             {
               text: 'Per iniziare',
               items: [
-                { text: 'Cos\'è Lingua?', link: '/it/guide/introduction' },
+                { text: "Cos'è Lingua?", link: '/it/guide/introduction' },
                 { text: 'Installazione', link: '/it/guide/installation' },
                 { text: 'Configurazione', link: '/it/guide/configuration' },
                 { text: 'Avvio rapido', link: '/it/guide/quick-start' },
+                { text: 'Aggiornamento da 1.x', link: '/it/guide/upgrade' },
               ],
             },
             {
               text: 'Architettura',
               items: [
                 { text: 'Come funziona', link: '/it/guide/architecture' },
-                { text: 'Archiviazione traduzioni', link: '/it/guide/storage' },
+                { text: 'Driver di archiviazione', link: '/it/guide/storage' },
+                { text: 'Sicurezza', link: '/it/guide/security' },
                 { text: 'Pubblicazione asset', link: '/it/guide/publishing' },
               ],
             },
@@ -810,6 +836,7 @@ export default defineConfig({
               items: [
                 { text: 'Gestione lingue', link: '/it/features/languages' },
                 { text: 'Gestione traduzioni', link: '/it/features/translations' },
+                { text: 'Importa / Esporta', link: '/it/features/transfer' },
                 { text: 'Selettore lingua', link: '/it/features/language-selector' },
                 { text: 'Statistiche', link: '/it/features/statistics' },
                 { text: 'Impostazioni', link: '/it/features/settings' },

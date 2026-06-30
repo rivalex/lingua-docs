@@ -1,6 +1,7 @@
-# Publication des assets
+# Publier les ressources
 
-Lingua est livré avec plusieurs groupes publiables pour vous permettre de ne remplacer que les parties dont vous avez besoin.
+Lingua est livré avec plusieurs groupes publiables pour vous permettre de ne
+remplacer que les parties dont vous avez besoin.
 
 ## Tout publier en une fois
 
@@ -8,7 +9,7 @@ Lingua est livré avec plusieurs groupes publiables pour vous permettre de ne re
 php artisan vendor:publish --provider="Rivalex\Lingua\LinguaServiceProvider"
 ```
 
-## Tags individuels
+## Tags disponibles
 
 ### `lingua-config`
 
@@ -20,7 +21,9 @@ php artisan vendor:publish --tag="lingua-config"
 
 **Sortie :** `config/lingua.php`
 
-Utilisez ceci pour personnaliser les routes, le middleware, le mode du sélecteur, la barre d'outils de l'éditeur ou toute autre option.
+Utilisez ceci pour personnaliser les routes, le middleware, le pilote de stockage, le mode
+du sélecteur, la barre d'outils de l'éditeur, le cache ou toute autre option. Voir
+[Configuration](/fr/guide/configuration).
 
 ---
 
@@ -32,19 +35,29 @@ Publie les migrations de base de données.
 php artisan vendor:publish --tag="lingua-migrations"
 ```
 
-**Sortie :** `database/migrations/YYYY_MM_DD_HHMMSS_create_lingua_table.php`
+<Badge type="tip" text="Nouveau dans la 2.0" /> Les migrations sont maintenant **adaptées au pilote**
+et divisées en trois fichiers séparés :
 
-Utilisez ceci si vous devez modifier le schéma `languages` ou `language_lines` - par exemple, pour ajouter des index ou changer les types de colonnes. Après la publication, exécutez `php artisan migrate` normalement.
+| Migration | Publiée pour |
+|---|---|
+| `create_language_lines_table` | pilote database uniquement |
+| `create_languages_table` | les deux pilotes |
+| `create_lingua_settings_table` | les deux pilotes |
+
+Le pilote `file` ignore `create_language_lines_table`. L'assistant `lingua:install`
+publie le bon ensemble pour le pilote que vous choisissez, vous n'avez donc besoin de
+ce tag que si vous souhaitez personnaliser le schéma avant d'exécuter les migrations.
 
 ::: warning
-L'assistant `lingua:install` publie et exécute les migrations automatiquement. Ne publiez manuellement que si vous devez personnaliser le schéma avant de les exécuter.
+L'assistant `lingua:install` publie et exécute les migrations automatiquement.
+Ne publiez manuellement que si vous devez personnaliser le schéma en premier.
 :::
 
 ---
 
 ### `lingua-translations`
 
-Publie les chaînes de traduction de l'interface du package.
+Publie les chaînes de traduction de l'interface du package (9 locales d'interface).
 
 ```bash
 php artisan vendor:publish --tag="lingua-translations"
@@ -52,22 +65,16 @@ php artisan vendor:publish --tag="lingua-translations"
 
 **Sortie :** `lang/vendor/lingua/{locale}/lingua.php`
 
-Cela expose chaque libellé, titre, bouton et message utilisé dans l'interface Lingua. Remplacez n'importe quelle chaîne pour :
-- Traduire l'interface dans la langue de votre application
-- Adapter le vocabulaire au style de votre projet (ex. "Add language" → "Installer une locale")
-
-Les fichiers publiés suivent la structure standard des traductions de packages Laravel :
+Remplacez n'importe quel libellé, titre, bouton ou message utilisé dans l'interface Lingua
+pour traduire l'interface ou adapter le vocabulaire au style de votre projet.
 
 ```
 lang/
 └── vendor/
     └── lingua/
-        ├── en/
-        │   └── lingua.php
-        ├── fr/
-        │   └── lingua.php
-        └── it/
-            └── lingua.php
+        ├── en/lingua.php
+        ├── fr/lingua.php
+        └── it/lingua.php
 ```
 
 ---
@@ -82,58 +89,40 @@ php artisan vendor:publish --tag="lingua-views"
 
 **Sortie :** `resources/views/vendor/lingua/`
 
-Utilisez ceci pour personnaliser les layouts, les modales ou le composant sélecteur de langue. Laravel utilise automatiquement vos vues publiées à la place des valeurs par défaut du package.
-
-```
-resources/views/vendor/lingua/
-├── components/
-│   ├── autocomplete.blade.php
-│   ├── clipboard.blade.php
-│   ├── editor.blade.php
-│   ├── language-flag.blade.php
-│   ├── menu-group.blade.php
-│   └── message.blade.php
-└── livewire/
-    ├── languages.blade.php
-    ├── language-selector.blade.php
-    ├── translations.blade.php
-    └── translation/
-        ├── create.blade.php
-        ├── delete.blade.php
-        ├── row.blade.php
-        └── update.blade.php
-```
+Utilisez ceci pour personnaliser les layouts, les modales ou le sélecteur de langue. Laravel
+utilise automatiquement vos vues publiées à la place des valeurs par défaut du package.
 
 ::: tip
-Ne publiez que les vues que vous avez l'intention de modifier. Les vues non publiées sont servies directement depuis le package et reçoivent automatiquement les mises à jour en amont.
+Ne publiez que les vues que vous avez l'intention de modifier. Les vues non publiées sont
+servies depuis le package et reçoivent automatiquement les mises à jour en amont.
 :::
 
 ---
 
-### `lingua-assets`
+### `lingua-assets` (supprimé) <Badge type="warning" text="Supprimé dans la 2.0" />
 
-Publie les CSS et JavaScript compilés dans `public/`.
-
-```bash
-php artisan vendor:publish --tag="lingua-assets"
-```
-
-**Sortie :** `public/vendor/lingua/`
-
-Requis uniquement si vous servez les assets directement depuis `public/` plutôt que via Vite ou un CDN. **Relancez cette commande après chaque mise à jour de Lingua** pour garder les assets synchronisés.
+Le tag de publication `lingua-assets` **n'existe plus**. Dans la 2.0, les CSS/JS compilés
+de Lingua sont servis en interne via la route `lingua.assets`
+(derrière un espace confiné realpath — voir
+[Sécurité](/fr/guide/security#asset-security)). Il n'y a rien à publier ni à copier
+dans `public/`, et rien à re-publier après une mise à niveau.
 
 ---
 
 ## Mise à jour après les mises à niveau
 
-Après avoir mis à jour Lingua via Composer, republiez les assets modifiés :
+Après avoir mis à jour Lingua via Composer, re-publiez les traductions de l'interface si
+vous ne les avez pas personnalisées, et fusionnez les nouvelles clés de configuration :
 
 ```bash
-# Toujours republier les assets compilés
-php artisan vendor:publish --tag="lingua-assets" --force
-
-# Republier les traductions de l'interface si vous ne les avez pas personnalisées
+# Re-publier les traductions de l'interface (écrase)
 php artisan vendor:publish --tag="lingua-translations" --force
+
+# Re-publier la configuration pour récupérer les nouvelles clés, puis fusionner manuellement
+php artisan vendor:publish --tag="lingua-config" --force
 ```
 
-L'indicateur `--force` écrase les fichiers existants. Omettez-le pour `lingua-views` et `lingua-config` pour préserver vos personnalisations locales.
+L'option `--force` écrase les fichiers existants. Omettez-la pour `lingua-views`
+et `lingua-config` pour préserver vos personnalisations locales, et fusionnez les nouvelles
+clés manuellement. Voir le [guide de mise à niveau](/fr/guide/upgrade) pour la liste
+complète 1.x → 2.0.

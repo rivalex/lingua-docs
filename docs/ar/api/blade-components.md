@@ -1,50 +1,115 @@
 # مكونات Blade
 
-تُسجِّل Lingua عدة مكونات Blade مجهولة تحت البادئة `lingua::`. تُستخدم هذه داخليًا في عروض Livewire ويمكن إعادة استخدامها في قوالبك الخاصة.
+تُسجِّل Lingua مكونات Blade مجهولة تحت البادئة `lingua::`. تُستخدم
+داخلياً في عروض Livewire ويمكن إعادة استخدامها في قوالبك الخاصة.
 
-## `<x-lingua::editor>`
+---
 
-مكون محرر متعدد الأشكال يُعرض كـ `<textarea>` أو محرر HTML بـ TipTap أو محرر Markdown بـ TipTap بناءً على خاصية `type`.
+## `<x-lingua::nav>` <Badge type="tip" text="جديد في 2.0" />
+
+قائمة التنقل المشتركة التي تظهر على جميع صفحات Lingua الخمس.
 
 ```blade
-{{-- Plain text --}}
-<x-lingua::editor
-    wire:model="value"
-    type="text"
-    placeholder="Enter text…"
-/>
+<x-lingua::nav :current="'languages'" />
+```
 
-{{-- HTML --}}
-<x-lingua::editor
-    wire:model="value"
-    type="html"
-    label="Body content"
-    :required="true"
-/>
+| الخاصية | النوع | الوصف |
+|---|---|---|
+| `current` | string | اسم الصفحة الحالية لتمييز الرابط النشط |
 
-{{-- Markdown --}}
-<x-lingua::editor
-    wire:model="value"
-    type="markdown"
-    placeholder="Write in Markdown…"
+يمكن تعطيلها من الإعدادات أو `config/lingua.php`:
+
+```php
+'nav' => ['enabled' => false],
+```
+
+---
+
+## `<x-lingua::select>` <Badge type="tip" text="جديد في 2.0" />
+
+حقل اختيار مدعوم بـ **Popover API الأصلي** (`popover="manual"`).
+يحل مشكلة انقطاع `transform`+`overflow` في حوارات Flux.
+
+```blade
+<x-lingua::select
+    :options="$languages"
+    wire:model="locale"
+    placeholder="اختر لغة…"
 />
 ```
 
-### الخصائص
+| الخاصية | النوع | الوصف |
+|---|---|---|
+| `options` | Collection/array | خيارات القائمة |
+| `wire:model` | - | ربط Livewire |
+| `placeholder` | string | نص عنصر نائب |
+
+---
+
+## `<x-lingua::stat>`
+
+يعرض بطاقة إحصاء مع رقم وتسمية.
+
+```blade
+<x-lingua::stat :value="$total" label="إجمالي الترجمات" />
+```
+
+---
+
+## `<x-lingua::card>` و `<x-lingua::card.row>`
+
+حاوية بطاقة مع صفوف للإعدادات وصفحات التفصيل.
+
+```blade
+<x-lingua::card>
+    <x-lingua::card.row label="وضع المحدد">
+        sidebar
+    </x-lingua::card.row>
+</x-lingua::card>
+```
+
+---
+
+## `<x-lingua::branding>`
+
+شارة العلامة التجارية وأيقونة Lingua.
+
+```blade
+<x-lingua::branding />
+```
+
+---
+
+## `<x-lingua::validation-errors>`
+
+يعرض أخطاء تحقق Livewire.
+
+```blade
+<x-lingua::validation-errors />
+```
+
+---
+
+## `<x-lingua::editor>`
+
+محرر متعدد الأشكال (`text`/`html`/`markdown`). انظر [محرر النص الغني](/ar/features/rich-text).
+
+```blade
+<x-lingua::editor wire:model="value" type="html" label="المحتوى" />
+```
 
 | الخاصية | النوع | الافتراضي | الوصف |
 |---|---|---|---|
 | `type` | string | `'text'` | `'text'` أو `'html'` أو `'markdown'` |
-| `label` | string | `''` | تسمية اختيارية فوق الحقل |
-| `placeholder` | string | `''` | نص العنصر النائب |
-| `required` | bool | `false` | يعرض شارة مطلوب |
-| `wire:model` | - | - | ربط نموذج Livewire |
+| `label` | string | `''` | تسمية اختيارية |
+| `placeholder` | string | `''` | عنصر نائب |
+| `required` | bool | `false` | شارة مطلوب |
 
 ---
 
 ## `<x-lingua::clipboard>`
 
-غلاف يضيف زر نسخ إلى الحافظة حول محتوى slot.
+يضيف زر نسخ إلى الحافظة.
 
 ```blade
 <x-lingua::clipboard text-to-copy="auth.failed">
@@ -52,20 +117,16 @@
 </x-lingua::clipboard>
 ```
 
-النقر على المكون ينسخ `text-to-copy` إلى الحافظة ويعرض علامة صح لفترة وجيزة.
-
-### الخصائص
-
 | الخاصية | النوع | الوصف |
 |---|---|---|
-| `text-to-copy` | string | النص المراد نسخه إلى الحافظة |
-| `show-tooltip` | bool | عرض تلميح عند التمرير (الافتراضي: `false`) |
+| `text-to-copy` | string | النص المُنسَخ |
+| `show-tooltip` | bool | عرض تلميح عند التمرير |
 
 ---
 
 ## `<x-lingua::language-flag>`
 
-يُعرض أيقونة علم واسم اللغة للغة معطاة.
+يعرض أيقونة علم واسم لغة.
 
 ```blade
 <x-lingua::language-flag
@@ -75,21 +136,13 @@
 />
 ```
 
-### الخصائص
-
-| الخاصية | النوع | الوصف |
-|---|---|---|
-| `name` | string | اسم اللغة بالإنجليزية |
-| `code` | string | رمز اللغة للبحث عن العلم |
-| `description` | string | الاسم الأصلي للغة (عنوان فرعي) |
-
-يستخدم `outhebox/blade-flags` لصور SVG للأعلام. إذا لم يكن علم متاحًا للرمز، يتراجع بأمان إلى عرض نص الرمز.
+يتراجع بأمان إلى عرض الرمز النصي إذا لم يتوفر علم للرمز.
 
 ---
 
 ## `<x-lingua::message>`
 
-مكون رسالة مؤقتة يظهر لفترة قصيرة بعد حدث Livewire.
+رسالة مؤقتة تظهر بعد حدث Livewire.
 
 ```blade
 <x-lingua::message on="translation_saved" :delay="2000">
@@ -97,61 +150,43 @@
 </x-lingua::message>
 ```
 
-### الخصائص
-
 | الخاصية | النوع | الافتراضي | الوصف |
 |---|---|---|---|
-| `on` | string | - | اسم حدث Livewire للاستماع إليه |
-| `delay` | int | `1500` | المدة بالميلي ثانية قبل الإخفاء |
+| `on` | string | - | اسم حدث Livewire |
+| `delay` | int | `1500` | مدة الظهور بالميلي ثانية |
 
 ---
 
 ## `<x-lingua::autocomplete>`
 
-مكون حقل إدخال بإكمال تلقائي يُستخدم في نموذج إنشاء الترجمة.
+حقل إدخال بإكمال تلقائي.
 
 ```blade
 <x-lingua::autocomplete
     wire:model="group"
     :suggestions="$availableGroups"
-    placeholder="e.g. marketing"
+    placeholder="مثل: marketing"
 />
 ```
-
-### الخصائص
-
-| الخاصية | النوع | الوصف |
-|---|---|---|
-| `wire:model` | - | ربط نموذج Livewire |
-| `suggestions` | array | مصفوفة اقتراحات الإكمال التلقائي |
-| `placeholder` | string | عنصر نائب لحقل الإدخال |
 
 ---
 
 ## `<x-lingua::menu-group>`
 
-مكون مجموعة تنقل للقوائم الجانبية.
+مجموعة تنقل للأشرطة الجانبية.
 
 ```blade
-<x-lingua::menu-group heading="Languages">
-    {{-- menu items slot --}}
+<x-lingua::menu-group heading="اللغات">
+    {{-- menu items --}}
 </x-lingua::menu-group>
 ```
-
-### الخصائص
-
-| الخاصية | النوع | الوصف |
-|---|---|---|
-| `heading` | string | نص عنوان المجموعة |
 
 ---
 
 ## تخصيص المكونات
 
-انشر جميع عروض المكونات لتجاوزها:
-
 ```bash
 php artisan vendor:publish --tag="lingua-views"
 ```
 
-العروض المنشورة في `resources/views/vendor/lingua/components/`. يستخدم Laravel إصدارك المنشور تلقائيًا.
+المكونات المنشورة في `resources/views/vendor/lingua/components/`.

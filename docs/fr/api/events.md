@@ -1,6 +1,7 @@
-# Événements Livewire
+# Événements
 
-Les composants Livewire de Lingua communiquent via des événements nommés. Vous pouvez écouter ces événements dans vos propres composants Livewire, code Alpine.js ou JavaScript.
+Les composants Livewire de Lingua communiquent via des événements nommés. Écoutez-les
+dans vos propres composants Livewire, code Alpine.js ou JavaScript.
 
 ## Écouter dans Livewire
 
@@ -12,7 +13,7 @@ class MyComponent extends Component
     #[On('language_added')]
     public function handleLanguageAdded(): void
     {
-        // Rafraîchir quelque chose quand une nouvelle langue est ajoutée
+        // Rafraîchir quand une nouvelle langue est ajoutée
     }
 }
 ```
@@ -21,13 +22,11 @@ class MyComponent extends Component
 
 ```js
 window.addEventListener('language_added', (event) => {
-    console.log('Une nouvelle langue a été ajoutée !', event.detail);
+    console.log('Nouvelle langue ajoutée !', event.detail);
 });
 
-// Ou via le système d'événements de Livewire :
-Livewire.on('language_added', () => {
-    // ...
-});
+// Via le système d'événements de Livewire :
+Livewire.on('language_added', () => { /* … */ });
 ```
 
 ---
@@ -36,19 +35,26 @@ Livewire.on('language_added', () => {
 
 | Événement | Déclenché quand |
 |---|---|
-| `language_added` | Une nouvelle langue a été ajoutée avec succès |
-| `language_added_fail` | L'ajout d'une langue a échoué |
-| `refreshLanguages` | Tout changement de langue nécessitant le re-rendu de la liste des langues |
-| `language_default_set` | La langue par défaut a été modifiée |
-| `language_default_fail` | La définition de la langue par défaut a échoué |
-| `languages_sorted` | Les langues ont été réordonnées par glisser-déposer |
-| `languages_sorted_fail` | Le réordonnancement des langues a échoué |
-| `lang_updated` | `lingua:update-lang` s'est terminé avec succès |
+| `language_added` | Langue ajoutée avec succès |
+| `language_added_fail` | Échec d'ajout de langue |
+| `refreshLanguages` | Changement nécessitant le re-rendu de la liste |
+| `language_default_set` | Langue par défaut modifiée |
+| `language_default_fail` | Échec de définition de langue par défaut |
+| `languages_sorted` | Langues réordonnées par glisser-déposer |
+| `languages_sorted_fail` | Échec du réordonnancement |
+| `lang_updated` | `lingua:update-lang` terminé avec succès |
 | `lang_updated_fail` | `lingua:update-lang` a échoué |
-| `synced_database` | La synchronisation vers la base de données s'est terminée avec succès |
-| `synced_database_fail` | La synchronisation vers la base de données a échoué |
-| `synced_local` | La synchronisation vers le stockage local s'est terminée avec succès |
-| `synced_local_fail` | La synchronisation vers le stockage local a échoué |
+
+---
+
+## Événements de synchronisation DB
+
+| Événement | Déclenché quand |
+|---|---|
+| `synced_database` | `sync-to-database` terminé avec succès |
+| `synced_database_fail` | `sync-to-database` a échoué |
+| `synced_local` | `sync-to-local` terminé avec succès |
+| `synced_local_fail` | `sync-to-local` a échoué |
 
 ---
 
@@ -56,14 +62,36 @@ Livewire.on('language_added', () => {
 
 | Événement | Déclenché quand |
 |---|---|
-| `translation_deleted` | Un enregistrement de traduction a été entièrement supprimé |
-| `translation_delete_fail` | La suppression d'une traduction a échoué |
-| `translation_locale_deleted` | La valeur d'une seule locale a été retirée d'une traduction |
-| `translation_locale_delete_fail` | La suppression d'une valeur de locale a échoué |
-| `vendor_translation_protected` | Une tentative de suppression d'une traduction de package a été effectuée |
-| `refreshTranslationsTableDefaults` | La table des traductions doit recharger sa colonne de locale par défaut |
-| `refreshTranslationRow.{id}` | Une ligne de traduction spécifique doit être rafraîchie (paramétré par l'ID de traduction) |
-| `updateTranslationModal.{id}` | La modale de mise à jour pour une traduction doit être rafraîchie |
+| `translation_deleted` | Enregistrement de traduction entièrement supprimé |
+| `translation_delete_fail` | Suppression de traduction échouée |
+| `translation_locale_deleted` | Valeur d'une locale retirée d'une traduction |
+| `translation_locale_delete_fail` | Suppression de valeur de locale échouée |
+| `vendor_translation_protected` | Tentative de suppression d'une traduction vendor |
+| `refreshTranslationsTableDefaults` | La table doit recharger la colonne locale par défaut |
+| `refreshTranslationRow.{id}` | Une ligne spécifique doit être rafraîchie (paramétré) |
+| `updateTranslationModal.{id}` | La modal de mise à jour doit être rafraîchie |
+
+---
+
+## Événements de paramètres <Badge type="tip" text="Nouveau dans la 2.0" />
+
+| Événement | Déclenché quand |
+|---|---|
+| `settings_saved` | Un paramètre est mis à jour depuis la page Paramètres |
+| `settings_save_fail` | Échec de sauvegarde de paramètre |
+
+---
+
+## Événements de transfert <Badge type="tip" text="Nouveau dans la 2.0" />
+
+| Événement | Déclenché quand |
+|---|---|
+| `export_started` | Export démarré |
+| `export_completed` | Fichier d'export prêt au téléchargement |
+| `export_failed` | Export échoué |
+| `import_diff_ready` | Diff dry-run calculé, prêt à l'affichage |
+| `import_committed` | Import transactionnel appliqué avec succès |
+| `import_failed` | Import échoué (rollback effectué) |
 
 ---
 
@@ -71,13 +99,13 @@ Livewire.on('language_added', () => {
 
 | Événement | Déclenché quand |
 |---|---|
-| `refreshLanguageRows` | Toutes les lignes de langue doivent être re-rendues (ex. après un changement de langue par défaut) |
+| `refreshLanguageRows` | Lignes de langue nécessitant un re-rendu |
 
 ---
 
-## Exemple : Afficher une notification quand une langue est ajoutée
+## Exemples
 
-Avec Alpine.js et une bibliothèque de notifications :
+### Notification quand une langue est ajoutée
 
 ```blade
 <div
@@ -88,17 +116,20 @@ Avec Alpine.js et une bibliothèque de notifications :
 </div>
 ```
 
-## Exemple : Rediriger après un changement de locale
+### Réagir à la protection vendor
 
-Si vous souhaitez rediriger vers une URL différente après que le sélecteur de langue change de locale (au lieu de la page courante) :
+```js
+window.addEventListener('vendor_translation_protected', () => {
+    alert('Cette traduction est protégée et ne peut pas être supprimée.');
+});
+```
+
+### Rediriger après un import
 
 ```php
-// Publier LanguageSelector et remplacer changeLocale() :
-public function changeLocale($locale): void
+#[On('import_committed')]
+public function onImportDone(): void
 {
-    if (! Lingua::hasLocale($locale)) return;
-    Session::put(config('lingua.session_variable'), $locale);
-    app()->setLocale($locale);
-    $this->redirect(route('home'), navigate: true); // rediriger vers l'accueil
+    $this->redirect(route('lingua.translations'), navigate: true);
 }
 ```

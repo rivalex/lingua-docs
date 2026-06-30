@@ -1,6 +1,8 @@
 # Eventi Livewire
 
-I componenti Livewire di Lingua comunicano tramite eventi nominati. Puoi ascoltare questi eventi nei tuoi componenti Livewire, nel codice Alpine.js o in JavaScript.
+I componenti Livewire di Lingua comunicano tramite eventi nominati. Puoi
+ascoltare questi eventi nei tuoi componenti Livewire, nel codice Alpine.js
+o in JavaScript.
 
 ## Ascolto in Livewire
 
@@ -21,12 +23,12 @@ class MyComponent extends Component
 
 ```js
 window.addEventListener('language_added', (event) => {
-    console.log('Una nuova lingua è stata aggiunta!', event.detail);
+    console.log('Nuova lingua aggiunta!', event.detail);
 });
 
 // Oppure tramite il sistema di eventi di Livewire:
 Livewire.on('language_added', () => {
-    // ...
+    // …
 });
 ```
 
@@ -45,9 +47,9 @@ Livewire.on('language_added', () => {
 | `languages_sorted_fail` | Il riordinamento delle lingue è fallito |
 | `lang_updated` | `lingua:update-lang` è stato completato con successo |
 | `lang_updated_fail` | `lingua:update-lang` è fallito |
-| `synced_database` | La sincronizzazione nel database è stata completata con successo |
+| `synced_database` | La sincronizzazione nel database è stata completata |
 | `synced_database_fail` | La sincronizzazione nel database è fallita |
-| `synced_local` | La sincronizzazione in locale è stata completata con successo |
+| `synced_local` | La sincronizzazione in locale è stata completata |
 | `synced_local_fail` | La sincronizzazione in locale è fallita |
 
 ---
@@ -58,11 +60,11 @@ Livewire.on('language_added', () => {
 |---|---|
 | `translation_deleted` | Un record di traduzione è stato completamente eliminato |
 | `translation_delete_fail` | L'eliminazione di una traduzione è fallita |
-| `translation_locale_deleted` | Il valore di una singola locale è stato rimosso da una traduzione |
+| `translation_locale_deleted` | Il valore di una singola locale è stato rimosso |
 | `translation_locale_delete_fail` | La rimozione di un valore della locale è fallita |
 | `vendor_translation_protected` | È stato tentato di eliminare una traduzione vendor |
 | `refreshTranslationsTableDefaults` | La tabella delle traduzioni deve ricaricare la colonna della locale predefinita |
-| `refreshTranslationRow.{id}` | Una riga di traduzione specifica deve aggiornarsi (parametrizzata dall'ID della traduzione) |
+| `refreshTranslationRow.{id}` | Una riga di traduzione specifica deve aggiornarsi (parametrizzata dall'ID) |
 | `updateTranslationModal.{id}` | La modale di aggiornamento per una traduzione deve aggiornarsi |
 
 ---
@@ -75,9 +77,9 @@ Livewire.on('language_added', () => {
 
 ---
 
-## Esempio: mostrare un toast quando viene aggiunta una lingua
+## Esempio: toast quando viene aggiunta una lingua
 
-Usando Alpine.js e una libreria di toast:
+Usando Alpine.js:
 
 ```blade
 <div
@@ -88,17 +90,31 @@ Usando Alpine.js e una libreria di toast:
 </div>
 ```
 
+## Esempio: protezione vendor nell'interfaccia
+
+`vendor_translation_protected` viene emesso quando l'utente tenta di
+eliminare una riga vendor — niente viene eliminato, il componente chiude
+la modale e l'evento ti permette di mostrare un avviso personalizzato:
+
+```js
+window.addEventListener('vendor_translation_protected', () => {
+    alert('Questa traduzione è protetta e non può essere eliminata.');
+});
+```
+
 ## Esempio: reindirizzare dopo il cambio di locale
 
-Se vuoi reindirizzare a un URL diverso dopo che il selettore di lingua cambia locale (invece della pagina corrente):
+Se vuoi reindirizzare a un URL diverso dopo che il selettore di lingua
+cambia locale (invece della pagina corrente — il comportamento predefinito
+di 2.0):
 
 ```php
 // Pubblica LanguageSelector e sovrascrivi changeLocale():
-public function changeLocale($locale): void
+public function changeLocale(string $locale): void
 {
     if (! Lingua::hasLocale($locale)) return;
     Session::put(config('lingua.session_variable'), $locale);
     app()->setLocale($locale);
-    $this->redirect(route('home'), navigate: true); // reindirizza alla home
+    $this->redirect(route('home'), navigate: true);
 }
 ```

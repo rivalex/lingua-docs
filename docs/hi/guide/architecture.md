@@ -1,121 +1,135 @@
-# यह कैसे काम करता है
+# Architecture
 
-Lingua की आंतरिक संरचना को समझने से इसे configure, debug और extend करना आसान हो जाता है।
+यह पेज Lingua की आंतरिक architecture का वर्णन करता है — request lifecycle से लेकर cache model और DB schema तक।
 
-## Request lifecycle
+## Request Lifecycle
 
 ```
-Browser request
+HTTP Request
     │
     ▼
-┌─────────────────────────────┐
-│      LinguaMiddleware       │  Session से 'locale' पढ़ता है
-│  app()->setLocale($locale)  │  DB default पर fallback करता है
-└───┬─────────────────────────┘
+ManagesLocale (Trait)
+    ├── session से locale पढ़ता है
+    ├── app()->setLocale() call करता है
+    └── html lang/dir attributes set करता है
     │
     ▼
-┌─────────────────────────────┐
-│        Your Controller      │
-│  __('auth.failed')          │  मानक Laravel helper
-└───┬─────────────────────────┘
+LinguaManager (Translation Loader)
+    ├── Illuminate\Translation\FileLoader extend करता है
+    ├── database driver: DB + files merge करता है (DB wins)
+    └── file driver: सीधे lang/ files पढ़ता है
     │
     ▼
-┌─────────────────────────────┐
-│       LinguaManager         │  Custom TranslationLoaderManager
-│  1. DB loader (Spatie)      │  DB ओवरलैप पर हमेशा जीतता है
-│  2. File loader (fallback)  │
-└───┬─────────────────────────┘
+TranslationRepository (Contract)
+    ├── DatabaseRepository — language_lines query करता है
+    └── FileRepository — lang/ filesystem read/write करता है
     │
     ▼
-अनुवादित string वापस आती है
+Cache Layer
+    ├── प्रति (locale, group) rememberForever
+    └── write पर surgical forget
 ```
 
-## Translation loading
+## Translation Loading
 
-`LinguaManager` Spatie के `TranslationLoaderManager` को extend करता है। रनटाइम पर यह दो sources को merge करता है:
+**Database driver** में, `LinguaManager::load()` दो sources को merge करता है:
 
-1. **File loader** - सामान्य Laravel की तरह `lang/` से पढ़ता है
-2. **Database loader** (Spatie का `Db` loader) - `language_lines` से पढ़ता है
+```php
+$fileTranslations = parent::load($locale, $group, $namespace);
+$dbTranslations   = $this->repository->loadTranslations($locale, $group, $namespace);
 
-जब एक ही key दोनों sources में मौजूद हो, **डेटाबेस मान जीतता है**। इससे आप सोर्स फ़ाइलों को छुए बिना किसी भी vendor या file-based अनुवाद को ओवरराइड कर सकते हैं।
+return array_replace_recursive($fileTranslations, $dbTranslations);
+```
 
-यदि `language_lines` टेबल अभी मौजूद नहीं है (उदाहरण: migration चलाने से पहले), तो `LinguaManager` gracefully केवल-फ़ाइल मोड पर fallback करता है।
+DB entries हमेशा file entries को override करती हैं। Vendor namespaces (`*` prefix) DB में cached होती हैं।
+
+**File driver** में, `LinguaManager` parent `FileLoader` को delegate करता है — कोई DB query नहीं।
 
 ## Middleware
 
-`LinguaMiddleware` को `LinguaServiceProvider` द्वारा boot पर `web` middleware group में स्वचालित रूप से जोड़ा जाता है। यह प्रत्येक web request पर चलता है:
+`ManagesLocale` trait दो HTTP Middleware में inject होती है:
+
+| Middleware | क्या करती है |
+|---|---|
+| `LocaleFromSession` | Request के शुरू में `app()->setLocale()` call करती है |
+| `LocaleSwitchRedirect` | Locale-switch form submissions handle करती है, same-origin redirect करती है |
+
+## Service Provider
+
+`LinguaServiceProvider` bootstrap करता है:
+
+1. `register()` में `extend('translator', ...)` — deferred provider safe binding
+2. `boot()` में Livewire components, routes, views, config, migrations register होते हैं
+3. `TranslationRepository` contract bind होता है (driver के अनुसार `DatabaseRepository` या `FileRepository`)
+
+## Database Schema
+
+**`languages` टेबल** — installed locales:
+
+| Column | Type | विवरण |
+|---|---|---|
+| `id` | bigint | Primary key |
+| `name` | varchar | "English", "French", आदि |
+| `native` | varchar | "English", "Français", आदि |
+| `locale` | varchar | "en", "fr", आदि |
+| `direction` | varchar | "ltr" या "rtl" |
+| `sort_order` | int | Display order |
+| `is_default` | boolean | डिफ़ॉल्ट locale flag |
+
+**`language_lines` टेबल** — translations (केवल database driver):
+
+| Column | Type | विवरण |
+|---|---|---|
+| `id` | bigint | Primary key |
+| `group` | varchar | "auth", "validation", vendor namespace |
+| `key` | varchar | Translation key |
+| `type` | varchar | "text", "html", "markdown" |
+| `text` | json | `{"en": "...", "fr": "..."}` |
+
+**`lingua_settings` टेबल** — UI-configurable settings:
+
+| Column | Type | विवरण |
+|---|---|---|
+| `key` | varchar | Setting key (unique) |
+| `value` | text | Setting value |
+
+## बंडल Translation Dataset
+
+Lingua एक बंडल dataset शिप करता है (कोई GitHub download नहीं):
+
+- **26 locales**: ar, cs, da, de, el, en, es, fa, fi, fr, he, hi, hu, id, it, ja, ko, nl, no, pl, pt, ru, sv, tr, uk, zh
+- **7 groups**: auth, pagination, passwords, validation, notifications, settings, transfer
+- **5902 strings** — Laravel v13.14.0 के अनुरूप
+- **Meta**: `.meta.json` में version `v13.14.0`, checksum, string count
+
+`lingua:add {locale}` इस dataset से seed करता है।
+
+## Cache Architecture {#cache-architecture}
+
+Lingua translations को **सर्जिकल रूप से** प्रति `(locale, group)` pair कैश करता है:
 
 ```php
-// सरल logic
-$locale = session()->get(config('lingua.session_variable'))
-    ?? Language::default()?->code
-    ?? config('app.locale');
-
-app()->setLocale($locale);
-app()->setFallbackLocale($defaultLocale);
-session()->put(config('lingua.session_variable'), $locale);
+// Cache key format:
+"{prefix}.{locale}.{group}"
+// उदाहरण: "lingua.trans.fr.auth"
 ```
 
-## Service provider
+**Write पर:** केवल modified `(locale, group)` pair की cache bust होती है।
 
-`LinguaServiceProvider` boot पर तीन काम करता है:
+**Read पर:** `rememberForever` — explicit flush तक cache में रहता है।
 
-1. **Blade anonymous components** को `lingua::` prefix के तहत register करता है
-2. **Livewire components** को `lingua::` namespace के तहत register करता है
-3. **`translator` और `translation.loader` singletons** को IoC container में Lingua के कस्टम implementations से बदलता है
-
-चूँकि service provider core translator binding को replace करता है, इसलिए यह ज़रूरी है कि यह Laravel के `TranslationServiceProvider` के *बाद* boot हो। Composer का autoload क्रम इसे स्वचालित रूप से संभालता है।
-
-## Database schema
-
-दो टेबल उपयोग की जाती हैं:
-
-### `languages`
-
-| कॉलम | प्रकार | नोट्स |
-|---|---|---|
-| `id` | bigint (auto-increment) | Primary key |
-| `code` | string | ISO 639-1 code (`en`, `fr`, `pt_BR`) |
-| `regional` | string, nullable | पूर्ण regional code (`en_US`, `pt_BR`) |
-| `type` | string | `'regional'` या `'standard'` |
-| `name` | string | अंग्रेज़ी display नाम (`French`) |
-| `native` | string | मूल नाम (`Français`) |
-| `direction` | string | `'ltr'` या `'rtl'` |
-| `is_default` | boolean | केवल एक पंक्ति `true` होनी चाहिए |
-| `sort` | integer | Display क्रम (स्वचालित रूप से असाइन किया जाता है) |
-
-### `language_lines` (Spatie)
-
-| कॉलम | प्रकार | नोट्स |
-|---|---|---|
-| `id` | bigint (auto-increment) | Primary key |
-| `group` | string | Translation group (`auth`, `validation`, `single`) |
-| `key` | string | Translation key (`failed`, `required`) |
-| `text` | json | `{"en": "…", "fr": "…", "it": "…"}` |
-| `type` | string | `'text'`, `'html'`, या `'markdown'` |
-| `is_vendor` | boolean | तृतीय-पक्ष पैकेज strings के लिए `true` |
-| `vendor` | string, nullable | Vendor नाम (उदाहरण: `spatie`, `laravel`) |
-
-JSON `text` कॉलम **एक ही पंक्ति में सभी locales** संग्रहीत करता है। इस डिज़ाइन का अर्थ है:
-- नया locale जोड़ने से schema कभी नहीं बदलता
-- एक ही query किसी key के सभी locale values लाती है
-- गुम locales के JSON object में बस कोई key नहीं होती
-
-## Seeder
-
-`LinguaSeeder` को `lingua:install` के दौरान एक बार call किया जाता है। यह:
-
-1. `config('lingua.default_locale')` पढ़ता है (डिफ़ॉल्ट: `config('app.locale')`)
-2. `laravel-lang/locales` से locale metadata लाता है
-3. `is_default = true` के साथ एक `Language` रिकॉर्ड बनाता है
-4. भाषा फ़ाइलें इंस्टॉल करने के लिए `lingua:add {locale}` call करता है
-5. सभी strings आयात करने के लिए `lingua:sync-to-database` call करता है
+यह global `cache:clear` की आवश्यकता को समाप्त करता है। हर translation edit surgical है।
 
 ## Models
 
-| Model | Table | Extends |
-|---|---|---|
-| `Language` | `languages` | `Illuminate\Database\Eloquent\Model` |
-| `Translation` | `language_lines` | Spatie का `LanguageLine` |
+**`Language` Model** (`Rivalex\Lingua\Models\Language`):
 
-`Translation` Spatie के `setTranslation()` और `forgetTranslation()` methods inherit करता है और Lingua-specific scopes, sync methods, और statistics helpers जोड़ता है।
+- `$fillable`: `name`, `native`, `locale`, `direction`, `sort_order`, `is_default`
+- Accessors: `getTotalStringsAttribute()`, `getTranslatedStringsAttribute()` — `TranslationRepository` के माध्यम से route होते हैं
+- Scopes: `default()`, `ordered()`
+
+**`Translation` Model** (`Rivalex\Lingua\Models\Translation`):
+
+- `$casts`: `text` → `array` (JSON)
+- Observers: write पर cache invalidation trigger करते हैं
+- Scopes: `forGroup()`, `withLocale()`, `vendorOnly()`, `nonVendor()`

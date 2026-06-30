@@ -1,101 +1,143 @@
-# Stockage des traductions
+# Pilotes de stockage
 
-Comprendre la façon dont les traductions sont stockées vous aide à les interroger, les importer et les exporter correctement.
+<Badge type="tip" text="Nouveau dans la 2.0" /> Lingua 2.0 introduit un système de
+**pilote de stockage** pluggable. Vous choisissez où vivent les traductions : dans la
+**base de données** (la valeur par défaut complète) ou dans des **fichiers `lang/`** classiques.
 
-## La table `language_lines`
-
-Chaque ligne dans `language_lines` représente une **chaîne** traduisible - et non une locale. Toutes les valeurs de locale sont stockées ensemble dans une seule colonne JSON `text` :
-
-```
-group      | key        | type | text
------------|------------|------|---------------------------------------------------
-validation | required   | text | {"en":"The :attribute field is required.","fr":"Le champ :attribute est obligatoire."}
-auth       | failed     | text | {"en":"These credentials do not match.","it":"Le credenziali non corrispondono."}
-single     | Welcome    | text | {"en":"Welcome","fr":"Bienvenue","de":"Willkommen"}
-emails     | subject    | html | {"en":"<b>Welcome</b> to our platform!"}
+```php
+// config/lingua.php
+'storage' => [
+    'driver' => env('LINGUA_STORAGE_DRIVER', 'database'),
+],
 ```
 
-### Avantages de cette conception
+## Choisir un pilote
 
-- **Une ligne par chaîne** - pas de lignes par locale à gérer
-- **L'ajout d'une locale est non destructif** - il suffit d'ajouter une nouvelle clé à l'objet JSON
-- **Les traductions manquantes sont explicites** - si `fr` est absent du JSON, la chaîne n'est pas encore traduite
-- **Requête unique** - un seul `SELECT` récupère toutes les valeurs de locale pour une clé
+| Fonctionnalité | `database` | `file` |
+|---|:---:|:---:|
+| Magasin de stockage | Table `language_lines` | `lang/` PHP + JSON |
+| Types HTML / Markdown | ✅ | ❌ (aplati en texte brut) |
+| Statistiques de traduction | ✅ | ✅ (calculé depuis les fichiers) |
+| Import / export (Transfert) | ✅ | ✅ |
+| Protection vendor | ✅ | ✅ |
+| Cache chirurgical par (locale, group) | ✅ | n/a |
+| Boutons de synchronisation dans l'UI | ✅ | masqués |
+| Modifier les traductions dans l'UI | ✅ | ✅ |
 
-### Requêtes directes
+::: tip Règle générale
+Utilisez **database** pour la meilleure expérience et les remplacements à l'exécution. Utilisez
+**file** quand les traductions doivent rester sous contrôle de version ou que le système de
+fichiers est la source de vérité.
+:::
 
-Vous pouvez interroger `language_lines` en utilisant la syntaxe standard de colonne JSON d'Eloquent :
+## Pilote base de données
+
+Le pilote par défaut, identique au comportement de la 1.x.
+
+- Traductions stockées dans la table `language_lines`, toutes les locales dans une
+  colonne JSON `text` par ligne
+- Prend en charge les types `text`, `html` et `markdown`, chacun avec son propre éditeur
+- Cache chirurgical : `Cache::forget('lingua.trans.{locale}.{group}')` à
+  chaque écriture — pas de vidage global
+- Statistiques complètes, import/export et protection vendor
+- Les remplacements à l'exécution l'emportent sur les fichiers `lang/` via `array_replace_recursive`
+
+## Pilote fichier
+
+Lit et écrit directement dans les fichiers PHP et JSON de `lang/`. Il n'y a **pas**
+de table `language_lines`.
+
+::: danger Perte de type en mode fichier
+Le pilote `file` ne stocke que des chaînes brutes. Les types HTML et Markdown sont
+**aplatis en texte brut** — l'éditeur par type et les métadonnées de type ne sont pas
+disponibles. Si vous utilisez des traductions HTML/Markdown, utilisez le pilote base de données.
+:::
+
+- Pas de requêtes base de données ; se comporte comme le `FileLoader` Laravel standard
+- Les boutons de synchronisation sont **masqués** dans l'UI (les fichiers *sont* le magasin)
+- `lingua:sync-to-local` est une **opération nulle sans `--force`** (la DB depuis laquelle
+  il exporterait n'est pas le magasin actif)
+- Les modifications dans l'UI sont écrites directement dans les fichiers via `AtomicFileWriter`
+  (renommage atomique + `opcache_invalidate` — voir
+  [Sécurité](/fr/guide/security#file-mode-security))
+
+::: warning Mise en garde de déploiement
+Sur les plateformes qui reconstruisent `lang/` depuis votre dépôt à chaque déploiement
+(p. ex. Forge, Envoyer, images de conteneurs), les modifications de l'UI faites en mode
+fichier peuvent être **écrasées** au prochain déploiement. Commitez les modifications dans
+votre dépôt, ou utilisez le pilote base de données.
+:::
+
+## Changer de pilote
+
+Utilisez la commande `lingua:storage` pour changer à tout moment. Elle **synchronise avant
+de changer** pour ne rien perdre.
+
+```bash
+php artisan lingua:storage file
+php artisan lingua:storage database
+```
+
+| Option | Effet |
+|---|---|
+| `--force` | Ignorer les confirmations |
+| `--write-env` | Mettre à jour `LINGUA_STORAGE_DRIVER` dans `.env` |
+| `--no-migrate` | Ignorer l'étape d'assurance de migration |
+
+### Base de données → fichier
+
+Lingua **exporte** d'abord la base de données vers `lang/`, en avertissant des chaînes
+HTML/Markdown qui perdront leur type, puis change le pilote actif.
+
+### Fichier → base de données
+
+Lingua **synchronise** `lang/` dans la base de données et s'assure que la migration
+`language_lines` a été exécutée, puis change.
+
+## Installation avec choix de pilote
+
+L'installateur interactif demande quel pilote utiliser et publie les migrations
+**adaptées au pilote** — le pilote `file` ignore entièrement la migration
+`language_lines` :
+
+```bash
+php artisan lingua:install
+```
+
+Voir [Installation](/fr/guide/installation).
+
+## Désinstallation
+
+`lingua:uninstall` démonte Lingua en toute sécurité :
+
+```bash
+php artisan lingua:uninstall
+```
+
+Il **exporte d'abord la base de données vers `lang/`**, puis supprime les trois tables
+Lingua (`language_lines`, `languages`, `lingua_settings`). Votre répertoire `lang/`
+est préservé.
+
+| Option | Effet |
+|---|---|
+| `--force` | Ignorer les confirmations |
+| `--keep-config` | Laisser `config/lingua.php` en place |
+| `--keep-published` | Laisser les vues/migrations publiées en place |
+
+## Requêtes directes (pilote base de données)
 
 ```php
 use Rivalex\Lingua\Models\Translation;
 
-// Toutes les traductions ayant une valeur en français
+// Toutes les traductions qui ont une valeur française
 Translation::whereNotNull('text->fr')->get();
 
-// Uniquement les traductions françaises manquantes
+// Seulement les traductions françaises manquantes
 Translation::whereNull('text->fr')->get();
 
-// Trouver une clé spécifique
-Translation::where('key', 'required')->where('group', 'validation')->first();
-
-// Toutes les chaînes d'un groupe
-Translation::where('group', 'auth')->get();
+// Une clé spécifique
+Translation::where('group', 'validation')->where('key', 'required')->first();
 ```
 
-## Types de traduction
-
-Chaque ligne de traduction a un `type` qui détermine l'éditeur utilisé dans l'interface :
-
-| Type | Cas d'utilisation | Détection automatique lors de la synchronisation |
-|---|---|---|
-| `text` | Libellés simples, messages, textes de boutons | Par défaut |
-| `html` | Contenu enrichi avec des balises HTML | La chaîne contient des éléments HTML |
-| `markdown` | Contenu formaté en Markdown | La chaîne est analysée comme du Markdown |
-
-La détection de type est effectuée lors de `lingua:sync-to-database`. Vous pouvez changer le type à tout moment via la modale d'édition dans l'interface.
-
-### Exemple : traduction HTML
-
-```php
-Translation::create([
-    'group' => 'marketing',
-    'key'   => 'hero_subtitle',
-    'type'  => 'html',
-    'text'  => ['en' => '<strong>Build faster</strong> with fewer tools.'],
-]);
-```
-
-### Exemple : traduction Markdown
-
-```php
-Translation::create([
-    'group' => 'emails',
-    'key'   => 'welcome_body',
-    'type'  => 'markdown',
-    'text'  => ['en' => "# Welcome!\n\nThank you for signing up.\n\n**Your account is now active.**"],
-]);
-```
-
-## Clés de traduction
-
-Lingua utilise la même convention `groupe.clé` en deux parties que les traductions Laravel standard :
-
-| Format | Exemple | Appel `trans()` |
-|---|---|---|
-| Clé de fichier PHP | `auth.failed` | `__('auth.failed')` |
-| Clé JSON / unique | `Welcome` | `__('Welcome')` |
-| Clé de package | `spatie::messages.error` | via l'espace de noms du package |
-
-::: tip groupe vs. clé
-La colonne `group` correspond au nom du fichier (`auth` = `lang/en/auth.php`) et la `key` correspond à la clé de tableau dans ce fichier. Pour les fichiers JSON, le groupe est `'single'`.
-:::
-
-## Traductions de packages
-
-Les traductions de packages sont signalées avec `is_vendor = true` et portent une chaîne `vendor` (ex. `'spatie'`, `'laravel'`). Elles sont synchronisées depuis les répertoires `lang/vendor/{vendor}/{locale}/`.
-
-- Elles **peuvent être modifiées** dans l'interface (pour remplacer le texte du package)
-- Elles **ne peuvent pas être supprimées** - toute tentative de suppression déclenche un événement `vendor_translation_protected`
-- Les champs `group` et `key` sont **verrouillés** dans la modale de mise à jour
-
-Consultez [Traductions de packages](/fr/features/vendor-translations) pour tous les détails.
+Voir [Traductions vendor](/fr/features/vendor-translations) pour savoir comment
+les chaînes de packages sont protégées dans les deux pilotes.

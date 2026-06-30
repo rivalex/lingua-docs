@@ -1,66 +1,42 @@
-# अनुवाद सांख्यिकी
+# Statistics
 
-सांख्यिकी पृष्ठ आपको सभी स्थापित भाषाओं में आपके अनुवाद कवरेज का वास्तविक समय में अवलोकन देता है।
+Statistics पेज (`/lingua/statistics`) सभी installed भाषाओं में translation coverage का real-time overview देता है।
 
 ```blade
-<a href="{{ route('lingua.statistics') }}">अनुवाद सांख्यिकी</a>
+{{-- अपने layout में link करें --}}
+<a href="{{ route('lingua.statistics') }}">Translation Statistics</a>
 ```
 
-<Screenshot src="/screenshots/statistics-page.png" alt="अनुवाद सांख्यिकी पृष्ठ" caption="सांख्यिकी पृष्ठ प्रति भाषा कवरेज, समूह विभाजन और गायब keys दिखाता है।" />
+## Overview Cards
 
-## अवलोकन
+पेज के ऊपर प्रत्येक installed language के लिए एक KPI card है:
 
-पृष्ठ के शीर्ष पर तीन सारांश काउंटर दिखाई देते हैं:
-
-- **कुल keys** — डेटाबेस में अनुवाद strings की कुल संख्या
-- **कुल groups** — विशिष्ट अनुवाद groups की संख्या
-- **स्थापित भाषाएं** — सिस्टम में पंजीकृत भाषाओं की संख्या
-
-आप सभी सांख्यिकी में package अनुवाद शामिल या बाहर करने के लिए **Vendor अनुवाद शामिल करें** टॉगल कर सकते हैं।
-
-## भाषा अनुसार कवरेज
-
-<Screenshot src="/screenshots/statistics-coverage.png" alt="भाषा अनुसार कवरेज अनुभाग" caption="प्रत्येक भाषा row एक progress bar, प्रतिशत और गायब key की संख्या दिखाती है।" />
-
-प्रत्येक स्थापित भाषा के लिए आप देख सकते हैं:
-
-| कॉलम | विवरण |
+| Metric | विवरण |
 |---|---|
-| भाषा | भाषा का नाम और झंडा |
-| कवरेज | समापन प्रतिशत के साथ progress bar |
-| अनुवादित | इस locale के लिए मान वाली keys की संख्या |
-| गायब | बिना मान की keys की संख्या — गायब keys panel विस्तारित करने के लिए क्लिक करें |
+| **Total strings** | `language_lines` में कितनी keys हैं |
+| **Translated** | इस locale के लिए non-empty value वाली keys |
+| **Missing** | Total - Translated |
+| **Coverage %** | Translated / Total × 100 |
 
-**डिफ़ॉल्ट भाषा** एक badge के साथ हाइलाइट की जाती है। चूंकि डिफ़ॉल्ट locale संदर्भ key सेट को संचालित करती है, यह हमेशा 100% कवरेज दिखाती है।
+## Group Breakdown
 
-## गायब keys का विस्तृत विवरण
+भाषा card पर click करने पर group-by-group breakdown दिखती है:
 
-किसी भी भाषा row पर **गायब count badge** क्लिक करें, inline गायब keys panel विस्तारित करने के लिए।
+| Group | Total | Translated | Missing |
+|---|---|---|---|
+| auth | 12 | 12 | 0 |
+| validation | 98 | 87 | 11 |
+| pagination | 4 | 4 | 0 |
+| … | … | … | … |
 
-<Screenshot src="/screenshots/statistics-missing.png" alt="गायब keys panel विस्तारित" caption="गायब keys panel group, key और translation editor का सीधा link दिखाता है।" />
+## Missing Keys Drill-down
 
-Panel की प्रत्येक row दिखाती है:
+किसी group की "Missing" count पर click करें — उस group की सभी untranslated keys की list दिखती है। वहाँ से directly Translations पेज पर जाकर उन्हें fill कर सकते हैं।
 
-- **Group** — अनुवाद group (जैसे `validation`, `auth`)
-- **Key** — अनुवाद key (जैसे `required`, `failed`)
-- **अनुवाद करें →** link — उस locale के लिए pre-filtered Translations पृष्ठ खोलता है
+## Vendor Toggle
 
-Panel बंद करने के लिए उसी भाषा row पर फिर से क्लिक करें।
+**Show vendor translations** toggle vendor-namespaced strings को statistics में include/exclude करता है। Vendor strings अलग track करना useful है क्योंकि उन्हें हमेशा translate नहीं करना होता।
 
-## Group अनुसार विभाजन
+## File Driver में Statistics
 
-<Screenshot src="/screenshots/statistics-breakdown.png" alt="Group अनुसार विभाजन तालिका" caption="विभाजन तालिका प्रत्येक group के लिए प्रति locale अनुवादित key की संख्या दिखाती है।" />
-
-विभाजन तालिका प्रत्येक अनुवाद group को प्रत्येक स्थापित भाषा के अनुवादित keys की संख्या के साथ सूचीबद्ध करती है। इसका उपयोग करके पता लगाएं कि कौन से groups पूरी तरह अनुवादित हैं और किन्हें ध्यान देने की आवश्यकता है।
-
-## Vendor अनुवाद टॉगल
-
-डिफ़ॉल्ट रूप से, vendor अनुवाद (`laravel/framework` जैसे packages से) सांख्यिकी से बाहर रखे जाते हैं। उन्हें शामिल करने के लिए **Vendor अनुवाद शामिल करें** टॉगल करें।
-
-::: info
-Vendor अनुवाद अक्सर package लेखक द्वारा upstream में बनाए रखे जाते हैं। यदि आपने locale-specific overrides नहीं जोड़े हैं, तो उन्हें अपनी सांख्यिकी में शामिल करने से आपका दृश्यमान कवरेज कम हो सकता है।
-:::
-
-::: tip कुशलता से काम करना
-अपने अनुवाद प्रयास को प्राथमिकता देने के लिए गायब count द्वारा क्रमबद्ध करें। आपकी सूची के शीर्ष पर सबसे अधिक गायब keys वाली भाषाओं पर सबसे अधिक ध्यान देने की आवश्यकता है।
-:::
+`file` driver में, statistics filesystem से count करते हैं — `language_lines` table नहीं होती। Coverage percentages available हैं लेकिन group drill-down limited हो सकती है।

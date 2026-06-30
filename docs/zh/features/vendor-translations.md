@@ -1,121 +1,89 @@
-# 扩展包翻译
+# 供应商翻译
 
-扩展包翻译是属于第三方扩展包的字符串--Laravel 自身的验证消息、分页标签、密码重置字符串，以及其他附带 `lang/` 目录的扩展包的翻译。
+供应商翻译是属于第三方扩展包的翻译字符串——Laravel 自身的验证消息、分页标签、密码重置字符串，以及其他附带 `lang/` 目录的扩展包的翻译。
 
 ## 如何识别
 
-在 `lingua:sync-to-database` 期间，Lingua 扫描 `lang/vendor/` 目录结构。在那里找到的任何翻译文件都会以以下方式导入：
+在数据库中，供应商翻译行的 `is_vendor = true`，`vendor` 列存储了供应商名称（例如 `laravel`）。
 
-- `is_vendor = true`
-- `vendor` = 扩展包名称（从目录名称派生，如 `spatie`、`laravel`、`filament`）
+在翻译 UI 中，供应商行以不同样式显示，并在操作区域显示锁定图标，表示无法删除。
 
-同步后数据库中的示例记录：
-
-```
-group      | key          | is_vendor | vendor   | text
------------|--------------|-----------|----------|-----------------------------
-validation | required     | false     | null     | {"en":"The :attribute…"}
-passwords  | reset        | true      | laravel  | {"en":"Your password…"}
-auth       | failed       | true      | laravel  | {"en":"These credentials…"}
+```sql
+-- 所有 Laravel 核心供应商翻译
+SELECT * FROM language_lines WHERE is_vendor = true AND vendor = 'laravel';
 ```
 
-::: tip
-Laravel 自身的 `lang/en/*.php` 文件（auth、validation、pagination、passwords）被视为**扩展包翻译**，因为它们来自框架，而非您的应用代码。
-:::
+## 允许的操作
 
-## 可以对扩展包翻译执行哪些操作
-
-| 操作 | 是否允许？ | 说明 |
+| 操作 | 是否允许 | 说明 |
 |---|---|---|
-| **编辑值** | ✅ 是 | 用您自己的措辞覆盖任何扩展包字符串 |
-| **更改类型** | ✅ 是 | 在 text / html / markdown 之间切换 |
-| **编辑分组或键** | ❌ 否 | 编辑模态框中的分组和键字段被锁定 |
-| **删除** | ❌ 否 | 受 `VendorTranslationProtectedException` 保护 |
+| **覆盖值** | 是 | 可以为供应商键提供自定义翻译值 |
+| **添加语言区域** | 是 | 可以为供应商键添加新语言区域的翻译 |
+| **删除行** | **否** | `VendorTranslationProtectedException` |
+| **导入覆盖** | 否（跳过） | 导入时供应商行被标记为跳过 |
 
-## 覆盖扩展包字符串
+## 覆盖供应商翻译
 
-最常见的用例是覆盖 Laravel 的验证消息以匹配您应用的语调：
-
-1. 打开 `/lingua/translations`
-2. 找到该字符串（如 `validation.required`）
-3. 点击编辑图标打开更新模态框
-4. 更改任意语言环境的值
-5. 保存--覆盖在下一次请求时立即生效
+覆盖供应商翻译是完全支持的用例：
 
 ```php
-// 或通过 Facade 以编程方式：
+// 在翻译 UI 中内联编辑
+// 或通过 Facade 以编程方式设置
 use Rivalex\Lingua\Facades\Lingua;
 
-Lingua::setVendorTranslation(
-    vendor: 'laravel',
-    group:  'validation',
-    key:    'required',
-    value:  'Please fill in the :attribute field.',
-    locale: 'en'
-);
+Lingua::setTranslation('validation.required', '此字段不能为空。', 'zh');
 ```
 
-## 查询扩展包翻译
+覆盖值存储在同一行的 `text` JSON 列中，在运行时优先于文件中的供应商默认值。
+
+## 查询供应商翻译
 
 ```php
-use Rivalex\Lingua\Facades\Lingua;
 use Rivalex\Lingua\Models\Translation;
+use Rivalex\Lingua\Facades\Lingua;
 
-// 所有扩展包翻译
-$all = Translation::where('is_vendor', true)->get();
-
-// 特定扩展包的所有翻译
-$laravel = Lingua::getVendorTranslations('laravel');
-
-// 具有法语值的特定扩展包所有翻译
-$frenchLaravel = Lingua::getVendorTranslations('laravel', 'fr');
-
-// 手动按分组和键过滤
-$required = Translation::where('is_vendor', true)
+// 通过 Eloquent 查询
+$vendorRows = Translation::where('is_vendor', true)
     ->where('vendor', 'laravel')
-    ->where('group', 'validation')
-    ->where('key', 'required')
-    ->first();
+    ->get();
+
+// 通过 Facade
+$vendorTranslations = Lingua::getVendorTranslations('laravel', 'en');
 ```
 
 ## 保护机制
 
-尝试删除扩展包翻译（通过界面或 `Lingua::forgetTranslation()`）会抛出 `VendorTranslationProtectedException`：
+`VendorTranslationProtectedException` 由以下操作触发：
 
 ```php
-use Rivalex\Lingua\Facades\Lingua;
-use Rivalex\Lingua\Exceptions\VendorTranslationProtectedException;
+// 1. Translation 模型上的 forgetTranslation() 方法
+$translation->forgetTranslation(); // 供应商行 → 抛出异常
 
-try {
-    Lingua::forgetTranslation('required', 'en'); // 该键属于扩展包翻译
-} catch (VendorTranslationProtectedException $e) {
-    // 优雅处理
-}
+// 2. 导入服务中的 ImportCommitService
+// 导入文件中包含供应商键时，该行被跳过并记录警告
 ```
 
-在 Livewire 界面中，删除尝试会触发 `vendor_translation_protected` 事件，并在不删除任何内容的情况下关闭模态框。您可以在自己的 Livewire 组件或 Alpine.js 代码中监听此事件：
+该保护机制确保您不会意外删除 Laravel 核心翻译字符串，同时仍然允许您覆盖它们的值。
 
-```js
-// Alpine.js / Livewire 事件监听器
-window.addEventListener('vendor_translation_protected', () => {
-    alert('This translation is protected and cannot be deleted.');
-});
-```
+## 重新同步供应商翻译
 
-## 重新同步扩展包翻译
-
-如果您依赖的扩展包在版本升级中添加了新的翻译键，重新同步以导入它们：
+如果供应商包发布了新翻译文件：
 
 ```bash
-# 从 laravel-lang 拉取最新内容并同步到数据库
-php artisan lingua:update-lang
-
-# 或手动从现有 lang/ 文件重新同步
+# 将 lang/ 中的文件（包括供应商文件）同步到数据库
 php artisan lingua:sync-to-database
+
+# 或更新特定语言
+php artisan lingua:update-lang fr
 ```
 
-Lingua 在同步时使用 `updateOrCreate`，因此现有的覆盖（已编辑的值）会被保留。
+`lingua:sync-to-database` 会检测 `lang/vendor/` 子目录中的文件，并将其标记为 `is_vendor = true` 导入。
 
-## 禁用扩展包翻译导入
+## 内置供应商数据集
 
-如果您完全不想在数据库中保存扩展包翻译，请在删除 `lang/vendor/` 目录之后再进行同步。Lingua 只导入磁盘上存在的内容。
+Lingua 2.0 随包附带了 Laravel v13.14.0 的翻译数据集（26 个语言区域，5902 个字符串）。这些字符串通过 `lingua:add {locale}` 命令填充到数据库，**无需**从 GitHub 下载 `laravel-lang` 包。
+
+```bash
+# 添加法语时，自动从内置数据集填充 Laravel 核心翻译
+php artisan lingua:add fr
+```

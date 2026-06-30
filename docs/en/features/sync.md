@@ -1,6 +1,6 @@
 # Bi-directional Sync
 
-Lingua can import translations from local files into the database and export them back - giving you the best of both worlds: **database-driven runtime** and **file-based version control**.
+Lingua imports translations from local files into the database and exports them back — giving you both a **database-driven runtime** and **file-based version control**.
 
 ## The two directions
 
@@ -13,9 +13,17 @@ lang/vendor/…          │  ◄── lingua:sync-to-local
                       ─┘
 ```
 
+## The bundled dataset <Badge type="tip" text="Changed" />
+
+Lingua ships its own translation dataset — **26 locales × 7 groups, 5902 strings, aligned to Laravel v13.14.0**. `lingua:add` seeds new locales straight from this dataset.
+
+::: tip No more `laravel-lang`
+`lingua:add` no longer downloads anything from GitHub or `laravel-lang/common`. Both external dependencies were removed in 2.0. Everything needed to install a locale ships inside the package.
+:::
+
 ## Sync to database
 
-Imports all translation files from `lang/` (and its subdirectories) into the `language_lines` table.
+Imports all translation files from `lang/` (and subdirectories) into `language_lines`.
 
 ```bash
 php artisan lingua:sync-to-database
@@ -23,28 +31,27 @@ php artisan lingua:sync-to-database
 
 ### What gets imported
 
-- `lang/{locale}/*.php` - standard PHP translation files
-- `lang/{locale}.json` - JSON translation files
-- `lang/vendor/{package}/{locale}/*.php` - vendor package translations
+- `lang/{locale}/*.php` — standard PHP translation files
+- `lang/{locale}.json` — JSON translation files
+- `lang/vendor/{package}/{locale}/*.php` — vendor package translations
+
+The **default locale is processed first** so its keys define the reference set, and `language` rows are auto-created for any locale found on disk that is not yet registered.
 
 ### Upsert behaviour
 
-Lingua uses `updateOrCreate` matching on `group` + `key`. This means:
+Lingua uses `updateOrCreate` matching on `group` + `key`:
+
 - **New keys** are inserted
-- **Existing keys** have their `text` JSON merged - locale values you've edited in the UI are **preserved**
-- **Type detection** runs on the value to determine `text` / `html` / `markdown`
+- **Existing keys** keep the locale values you edited in the UI — they are merged, not clobbered
+- **Type detection** runs on the value to assign `text` / `html` / `markdown`
 
 ### Type auto-detection
 
 | Rule | Assigned type |
 |---|---|
-| String contains HTML tags (`<…>`) | `html` |
-| String parses as Markdown (headings, lists, etc.) | `markdown` |
+| Contains HTML tags (`<…>`) | `html` |
+| Parses as Markdown (headings, lists, etc.) | `markdown` |
 | Neither | `text` |
-
-::: tip
-Type detection is conservative - it only assigns `html` or `markdown` when the content clearly matches. Plain strings always get `text`. You can change the type manually via the Edit modal.
-:::
 
 ### Via the facade
 
@@ -53,10 +60,6 @@ use Rivalex\Lingua\Facades\Lingua;
 
 Lingua::syncToDatabase();
 ```
-
-::: warning
-The facade calls `Translation::syncToDatabase()` internally, which is a static call. In Artisan commands and Livewire components, `app(Translation::class)->syncToDatabase()` is used instead so that Mockery can intercept it in tests.
-:::
 
 ---
 
@@ -68,20 +71,23 @@ Exports all translations from `language_lines` back to `lang/` PHP and JSON file
 php artisan lingua:sync-to-local
 ```
 
+In **file** storage mode this is a no-op unless you pass `--force`, since file mode already writes to disk:
+
+```bash
+php artisan lingua:sync-to-local --force
+```
+
 ### What gets exported
 
-- All non-vendor translations → `lang/{locale}/{group}.php`
+- Non-vendor translations → `lang/{locale}/{group}.php`
 - JSON-group keys (`single`) → `lang/{locale}.json`
 - Vendor translations → `lang/vendor/{vendor}/{locale}/{group}.php`
 
 ### Use cases
 
-- **Version control** - commit the exported files to track translation changes over time
-- **Deployment pipelines** - export before deploying if downstream tooling expects file-based translations
-- **Backups** - create a point-in-time snapshot of all translations
-- **Other tools** - export for use in a translation management service or CSV importer
-
-### Via the facade
+- **Version control** — commit exported files to track translation changes
+- **Deployment** — export before deploying if downstream tooling expects file-based translations
+- **Backups** — point-in-time snapshot of all translations
 
 ```php
 Lingua::syncToLocal();
@@ -89,33 +95,33 @@ Lingua::syncToLocal();
 
 ---
 
-## Update from Laravel Lang
+## Update
 
-Pulls the latest translation strings from the `laravel-lang` ecosystem and syncs them to the database. Useful after upgrading Laravel or adding a new package that ships translations.
+Re-seeds installed locales from the **bundled dataset** plus your local `lang/` files — no internet access required.
 
 ```bash
 php artisan lingua:update-lang
 ```
 
-This runs `lang:update` (from `laravel-lang/common`) followed by `lingua:sync-to-database`.
+Use it after upgrading Laravel or adding a package that ships translations.
 
 ---
+
+## Surgical cache invalidation <Badge type="tip" text="Changed" />
+
+Sync operations no longer flush the whole cache. Lingua invalidates only the affected **`(locale, group)`** pairs with targeted `Cache::forget()` calls — never a global `cache:clear`. Untouched translations stay warm in the cache, so large syncs no longer cause a cold-cache stampede.
 
 ## Automated sync workflows
 
 ### On deployment
 
-Add a post-deploy step to keep the database in sync with your committed lang files:
-
 ```bash
-# In your deploy script or CI/CD pipeline
 php artisan lingua:sync-to-database
-php artisan optimize:clear
 ```
 
 ### Via scheduler
 
-If your translation team edits files directly (rather than via the UI), schedule a periodic sync:
+If your team edits files directly rather than via the UI, schedule a periodic sync:
 
 ```php
 // routes/console.php
@@ -124,29 +130,21 @@ Schedule::command('lingua:sync-to-database')->hourly();
 
 ### On package install
 
-When you `composer require` a new package that ships translations, run:
+When you `composer require` a package that ships translations:
 
 ```bash
 php artisan lingua:update-lang
 ```
 
-This picks up any new strings from the installed package.
-
----
-
 ## Tips and gotchas
 
 ::: tip Keep DB as the source of truth
-Treat the database as the primary source. Only sync to local when you need files (version control, deployment, etc.). Avoid editing local files directly while the DB is in use - the next sync-to-database will overwrite your edits if the keys already exist.
-:::
-
-::: warning Locale files and DB out of sync
-If you add new locale PHP files manually without running `lingua:sync-to-database`, the new keys will only be available via the file loader (lower priority than DB). Run sync to import them properly.
+Treat the database as primary. Only sync to local when you need files. Avoid editing local files while the DB is in use — the next sync-to-database merges by key and may overwrite manual edits to existing keys.
 :::
 
 ::: tip Full roundtrip
 A safe way to reorganise translations:
-1. `lingua:sync-to-local` - export everything
+1. `lingua:sync-to-local` — export everything
 2. Edit files on disk
-3. `lingua:sync-to-database` - re-import
+3. `lingua:sync-to-database` — re-import
 :::

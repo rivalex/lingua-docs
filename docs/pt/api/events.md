@@ -1,6 +1,8 @@
 # Eventos Livewire
 
-Os componentes Livewire do Lingua se comunicam via eventos nomeados. Você pode escutar esses eventos nos seus próprios componentes Livewire, código Alpine.js ou JavaScript.
+Os componentes Livewire do Lingua se comunicam via eventos nomeados. Você pode
+escutar esses eventos nos seus próprios componentes Livewire, código Alpine.js
+ou JavaScript vanilla.
 
 ## Escutando no Livewire
 
@@ -20,13 +22,14 @@ class MyComponent extends Component
 ## Escutando no Alpine.js / JavaScript
 
 ```js
+// Via evento de janela
 window.addEventListener('language_added', (event) => {
-    console.log('A new language was added!', event.detail);
+    console.log('Novo idioma adicionado!', event.detail);
 });
 
-// Ou via sistema de eventos do Livewire:
+// Via sistema de eventos do Livewire
 Livewire.on('language_added', () => {
-    // ...
+    // …
 });
 ```
 
@@ -36,19 +39,27 @@ Livewire.on('language_added', () => {
 
 | Evento | Disparado quando |
 |---|---|
-| `language_added` | Um novo idioma foi adicionado com sucesso |
-| `language_added_fail` | A adição de um idioma falhou |
-| `refreshLanguages` | Qualquer alteração de idioma que requeira que a lista de idiomas seja re-renderizada |
+| `language_added` | Novo idioma adicionado com sucesso |
+| `language_added_fail` | Adição de idioma falhou |
+| `refreshLanguages` | Qualquer alteração de idioma que requeira re-renderização da lista |
 | `language_default_set` | O idioma padrão foi alterado |
-| `language_default_fail` | A definição do idioma padrão falhou |
-| `languages_sorted` | Os idiomas foram reordenados via arraste e solte |
-| `languages_sorted_fail` | A reordenação de idiomas falhou |
-| `lang_updated` | `lingua:update-lang` foi concluído com sucesso |
+| `language_default_fail` | Definição do idioma padrão falhou |
+| `languages_sorted` | Idiomas reordenados via drag-and-drop |
+| `languages_sorted_fail` | Reordenação falhou |
+| `lang_updated` | `lingua:update-lang` concluído com sucesso |
 | `lang_updated_fail` | `lingua:update-lang` falhou |
-| `synced_database` | A sincronização para o banco de dados foi concluída com sucesso |
-| `synced_database_fail` | A sincronização para o banco de dados falhou |
-| `synced_local` | A sincronização para local foi concluída com sucesso |
-| `synced_local_fail` | A sincronização para local falhou |
+| `synced_database` | Sync para o banco de dados concluído com sucesso |
+| `synced_database_fail` | Sync para o banco de dados falhou |
+| `synced_local` | Sync para local concluído com sucesso |
+| `synced_local_fail` | Sync para local falhou |
+
+---
+
+## Eventos de sincronização no BD
+
+Os eventos de sync DB são disparados **sincronamente** — o listener é executado
+antes do retorno da action Livewire, para que você possa tratar o resultado
+imediatamente.
 
 ---
 
@@ -56,49 +67,78 @@ Livewire.on('language_added', () => {
 
 | Evento | Disparado quando |
 |---|---|
-| `translation_deleted` | Um registro de tradução foi completamente excluído |
-| `translation_delete_fail` | A exclusão de uma tradução falhou |
-| `translation_locale_deleted` | O valor de um único locale foi removido de uma tradução |
-| `translation_locale_delete_fail` | A remoção de um valor de locale falhou |
-| `vendor_translation_protected` | Uma tentativa foi feita de excluir uma tradução de vendor |
-| `refreshTranslationsTableDefaults` | A tabela de traduções deve recarregar sua coluna de locale padrão |
-| `refreshTranslationRow.{id}` | Uma linha de tradução específica deve ser atualizada (parametrizada pelo ID da tradução) |
-| `updateTranslationModal.{id}` | O modal de atualização para uma tradução deve ser atualizado |
+| `translation_deleted` | Registro de tradução completamente excluído |
+| `translation_delete_fail` | Exclusão de tradução falhou |
+| `translation_locale_deleted` | Valor de um único locale removido |
+| `translation_locale_delete_fail` | Remoção de valor de locale falhou |
+| `vendor_translation_protected` | Tentativa de excluir tradução de vendor <Badge type="tip" text="Novidade na versão 2.0" /> |
+| `refreshTranslationsTableDefaults` | Tabela de traduções deve recarregar coluna do locale padrão |
+| `refreshTranslationRow.{id}` | Linha específica deve ser atualizada (parametrizada por ID) |
+| `updateTranslationModal.{id}` | Modal de atualização de uma tradução deve ser atualizado |
 
 ---
 
-## Eventos de atualização da interface
+## Eventos de configurações
 
 | Evento | Disparado quando |
 |---|---|
-| `refreshLanguageRows` | Todas as linhas de idioma devem ser re-renderizadas (ex: após uma alteração de padrão) |
+| `setting_saved` | Uma configuração foi salva com sucesso |
+| `setting_save_fail` | Salvar configuração falhou |
 
 ---
 
-## Exemplo: Exibir um toast quando um idioma é adicionado
+## Eventos de Transfer <Badge type="tip" text="Novidade na versão 2.0" />
 
-Usando Alpine.js e uma biblioteca de toast:
+| Evento | Disparado quando |
+|---|---|
+| `export_ready` | Arquivo de export pronto para download |
+| `import_diff_ready` | Diff do dry-run calculado e pronto para exibição |
+| `import_committed` | Import confirmado com sucesso |
+| `import_commit_fail` | Confirmação de import falhou |
+
+---
+
+## Eventos de atualização da UI
+
+| Evento | Disparado quando |
+|---|---|
+| `refreshLanguageRows` | Linhas de idioma devem ser re-renderizadas (ex: após alteração de padrão) |
+
+---
+
+## Exemplos
+
+### Toast quando um idioma é adicionado
 
 ```blade
 <div
     x-data="{ show: false, message: '' }"
-    x-on:language_added.window="message = 'Language added!'; show = true; setTimeout(() => show = false, 3000)"
+    x-on:language_added.window="message = 'Idioma adicionado!'; show = true; setTimeout(() => show = false, 3000)"
 >
     <div x-show="show" class="toast">{{ message }}</div>
 </div>
 ```
 
-## Exemplo: Redirecionar após troca de locale
+### Reagir à proteção de vendor
 
-Se quiser redirecionar para uma URL diferente após o seletor de idioma trocar o locale (em vez da página atual):
+```js
+window.addEventListener('vendor_translation_protected', () => {
+    alert('Esta tradução é protegida e não pode ser excluída.');
+});
+```
+
+### Personalizar redirecionamento pós-troca de locale
+
+Se quiser redirecionar para uma URL diferente após a troca de locale (em vez
+da página atual), publique o componente `LanguageSelector` e sobrescreva
+`changeLocale()`:
 
 ```php
-// Publicar LanguageSelector e sobrescrever changeLocale():
 public function changeLocale($locale): void
 {
     if (! Lingua::hasLocale($locale)) return;
     Session::put(config('lingua.session_variable'), $locale);
     app()->setLocale($locale);
-    $this->redirect(route('home'), navigate: true); // redirecionar para home
+    $this->redirect(route('home'), navigate: true);
 }
 ```

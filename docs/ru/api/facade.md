@@ -1,6 +1,7 @@
 # Фасад Lingua
 
-Фасад `Lingua` предоставляет статический доступ к полному сервису Lingua из любого места вашего приложения.
+Фасад `Lingua` предоставляет статический доступ к полному сервису Lingua из любого
+места вашего приложения.
 
 ```php
 use Rivalex\Lingua\Facades\Lingua;
@@ -18,28 +19,24 @@ use Rivalex\Lingua\Facades\Lingua;
 Lingua::getLocale(); // 'en'
 ```
 
-Аналогично `app()->getLocale()`.
-
 ---
 
 ### `getDefaultLocale()`
 
-Возвращает код локали языка, помеченного как основной в базе данных.
+Возвращает код локали языка, помеченного как основной в БД.
 
 ```php
 Lingua::getDefaultLocale(); // 'en'
 ```
 
-Возвращает `config('lingua.default_locale', 'en')` как запасной вариант, если основной язык не установлен.
+Возвращает `config('lingua.default_locale', 'en')` если основной язык не установлен.
 
 ---
 
 ### `isDefaultLocale(?string $locale = null): bool`
 
-Возвращает `true`, если указанная локаль (или текущая, если `null`) является системным языком по умолчанию.
-
 ```php
-Lingua::isDefaultLocale();       // true  (текущая локаль - основная)
+Lingua::isDefaultLocale();       // true  (текущая локаль — основная)
 Lingua::isDefaultLocale('en');   // true
 Lingua::isDefaultLocale('fr');   // false
 Lingua::isDefaultLocale('xx');   // false (неизвестная локаль, без исключения)
@@ -47,9 +44,20 @@ Lingua::isDefaultLocale('xx');   // false (неизвестная локаль, 
 
 ---
 
+### `setDefaultLocale(string $locale): void`
+
+Помечает указанную локаль как основной язык. Бросает `ModelNotFoundException`, если
+локаль не установлена.
+
+```php
+Lingua::setDefaultLocale('fr');
+```
+
+---
+
 ### `hasLocale(string $locale): bool`
 
-Возвращает `true`, если для данного кода или регионального значения существует запись `Language`.
+Возвращает `true`, если для кода или регионального значения существует запись `Language`.
 
 ```php
 Lingua::hasLocale('en');     // true
@@ -59,35 +67,20 @@ Lingua::hasLocale('xx');     // false
 
 ---
 
-### `setDefaultLocale(string $locale): void`
-
-Помечает указанную локаль как системный язык по умолчанию. Бросает `ModelNotFoundException`, если локаль не установлена.
-
-```php
-Lingua::setDefaultLocale('fr');
-```
-
----
-
 ### `getLocaleName(?string $locale = null): string`
 
-Возвращает английское отображаемое название локали. Возвращает `''`, если не найдено.
+Возвращает английское отображаемое название локали. Возвращает `''` если не найдено.
 
 ```php
-Lingua::getLocaleName();       // 'English'  (текущая локаль)
 Lingua::getLocaleName('fr');   // 'French'
 Lingua::getLocaleName('ar');   // 'Arabic'
-Lingua::getLocaleName('zz');   // ''
 ```
 
 ---
 
 ### `getLocaleNative(?string $locale = null): string`
 
-Возвращает нативное название локали. Возвращает `''`, если не найдено.
-
 ```php
-Lingua::getLocaleNative();       // 'English'
 Lingua::getLocaleNative('fr');   // 'Français'
 Lingua::getLocaleNative('ar');   // 'العربية'
 Lingua::getLocaleNative('ja');   // '日本語'
@@ -97,39 +90,44 @@ Lingua::getLocaleNative('ja');   // '日本語'
 
 ### `getDirection(?string $locale = null): string`
 
-Возвращает `'ltr'` или `'rtl'` для указанной локали. По умолчанию возвращает `'ltr'`, если локаль не найдена.
+Возвращает `'ltr'` или `'rtl'`. По умолчанию `'ltr'` если локаль не найдена.
 
 ```php
-Lingua::getDirection();        // 'ltr'  (текущая локаль)
 Lingua::getDirection('ar');    // 'rtl'
 Lingua::getDirection('he');    // 'rtl'
-Lingua::getDirection('en');    // 'ltr'
 Lingua::getDirection('zz');    // 'ltr'  (безопасный fallback)
 ```
 
 ---
 
-### `info(mixed $locale, bool $withCountry = false, bool $withCurrency = false): LocaleData`
+### `info(?string $locale = null): ?LocaleInfo` <Badge type="warning" text="Изменено в 2.0" />
 
-Возвращает объект `LocaleData` из `laravel-lang/locales` с подробной информацией о локали.
+Возвращает readonly-объект `LocaleInfo` с метаданными локали или `null` для неизвестных
+локалей.
 
 ```php
 $info = Lingua::info('fr');
-$info->code;          // 'fr'
-$info->native;        // 'Français'
-$info->direction;     // Direction enum
 
-$info = Lingua::info('en-US', withCountry: true, withCurrency: true);
-$info->native;        // 'English (United States)'
+if ($info !== null) {
+    $info->code;      // 'fr'
+    $info->name;      // 'French'
+    $info->native;    // 'Français'
+    $info->direction; // 'ltr'
+    $info->regional;  // 'fr_FR'
+    $info->type;      // 'standard'
+}
 ```
+
+::: warning Изменено в 2.0
+`info()` теперь возвращает `?LocaleInfo` (без `withCountry`/`withCurrency` параметров
+Spatie). Для неизвестных локалей возвращает `null` — всегда проверяйте `if ($info !== null)`.
+:::
 
 ---
 
 ## Запросы языков
 
 ### `languages(): Collection`
-
-Возвращает коллекцию всех установленных моделей `Language`.
 
 ```php
 $languages = Lingua::languages();
@@ -142,8 +140,6 @@ foreach ($languages as $lang) {
 
 ### `get(?string $locale = null): ?Language`
 
-Возвращает модель `Language` для данного кода локали или `null`, если не найдена.
-
 ```php
 $lang = Lingua::get('fr');
 $lang?->name;       // 'French'
@@ -153,8 +149,6 @@ $lang?->direction;  // 'ltr'
 ---
 
 ### `getDefault(): ?Language`
-
-Возвращает модель `Language`, помеченную как основной язык.
 
 ```php
 $default = Lingua::getDefault();
@@ -166,8 +160,6 @@ $default?->is_default; // true
 
 ### `getFallback(): ?Language`
 
-Возвращает модель `Language` для `app()->getFallbackLocale()`.
-
 ```php
 $fallback = Lingua::getFallback();
 ```
@@ -175,8 +167,6 @@ $fallback = Lingua::getFallback();
 ---
 
 ### `languagesWithStatistics(): Collection`
-
-Возвращает все модели `Language`, обогащённые статистикой переводов.
 
 ```php
 $languages = Lingua::languagesWithStatistics();
@@ -186,14 +176,45 @@ foreach ($languages as $lang) {
 }
 ```
 
-Каждая модель получает четыре атрибута только для чтения:
+Каждая модель получает `total_strings`, `translated_strings`, `missing_strings`,
+`completion_percentage`.
 
-| Атрибут | Тип | Описание |
-|---|---|---|
-| `total_strings` | `int` | Общее количество строк в `language_lines` |
-| `translated_strings` | `int` | Строки со значением для данной локали |
-| `missing_strings` | `int` | `total - translated` |
-| `completion_percentage` | `float` | `translated / total * 100` |
+---
+
+## Управление языками
+
+### `addLanguage(string $locale): void` <Badge type="warning" text="Изменено в 2.0" />
+
+```php
+Lingua::addLanguage('fr');
+```
+
+::: warning Изменено в 2.0
+Больше не вызывает `lang:add`. Только нативная работа с БД из встроенного набора данных.
+:::
+
+---
+
+### `removeLanguage(string $locale): void` <Badge type="warning" text="Изменено в 2.0" />
+
+```php
+Lingua::removeLanguage('fr');
+```
+
+::: warning Изменено в 2.0
+Больше не вызывает `lang:rm`. Только нативная работа с БД.
+:::
+
+---
+
+### `installDefaultLanguage(string $locale): void` <Badge type="tip" text="Новое в 2.0" />
+
+Устанавливает язык по умолчанию и заполняет его переводами из встроенного набора данных.
+Используется мастером `lingua:install`.
+
+```php
+Lingua::installDefaultLanguage('en');
+```
 
 ---
 
@@ -201,17 +222,13 @@ foreach ($languages as $lang) {
 
 ### `available(): array`
 
-Возвращает все коды локалей, известных `laravel-lang/locales` (установленные + неустановленные).
-
 ```php
-Lingua::available(); // ['af', 'ar', 'az', 'be', 'bg', 'bn', …]
+Lingua::available(); // ['af', 'ar', 'az', 'be', 'bg', 'bn', …]  (129+ локалей)
 ```
 
 ---
 
 ### `installed(): array`
-
-Возвращает коды локалей, текущих в таблице `languages`.
 
 ```php
 Lingua::installed(); // ['en', 'fr', 'it']
@@ -221,10 +238,8 @@ Lingua::installed(); // ['en', 'fr', 'it']
 
 ### `notInstalled(): array`
 
-Возвращает доступные, но неустановленные коды локалей, отсортированные по алфавиту.
-
 ```php
-Lingua::notInstalled(); // ['af', 'ar', 'az', …] (все кроме 'en', 'fr', 'it')
+Lingua::notInstalled(); // доступные, но неустановленные
 ```
 
 ---
@@ -234,56 +249,36 @@ Lingua::notInstalled(); // ['af', 'ar', 'az', …] (все кроме 'en', 'fr'
 ```php
 Lingua::isInstalled('en');   // true
 Lingua::isInstalled('xx');   // false
-Lingua::isInstalled(null);   // false
 ```
 
 ---
 
 ### `isAvailable(?string $locale = null): bool`
 
-Возвращает `true`, если локаль известна laravel-lang, но ещё **не** установлена.
+Возвращает `true`, если локаль известна реестру, но **не** установлена.
 
 ```php
 Lingua::isAvailable('de');   // true  (доступна, не установлена)
 Lingua::isAvailable('en');   // false (уже установлена)
-Lingua::isAvailable(null);   // false
 ```
 
 ---
 
 ## Чтение переводов
 
-### `translations(): Collection`
-
-Возвращает все модели `Translation`.
-
-```php
-$all = Lingua::translations();
-```
-
----
-
 ### `getTranslations(?string $key): array`
-
-Возвращает все значения локалей для ключа перевода в виде ассоциативного массива.
 
 ```php
 Lingua::getTranslations('auth.failed');
-// ['en' => 'These credentials do not match.', 'fr' => 'Ces identifiants ne correspondent pas.']
-
-Lingua::getTranslations('nonexistent'); // []
+// ['en' => 'These credentials do not match.', 'fr' => 'Ces identifiants…']
 ```
 
 ---
 
 ### `getTranslation(?string $key, ?string $locale = null): string`
 
-Возвращает переведённую строку для ключа и локали. Возвращает `''`, если не найдено.
-
 ```php
-Lingua::getTranslation('auth.failed');         // текущая локаль
 Lingua::getTranslation('auth.failed', 'fr');   // 'Ces identifiants…'
-Lingua::getTranslation('auth.failed', 'zz');   // ''
 Lingua::getTranslation('nonexistent', 'en');   // ''
 ```
 
@@ -291,13 +286,8 @@ Lingua::getTranslation('nonexistent', 'en');   // ''
 
 ### `getTranslationByGroup(string $group, ?string $locale = null): Collection`
 
-Возвращает все модели `Translation` в группе, опционально отфильтрованные по наличию значения для данной локали.
-
 ```php
-// Все строки validation
 Lingua::getTranslationByGroup('validation');
-
-// Только строки validation с французским переводом
 Lingua::getTranslationByGroup('validation', 'fr');
 ```
 
@@ -305,19 +295,9 @@ Lingua::getTranslationByGroup('validation', 'fr');
 
 ### `getLocaleStats(?string $locale = null): array`
 
-Возвращает статистику переводов для данной локали (или текущей, если `null`).
-
 ```php
 $stats = Lingua::getLocaleStats('fr');
-// [
-//   'total'      => 1240,
-//   'translated' => 980,
-//   'missing'    => 260,
-//   'percentage' => 79.03,
-// ]
-
-Lingua::getLocaleStats('zz');
-// ['total' => 1240, 'translated' => 0, 'missing' => 1240, 'percentage' => 0.0]
+// ['total' => 1240, 'translated' => 980, 'missing' => 260, 'percentage' => 79.03]
 ```
 
 ---
@@ -326,23 +306,20 @@ Lingua::getLocaleStats('zz');
 
 ### `setTranslation(?string $key, string $value, ?string $locale = null): void`
 
-Сохраняет значение перевода. Ничего не делает, если ключ не существует.
-
 ```php
 Lingua::setTranslation('auth.failed', 'Les identifiants ne correspondent pas.', 'fr');
-Lingua::setTranslation('auth.failed', 'Updated message');  // текущая локаль
 ```
 
 ---
 
 ### `forgetTranslation(?string $key, ?string $locale = null): void`
 
-Удаляет значение локали из ключа перевода. Если локаль является основной, удаляется вся запись. Бросает `VendorTranslationProtectedException` для переводов пакетов.
-
 ```php
 Lingua::forgetTranslation('custom.key', 'fr');  // удаляет только значение 'fr'
 Lingua::forgetTranslation('custom.key', 'en');  // удаляет всю запись (основная локаль)
 ```
+
+Бросает `VendorTranslationProtectedException` для вендорных строк.
 
 ---
 
@@ -352,14 +329,12 @@ Lingua::forgetTranslation('custom.key', 'en');  // удаляет всю зап�
 
 ```php
 $laravel = Lingua::getVendorTranslations('laravel');
-$frenchSpatie = Lingua::getVendorTranslations('spatie', 'fr');
+$frFr    = Lingua::getVendorTranslations('laravel', 'fr');
 ```
 
 ---
 
 ### `setVendorTranslation(string $vendor, string $group, string $key, string $value, ?string $locale = null): void`
-
-Обновляет значение перевода пакета. Бросает `ModelNotFoundException`, если запись не существует.
 
 ```php
 Lingua::setVendorTranslation(
@@ -373,37 +348,9 @@ Lingua::setVendorTranslation(
 
 ---
 
-## Жизненный цикл языков
-
-### `addLanguage(string $locale): void`
-
-Устанавливает языковые файлы для данной локали через `lang:add`.
-
-```php
-Lingua::addLanguage('fr');
-```
-
-> Это только устанавливает файлы. Используйте `php artisan lingua:add {locale}` для полного оркестрированного процесса (файлы + запись в БД + синхронизация).
-
----
-
-### `removeLanguage(string $locale): void`
-
-Удаляет языковые файлы для данной локали через `lang:rm --force`.
-
-```php
-Lingua::removeLanguage('fr');
-```
-
-> Это только удаляет файлы. Используйте `php artisan lingua:remove {locale}` для полного оркестрированного процесса (файлы + переводы + запись в БД + переупорядочивание).
-
----
-
 ## Синхронизация и обслуживание
 
 ### `syncToDatabase(): void`
-
-Импортирует все локальные файлы `lang/` в базу данных.
 
 ```php
 Lingua::syncToDatabase();
@@ -413,8 +360,6 @@ Lingua::syncToDatabase();
 
 ### `syncToLocal(): void`
 
-Экспортирует все переводы из базы данных в локальные файлы `lang/`.
-
 ```php
 Lingua::syncToLocal();
 ```
@@ -423,18 +368,12 @@ Lingua::syncToLocal();
 
 ### `updateLanguages(): void`
 
-Запускает `lang:update` для получения последних переводов из `laravel-lang`.
-
 ```php
 Lingua::updateLanguages();
 ```
 
 ---
 
-### `optimize(): void`
+### `optimize()` — устарел <Badge type="warning" text="Устарело в 2.0" />
 
-Очищает кеш приложения через `optimize:clear`.
-
-```php
-Lingua::optimize();
-```
+Метод `optimize()` **устарел** и будет удалён в будущей версии. Удалите все его вызовы.

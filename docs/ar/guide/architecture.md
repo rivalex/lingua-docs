@@ -21,9 +21,9 @@ Browser request
     │
     ▼
 ┌─────────────────────────────┐
-│       LinguaManager         │  Custom TranslationLoaderManager
-│  1. DB loader (Spatie)      │  DB always wins on overlap
-│  2. File loader (fallback)  │
+│       LinguaManager         │  extends Illuminate FileLoader
+│  DB translations merged over │  DB always wins on overlap
+│  file translations (DB mode) │  (file mode = plain FileLoader)
 └───┬─────────────────────────┘
     │
     ▼
@@ -32,18 +32,33 @@ Translated string returned
 
 ## تحميل الترجمات
 
-يمتد `LinguaManager` من `TranslationLoaderManager` الخاص بـ Spatie. في وقت التشغيل يدمج مصدرين:
+`LinguaManager` يمتد من
+`Illuminate\Translation\FileLoader` الخاص بـ Laravel — لا **توجد** اعتمادية على Spatie.
+يُسجَّل بتزيين ربط محمّل الإطار:
 
-1. **محمّل الملفات** - يقرأ من `lang/` كما يفعل Laravel العادي
-2. **محمّل قاعدة البيانات** (محمّل `Db` من Spatie) - يقرأ من `language_lines`
+```php
+$app->extend('translation.loader', function ($original, $app) {
+    return new LinguaManager($app, $original);
+});
+```
 
-عندما يوجد نفس المفتاح في المصدرين، **تفوز قيمة قاعدة البيانات**. هذا يتيح لك تجاوز أي ترجمة من حزمة خارجية أو مستندة إلى ملف دون لمس ملفات المصدر.
+في **وضع قاعدة البيانات**، لكل `(locale, group)` يُحمِّل الترجمات
+المستندة إلى الملفات عبر المحمّل الأصلي، ثم يدمج قيم قاعدة البيانات
+فوقها باستخدام `array_replace_recursive`. **قيمة قاعدة البيانات تفوز دائماً** عند
+التعارض، لذا يمكنك تجاوز أي سلسلة من مورّد أو ملف دون لمس
+ملفات المصدر.
 
-إذا لم يكن جدول `language_lines` موجودًا بعد (مثلًا قبل تشغيل الهجرات)، يتراجع `LinguaManager` بأمان إلى وضع الملفات فقط.
+إذا لم يكن جدول `language_lines` موجوداً بعد (مثلاً قبل تشغيل الهجرات)،
+يُلتقط `QueryException` ويتراجع `LinguaManager` بأمان
+إلى وضع الملفات فقط.
+
+في **وضع الملفات**، يتصرف `LinguaManager` كـ `FileLoader` القياسي —
+لا استعلامات إلى قاعدة البيانات. انظر [محركات التخزين](/ar/guide/storage).
 
 ## الوسيط
 
-`LinguaMiddleware` يُضاف تلقائيًا إلى مجموعة وسيط `web` عند الإقلاع عبر `LinguaServiceProvider`. يعمل على كل طلب ويب:
+`LinguaMiddleware` يُلحق تلقائياً بمجموعة وسيط `web`
+عند الإقلاع عبر `LinguaServiceProvider`. يعمل على كل طلب ويب:
 
 ```php
 // Simplified logic
@@ -58,64 +73,89 @@ session()->put(config('lingua.session_variable'), $locale);
 
 ## مزوِّد الخدمة
 
-`LinguaServiceProvider` يقوم بثلاثة أشياء عند الإقلاع:
+`LinguaServiceProvider` يقوم بما يلي عند الإقلاع:
 
 1. **تسجيل مكونات Blade المجهولة** تحت البادئة `lingua::`
 2. **تسجيل مكونات Livewire** تحت مساحة الاسم `lingua::`
-3. **استبدال منفردات `translator` و`translation.loader`** في حاوية IoC بالتطبيقات المخصصة لـ Lingua
+3. **تزيين ربط `translation.loader`** عبر `$app->extend(...)`،
+   بتغليف محمّل Laravel بـ `LinguaManager`
 
-لأن مزوِّد الخدمة يستبدل ربط المترجم الأساسي، من المهم أن يُقلِع *بعد* `TranslationServiceProvider` الخاص بـ Laravel. ترتيب التحميل التلقائي لـ Composer يتولى هذا تلقائيًا.
+لأن مزوِّد الخدمة *يُزيِّن* بدلاً من *يستبدل* المحمّل الأساسي،
+يتكامل بنظافة مع `TranslationServiceProvider` الخاص بـ Laravel. ترتيب
+التحميل التلقائي في Composer يتولى ترتيب الإقلاع تلقائياً.
 
 ## مخطط قاعدة البيانات
 
-يُستخدم جدولان:
+ثلاثة جداول تُستخدم (محرك `file` يتخطى `language_lines`):
 
 ### `languages`
 
 | العمود | النوع | ملاحظات |
 |---|---|---|
-| `id` | bigint (تزايد تلقائي) | المفتاح الأساسي |
-| `code` | string | رمز ISO 639-1 (`en`, `fr`, `pt_BR`) |
-| `regional` | string, nullable | الرمز الإقليمي الكامل (`en_US`, `pt_BR`) |
+| `id` | bigint | المفتاح الأساسي |
+| `code` | string | رمز ISO 639-1 (`en`، `fr`، `pt_BR`) |
+| `regional` | string، قابل للـ null | الرمز الإقليمي الكامل (`en_US`، `pt_BR`) |
 | `type` | string | `'regional'` أو `'standard'` |
 | `name` | string | اسم العرض بالإنجليزية (`French`) |
 | `native` | string | الاسم الأصلي (`Français`) |
 | `direction` | string | `'ltr'` أو `'rtl'` |
 | `is_default` | boolean | صف واحد فقط يجب أن يكون `true` |
-| `sort` | integer | ترتيب العرض (يُعيَّن تلقائيًا) |
+| `sort` | integer | ترتيب العرض (يُعيَّن تلقائياً) |
 
-### `language_lines` (Spatie)
+### `language_lines`
 
 | العمود | النوع | ملاحظات |
 |---|---|---|
-| `id` | bigint (تزايد تلقائي) | المفتاح الأساسي |
-| `group` | string | مجموعة الترجمة (`auth`, `validation`, `single`) |
-| `key` | string | مفتاح الترجمة (`failed`, `required`) |
-| `text` | json | `{"en": "…", "fr": "…", "it": "…"}` |
+| `id` | bigint | المفتاح الأساسي |
+| `group` | string | مجموعة الترجمة (`auth`، `validation`، `single`) |
+| `key` | string | مفتاح الترجمة (`failed`، `required`) |
+| `text` | json، **قابل للـ null** | `{"en": "…", "fr": "…"}` |
 | `type` | string | `'text'` أو `'html'` أو `'markdown'` |
-| `is_vendor` | boolean | `true` لنصوص حزم الطرف الثالث |
-| `vendor` | string, nullable | اسم الحزمة (مثل `spatie`, `laravel`) |
+| `is_vendor` | boolean | `true` لسلاسل حزم الطرف الثالث |
+| `vendor` | string، قابل للـ null | اسم المورّد (مثل `laravel`) |
 
-عمود JSON لـ `text` يخزّن **جميع اللغات في صف واحد**. هذا التصميم يعني:
-- إضافة لغة جديدة لا تغيّر المخطط أبدًا
+عمود JSON لـ `text` يخزّن **جميع اللغات في صف واحد**:
+
+- إضافة لغة جديدة لا تغيّر المخطط أبداً
 - استعلام واحد يجلب جميع قيم اللغات لمفتاح ما
 - اللغات الناقصة ليس لها مفتاح في كائن JSON ببساطة
 
-## الباذر
+### `lingua_settings`
 
-`LinguaSeeder` يُستدعى مرة واحدة أثناء `lingua:install`. يقوم بـ:
+جدول مفتاح/قيمة يدعم واجهة الإعدادات (مثل مفتاح تبديل شريط التنقل المشترك).
 
-1. قراءة `config('lingua.default_locale')` (الافتراضي `config('app.locale')`)
-2. جلب بيانات اللغة من `laravel-lang/locales`
-3. إنشاء سجل `Language` مع `is_default = true`
-4. استدعاء `lingua:add {locale}` لتثبيت ملفات اللغة
-5. استدعاء `lingua:sync-to-database` لاستيراد جميع النصوص
+## مجموعة البيانات المدمجة
+
+يشحن Lingua 2.0 جميع بيانات اللغات داخل الحزمة:
+
+- **`LocaleRegistry`** (`Rivalex\Lingua\Locales\LocaleRegistry`) — بيانات وصفية
+  لأكثر من 129 لغة. `Lingua::info($locale)` يُرجع كائن قيمة `LocaleInfo`
+  للقراءة فقط (`->name`، `->native`، `->direction`،
+  `->regional`، `->code`، `->type`)، أو `null` للغات غير المعروفة.
+- **الترجمات المدمجة** — 26 لغة × 7 مجموعات، 5902 سلسلة نصية، متوافقة
+  مع Laravel **v13.14.0**. `NotificationProjector` يشتق سلاسل الإشعارات.
+  `lingua:add` يبذر من هذه المجموعة بدون استدعاءات شبكة.
+
+## معمارية التخزين المؤقت
+
+في وضع قاعدة البيانات، تُخزِّن Lingua الترجمات **بدقة** لكل
+`(locale, group)`:
+
+- المفاتيح تبدو كـ `lingua.trans.{locale}.{group}`
+- عند حفظ/حذف `Translation`، يعمل فقط `Cache::forget('lingua.trans.{locale}.{group}')`
+  للمفاتيح المتأثرة — لا يوجد **أي** `cache:clear` عام في أي
+  مسار مزامنة
+- المخزن والبادئة قابلان للتهيئة عبر `cache.store` / `cache.prefix`
 
 ## النماذج
 
 | النموذج | الجدول | يمتد من |
 |---|---|---|
 | `Language` | `languages` | `Illuminate\Database\Eloquent\Model` |
-| `Translation` | `language_lines` | `LanguageLine` من Spatie |
+| `Translation` | `language_lines` | `Illuminate\Database\Eloquent\Model` |
 
-يرث `Translation` طرق `setTranslation()` و`forgetTranslation()` من Spatie ويضيف نطاقات ومناهج مزامنة ومساعدات إحصاءات خاصة بـ Lingua.
+`Translation` يوفر `getTranslationsForGroup()`، ومساعدات المزامنة،
+ومساعدات الإحصائيات، و`forgetTranslation()` — الذي يرمي
+`VendorTranslationProtectedException` لصفوف المورّد. نطاق الاستعلام
+`scopeOrdered()` يحل محل `scopeActive()` القديم (مفوَّض محتفظ به للتوافق
+العكسي).

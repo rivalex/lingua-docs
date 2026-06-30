@@ -1,6 +1,6 @@
 # Language Selector
 
-The `<livewire:lingua::language-selector>` component is an embeddable locale switcher for your end users - completely separate from the admin management UI.
+The `<livewire:lingua::language-selector>` component is an embeddable locale switcher for your end users — completely separate from the admin management UI.
 
 ## Basic usage
 
@@ -14,33 +14,33 @@ Add it anywhere in your Blade layouts. It renders using the mode configured in `
 
 ### Sidebar mode (default)
 
-Renders as a grouped navigation section - ideal for application sidebars built with Flux.
+Renders as a grouped navigation section — ideal for application sidebars built with Flux.
 
 ```blade
 <livewire:lingua::language-selector mode="sidebar" />
 ```
 
-<Screenshot src="/screenshots/selector-sidebar.png" alt="Language selector in sidebar mode" caption="Sidebar mode - shows all installed languages as navigation items." width="320px" :center="true"/>
+<Screenshot src="/screenshots/selector-sidebar.png" alt="Language selector in sidebar mode" caption="Sidebar mode — all installed languages as navigation items." width="320px" :center="true"/>
 
 ### Dropdown mode
 
-Renders as a compact dropdown button - ideal for headers and navigation bars.
+Renders as a compact dropdown button — ideal for headers and navigation bars.
 
 ```blade
 <livewire:lingua::language-selector mode="dropdown" />
 ```
 
-<Screenshot src="/screenshots/selector-dropdown.png" alt="Language selector in dropdown mode" caption="Dropdown mode - shows the current language with a flag icon." width="320px" :center="true"/>
+<Screenshot src="/screenshots/selector-dropdown.png" alt="Language selector in dropdown mode" caption="Dropdown mode — current language with a flag icon." width="320px" :center="true"/>
 
 ### Modal mode
 
-Renders as a button that opens a full language picker modal - ideal for prominent locale switching in landing pages or onboarding flows.
+Renders as a button that opens a full language picker overlay — ideal for prominent locale switching on landing pages or onboarding flows.
 
 ```blade
 <livewire:lingua::language-selector mode="modal" />
 ```
 
-<Screenshot src="/screenshots/selector-modal.png" alt="Language selector in modal mode" caption="Modal mode - full-screen language picker overlay."/>
+<Screenshot src="/screenshots/selector-modal.png" alt="Language selector in modal mode" caption="Modal mode — full-screen language picker overlay."/>
 
 ## Props reference
 
@@ -56,20 +56,30 @@ Renders as a button that opens a full language picker modal - ideal for prominen
 
 ## How locale switching works
 
-When a user clicks a language, the component calls `changeLocale($locale)`:
+When a user picks a language, the component calls `changeLocale($locale)`:
 
-1. Validates that the locale exists in the `languages` table (silently ignores unknown locales)
+1. Validates that the locale exists in the `languages` table (unknown locales are ignored)
 2. Stores the locale code in the session under `config('lingua.session_variable')`
 3. Calls `app()->setLocale($locale)` for the current request
-4. Redirects to the current URL (triggers a full page reload so the new locale takes effect everywhere)
+4. Redirects to the **current page** so the new locale takes effect everywhere
 
-On the next request, `LinguaMiddleware` reads the session and applies the locale before your controllers run.
+::: tip <Badge type="tip" text="Changed" /> Reloads the current page
+The selector now returns the user to the page they were on, not the site root. `ManagesLocale` derives the target from `getRequestUri()` and guards it with a local-path check, so the redirect can never be pointed at an external URL.
+:::
+
+On the next request, the Lingua middleware reads the session and applies the locale before your controllers run.
+
+## The `x-lingua::select` component <Badge type="tip" text="New in 2.0" />
+
+Internally, the dropdown and modal selectors use `x-lingua::select`, a custom Alpine + Tailwind dropdown built on the **native Popover API** (`popover="manual"` with `showPopover()` / `hidePopover()`) and `position: fixed`.
+
+Why this matters: a Flux modal or dialog applies `overflow` and `transform` to its container, which clips and mispositions ordinary absolutely-positioned dropdowns. Because the native popover renders in the top layer and is positioned in the viewport, **the selector works correctly even when nested inside a Flux modal or dialog** — no teleporting or z-index hacks required.
 
 ## Flag icons
 
-Flag icons are powered by the [`outhebox/blade-flags`](https://github.com/MohmmedAshraf/blade-flags) package, which is installed automatically as a Lingua dependency.
+Flag icons are powered by [`outhebox/blade-flags`](https://github.com/MohmmedAshraf/blade-flags), installed automatically as a Lingua dependency.
 
-Flags are matched by the language's `regional` code (e.g. `en_US` → 🇺🇸, `fr_FR` → 🇫🇷). If no regional code is set, the flag component gracefully falls back to the two-letter code display.
+Flags are matched by the language's `regional` code (e.g. `en_US` → 🇺🇸, `fr_FR` → 🇫🇷). If no regional code is set, the component falls back to the two-letter code.
 
 Disable flags globally:
 
@@ -92,7 +102,7 @@ Publish the views to override the markup:
 php artisan vendor:publish --tag="lingua-views"
 ```
 
-The selector templates are in:
+The selector templates live under:
 
 ```
 resources/views/vendor/lingua/livewire/
@@ -103,16 +113,11 @@ resources/views/vendor/lingua/livewire/
     └── modal.blade.php
 ```
 
-::: tip Integrate with your own navigation
-If you use Flux's sidebar or navbar components, the `sidebar` mode slots naturally into Flux's `<flux:navlist>` or `<flux:sidebar>`. Publish the view and adapt the markup to match your navigation structure.
-:::
-
 ## Refreshing the selector after changes
 
-The selector listens for the `refreshLanguages` Livewire event. If you add or remove a language from the management UI (or programmatically), the selector re-renders automatically without a page reload.
+The selector listens for the `refreshLanguages` Livewire event. Adding or removing a language (from the UI or programmatically) re-renders it without a page reload:
 
 ```js
-// Dispatch from any Livewire component or Alpine.js code:
 this.$dispatch('refreshLanguages')
 ```
 
@@ -120,9 +125,7 @@ this.$dispatch('refreshLanguages')
 
 ## Headless mode
 
-The headless selector renders zero CSS and zero framework markup — pure semantic HTML with `data-lingua-*` attributes that you style entirely with your own CSS, Tailwind, or any other approach.
-
-Use headless mode when you need the locale-switching logic but want complete control over the visual output.
+The headless selector renders zero CSS and zero framework markup — pure semantic HTML with `data-lingua-*` attributes that you style entirely with your own CSS, Tailwind, or any other approach. Use it when you need the locale-switching logic but want full control over the visual output.
 
 ### Basic usage
 
@@ -143,7 +146,7 @@ Enable headless mode globally via config or the Settings page:
 
 #### `$item` slot
 
-Replaces the default `<button>` markup inside every language `<li>`. Receives the `Language` model instance:
+Replaces the default `<button>` markup inside every language `<li>`. Receives the `Language` model:
 
 ```blade
 <livewire:lingua::headless-language-selector>
@@ -155,7 +158,7 @@ Replaces the default `<button>` markup inside every language `<li>`. Receives th
 
 #### `$current` slot
 
-Replaces the rendering of the **currently selected** language only. Falls through to `$item` if not provided:
+Replaces the rendering of the **currently selected** language only. Falls through to `$item` when not provided:
 
 ```blade
 <livewire:lingua::headless-language-selector>
@@ -169,8 +172,6 @@ Replaces the rendering of the **currently selected** language only. Falls throug
 ```
 
 ### CSS targeting API
-
-The component exposes `data-lingua-*` attributes on every element for CSS and JavaScript targeting:
 
 | Attribute | Element |
 |---|---|
@@ -192,9 +193,6 @@ The component exposes `data-lingua-*` attributes on every element for CSS and Ja
     display: flex;
     gap: 0.5rem;
     list-style: none;
-}
-[data-lingua-item] {
-    cursor: pointer;
 }
 [data-lingua-active] {
     font-weight: bold;
@@ -228,9 +226,7 @@ The component exposes `data-lingua-*` attributes on every element for CSS and Ja
 
 ```blade
 <div x-data="{ open: false }">
-    <button @click="open = !open">
-        {{ app()->getLocale() }}
-    </button>
+    <button @click="open = !open">{{ app()->getLocale() }}</button>
 
     <div x-show="open" @click.outside="open = false">
         <livewire:lingua::headless-language-selector>
@@ -244,13 +240,6 @@ The component exposes `data-lingua-*` attributes on every element for CSS and Ja
 </div>
 ```
 
-### Props reference (updated)
-
-| Prop | Type | Default | Description |
-|---|---|---|---|
-| `mode` | `string` | `config('lingua.selector.mode')` | `'sidebar'`, `'dropdown'`, `'modal'`, or `'headless'` |
-| `show-flags` | `bool` | `config('lingua.selector.show_flags')` | Show country flag icons |
-
 ::: tip
-When `mode="headless"` is passed to `<livewire:lingua::language-selector />`, that component renders nothing. Use `<livewire:lingua::headless-language-selector />` directly instead for full slot/attribute support.
+When `mode="headless"` is passed to `<livewire:lingua::language-selector />`, that component renders nothing. Use `<livewire:lingua::headless-language-selector />` directly instead for full slot and attribute support.
 :::

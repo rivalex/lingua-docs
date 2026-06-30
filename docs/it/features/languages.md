@@ -1,21 +1,41 @@
 # Gestione delle lingue
 
-La pagina Lingue (`/lingua/languages`) è il tuo centro di controllo per tutte le locale installate.
+La pagina Lingue (`/lingua/languages`) è il tuo centro di controllo per tutte
+le locale installate. Condivide il [menu di navigazione](/it/features/settings#menu-di-navigazione)
+con le altre pagine di Lingua, con la pagina corrente evidenziata.
 
-<Screenshot src="/screenshots/languages-page.png" alt="Pagina di gestione delle lingue di Lingua" caption="Pagina Lingue - mostra le locale installate con le statistiche di completamento." />
+<Screenshot src="/screenshots/languages-page.png" alt="Pagina di gestione delle lingue di Lingua" caption="Pagina Lingue — locale installate con statistiche di completamento e la toolbar a due righe." />
+
+## La toolbar
+
+La toolbar si ridispone su due righe così i controlli rimangono usabili a
+qualsiasi larghezza:
+
+- **Riga superiore** — il campo di **ricerca** locale e il pulsante
+  **Aggiungi lingua**.
+- **Riga inferiore** — i tre pulsanti di **sincronizzazione** (Sincronizza da
+  file, Sincronizza in file, Aggiorna).
 
 ## Aggiungere una lingua
 
 ### Dall'interfaccia
 
-Clicca **Aggiungi lingua**, seleziona una qualsiasi delle 70+ locale disponibili e conferma. Lingua:
+Clicca **Aggiungi lingua**, cerca tra le 129+ locale nel registro, scegline
+una e conferma. Lingua poi:
 
-1. Scarica i file della lingua da Laravel Lang
-2. Crea un record `Language` nel database
-3. Sincronizza tutte le nuove stringhe in `language_lines`
-4. Aggiorna la tabella con la nuova locale
+1. Crea un record `Language` per la locale
+2. Popola le sue stringhe dal **dataset integrato** (nessun download da
+   internet)
+3. Aggiorna la tabella con la nuova locale
 
-<Screenshot src="/screenshots/language-add-modal.png" alt="Modale per aggiungere una lingua" caption="La modale di aggiunta lingua con selettore di locale ricercabile." width="640px" :center="true"/>
+<Screenshot src="/screenshots/language-add-modal.png" alt="Modale per aggiungere una lingua" caption="La modale di aggiunta lingua con un selettore di locale ricercabile." width="640px" :center="true"/>
+
+::: tip <Badge type="tip" text="Novità in 2.0" /> Nessun download richiesto
+`lingua:add` non scarica più file da GitHub o `laravel-lang`. Le locale
+vengono popolate istantaneamente dal dataset integrato nel pacchetto (26
+locale × 7 gruppi, 5902 stringhe, allineati a Laravel v13.14.0). Vedi
+[Sincronizzazione bidirezionale](/it/features/sync#il-dataset-integrato).
+:::
 
 ### Dalla riga di comando
 
@@ -30,15 +50,13 @@ php artisan lingua:add ar
 ```php
 use Rivalex\Lingua\Facades\Lingua;
 
-// Installa i file della lingua (wrapper di lang:add)
+// Crea il record Language e popola il suo storage per la locale
 Lingua::addLanguage('fr');
-
-// Poi crea il record DB + sincronizza (quello che fa il comando Artisan completamente)
-// → usa lingua:add per il flusso completo e orchestrato
 ```
 
 ::: tip
-Usa `Lingua::notInstalled()` per ottenere l'elenco delle locale disponibili ma non ancora installate:
+Usa `Lingua::notInstalled()` per ottenere le locale disponibili ma non ancora
+installate:
 
 ```php
 $available = Lingua::notInstalled(); // ['af', 'ar', 'az', …]
@@ -47,16 +65,16 @@ $available = Lingua::notInstalled(); // ['af', 'ar', 'az', …]
 
 ## Rimuovere una lingua
 
-Clicca sull'icona del cestino su qualsiasi riga di lingua non predefinita. Una modale di conferma previene l'eliminazione accidentale - devi digitare il nome della lingua per confermare.
+Clicca sull'icona del cestino su qualsiasi riga di lingua non predefinita. Un
+passaggio di conferma previene l'eliminazione accidentale.
 
-Internamente, l'operazione di eliminazione:
-1. Rimuove i file della lingua tramite `lang:rm {locale} --force`
-2. Rimuove tutte le voci `{locale}` dalla colonna JSON `language_lines.text`
-3. Elimina il record `Language`
-4. Riordina i valori di ordinamento delle lingue rimanenti
+La rimozione di una lingua elimina il record `Language` **e ogni valore di
+traduzione per quella locale**, poi riordina i valori `sort` delle lingue
+rimanenti.
 
 ::: warning
-La **lingua predefinita non può essere rimossa**. Imposta prima un'altra lingua come predefinita.
+La **lingua predefinita non può essere rimossa**. Imposta prima un'altra
+lingua come predefinita.
 :::
 
 ```bash
@@ -64,42 +82,54 @@ La **lingua predefinita non può essere rimossa**. Imposta prima un'altra lingua
 php artisan lingua:remove fr
 ```
 
-## Impostare la lingua predefinita
-
-Clicca sull'icona a stella (⭐) su qualsiasi riga di lingua. Solo una lingua può essere predefinita alla volta. La modifica è avvolta in una transazione del database per prevenire una finestra in cui nessuna lingua è contrassegnata come predefinita.
-
 ```php
 // In modo programmatico
-Lingua::setDefaultLocale('fr');
-
-// Oppure tramite il modello
-$french = Language::where('code', 'fr')->first();
-Language::setDefault($french);
+Lingua::removeLanguage('fr');
 ```
 
-::: warning Rimozione della predefinita
-Se imposti una nuova lingua predefinita, assicurati che tutte le tue traduzioni siano almeno parzialmente complete per quella locale. La lingua predefinita è usata come fallback nell'editor dell'interfaccia (la colonna sinistra mostra il valore predefinito come riferimento).
+## Impostare la lingua predefinita
+
+Clicca sull'icona a stella (⭐) su qualsiasi riga di lingua. Solo una lingua
+può essere predefinita alla volta, e la modifica è avvolta in una transazione
+del database così non c'è mai una finestra senza predefinita.
+
+```php
+use Rivalex\Lingua\Facades\Lingua;
+
+Lingua::setDefaultLocale('fr');
+```
+
+::: warning La predefinita definisce il set di chiavi di riferimento
+La locale predefinita definisce il set canonico di chiavi. La copertura per
+ogni altra locale viene misurata rispetto ad essa, quindi la predefinita mostra
+sempre il 100%. Assicurati che sia ragionevolmente completa prima di cambiarla.
 :::
 
 ## Riordinare le lingue
 
-Trascina e rilascia le righe delle lingue per controllarne l'ordine di visualizzazione in tutta l'applicazione - nel widget del selettore di lingua, nel selettore di locale delle traduzioni e ovunque usi `Lingua::languages()`.
+Trascina e rilascia le righe delle lingue per controllarne l'ordine di
+visualizzazione ovunque appaiano — nel widget del selettore di lingua, nel
+selettore di locale delle traduzioni e ovunque chiami `Lingua::languages()`.
 
-L'ordine di ordinamento è memorizzato nella colonna intera `sort` e riassegnato sequenzialmente dopo ogni trascinamento.
+L'ordine di ordinamento è archiviato nella colonna intera `sort` e
+riassegnato sequenzialmente dopo ogni trascinamento.
 
-## Visualizzare le statistiche di completamento
+## Statistiche di completamento
 
 Ogni riga di lingua mostra:
 
 | Metrica | Descrizione |
 |---|---|
+| **Stringhe totali** | Il numero di chiavi nel set di chiavi di riferimento |
+| **Tradotte** | Numero di stringhe con un valore per questa locale |
 | **Completamento %** | `tradotte / totale * 100`, arrotondato a 2 decimali |
-| **Mancanti** | Numero di stringhe senza valore per questa locale |
 
-Questi vengono calcolati al momento della query tramite subquery del database sulla tabella `language_lines`, quindi sono sempre aggiornati.
+Le statistiche vengono calcolate tramite il [driver di archiviazione](/it/guide/storage)
+attivo, quindi sono corrette sia in modalità `database` che `file`.
 
 ```php
-// Ottieni le statistiche per una locale specifica
+use Rivalex\Lingua\Facades\Lingua;
+
 $stats = Lingua::getLocaleStats('fr');
 // [
 //   'total'      => 1240,
@@ -108,7 +138,7 @@ $stats = Lingua::getLocaleStats('fr');
 //   'percentage' => 79.03,
 // ]
 
-// Oppure ottieni tutte le lingue con le statistiche in un'unica query
+// Tutte le lingue con statistiche in un'unica passata
 $languages = Lingua::languagesWithStatistics();
 foreach ($languages as $lang) {
     echo "{$lang->name}: {$lang->completion_percentage}%";
@@ -117,12 +147,20 @@ foreach ($languages as $lang) {
 
 ## Controlli di sincronizzazione
 
-La barra degli strumenti della pagina Lingue ha tre pulsanti di sincronizzazione:
+La riga inferiore della toolbar ha tre pulsanti di sincronizzazione:
 
-| Pulsante | Azione |
-|---|---|
-| **Sincronizza nel database** | Importa tutti i file locali `lang/` in `language_lines` |
-| **Sincronizza in locale** | Esporta tutte le traduzioni DB nei file `lang/` |
-| **Aggiorna tramite Laravel Lang** | Esegue `lang:update` per recuperare le ultime stringhe dall'upstream, poi sincronizza nel DB |
+| Pulsante | Comando | Azione |
+|---|---|---|
+| **Sincronizza da file** | `lingua:sync-to-database` | Importa tutti i file locali `lang/` (core + vendor) in `language_lines` |
+| **Sincronizza in file** | `lingua:sync-to-local` | Scrive tutte le traduzioni DB nei file PHP & JSON in `lang/` |
+| **Aggiorna** | `lingua:update-lang` | Ri-popola le locale installate dal dataset integrato e da `lang/` locale |
 
-Tutte e tre le operazioni vengono eseguite **in modo asincrono** (attributo Livewire `#[Async]`) così l'interfaccia rimane reattiva durante le sincronizzazioni di lunga durata.
+Vedi [Sincronizzazione bidirezionale](/it/features/sync) per i dettagli
+completi, inclusa l'invalidazione chirurgica della cache per `(locale, gruppo)`
+che viene eseguita dopo ogni operazione.
+
+::: tip Consapevolezza del driver
+In modalità di archiviazione `file` il pulsante **Sincronizza in file** è
+limitato — la modalità file scrive già su disco, quindi si esegue solo con il
+flag `--force` dalla CLI. Vedi [Driver di archiviazione](/it/guide/storage).
+:::

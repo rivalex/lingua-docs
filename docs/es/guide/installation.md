@@ -1,38 +1,62 @@
 # Instalación
 
-Lingua incluye un asistente de instalación interactivo que se encarga de todo con un solo comando. Los pasos manuales también están documentados a continuación si prefieres más control.
+Lingua incluye un asistente de instalación interactivo que se encarga de todo
+con un solo comando. Los pasos manuales también están documentados a continuación
+si prefieres más control.
 
-## Paso 1 - Instalar con Composer
+## Paso 1 — Instalar con Composer
 
 ```bash
 composer require rivalex/lingua
 ```
 
-## Paso 2 - Ejecutar el instalador
+Ese es el único paquete que necesitas. Lingua 2.0 incluye sus propios datos de locale
+y conjunto de datos de traducción, por lo que no hay nada más que instalar.
+
+::: tip ¿Actualizando desde 1.x?
+Composer elimina automáticamente la antigua dependencia `spatie/laravel-translation-loader`.
+Si tu propio `composer.json` todavía lista `laravel-lang/common`, elimínalo:
+`composer remove laravel-lang/common`.
+Consulta la [guía de actualización](/es/guide/upgrade) completa.
+:::
+
+## Paso 2 — Ejecutar el instalador
 
 ```bash
 php artisan lingua:install
 ```
 
-El asistente:
+El asistente es interactivo. Usando
+[Laravel Prompts](https://laravel.com/docs/prompts), te pide que elijas
+un **driver de almacenamiento** con un selector de teclas de dirección:
 
-1. Publicará el archivo de configuración en `config/lingua.php`
-2. Publicará las migraciones de base de datos
-3. Preguntará si deseas ejecutar las migraciones automáticamente
-4. Inicializará la base de datos con tu idioma predeterminado (inglés por defecto) y todas sus traducciones desde Laravel Lang
-5. Opcionalmente dará una estrella al repositorio en GitHub ⭐
+| Driver | Úsalo cuando… |
+|---|---|
+| **`database`** *(recomendado)* | Quieres el conjunto completo de características: tipos HTML/Markdown, estadísticas, importación/exportación, protección de vendor y caché quirúrgica. |
+| **`file`** | Mantienes las traducciones en control de versiones o ejecutas en un entorno de solo lectura/CI y prefieres archivos `lang/` normales. |
+
+El asistente luego:
+
+1. Publica el archivo de configuración en `config/lingua.php`
+2. Publica las migraciones **conscientes del driver** (el driver `file` omite la
+   migración `language_lines`)
+3. Pregunta si ejecutar las migraciones automáticamente
+4. Inicializa la base de datos con tu idioma predeterminado y sus traducciones del
+   conjunto de datos integrado — **sin descargas de GitHub**
+5. Opcionalmente da una estrella al repositorio en GitHub ⭐
 
 Al finalizar verás:
 
 ```
+✓ Driver selected          →  database
 ✓ Configuration published  →  config/lingua.php
 ✓ Migrations published     →  database/migrations/
 ✓ Migrations run
 ✓ Seeder executed          →  default language + translations installed
-Lingua package installed successfully!
+Lingua installed successfully!
 ```
 
-## Paso 3 - Acceder a la interfaz
+## Paso 3 — Acceder a la interfaz
 
 Abre tu aplicación y visita:
 
@@ -40,6 +64,9 @@ Abre tu aplicación y visita:
 |---|---|---|
 | Idiomas | `your-app.test/lingua/languages` | `lingua.languages` |
 | Traducciones | `your-app.test/lingua/translations` | `lingua.translations` |
+| Estadísticas | `your-app.test/lingua/statistics` | `lingua.statistics` |
+| Transferencia | `your-app.test/lingua/transfer` | `lingua.transfer` |
+| Configuración | `your-app.test/lingua/settings` | `lingua.settings` |
 
 Eso es todo. Lingua está funcionando.
 
@@ -53,47 +80,70 @@ Si prefieres publicar y ejecutar cada paso individualmente:
 # 1. Publicar configuración
 php artisan vendor:publish --tag="lingua-config"
 
-# 2. Publicar migraciones
+# 2. Publicar migraciones (conscientes del driver)
 php artisan vendor:publish --tag="lingua-migrations"
 
 # 3. Ejecutar migraciones
 php artisan migrate
 
-# 4. Inicializar idioma predeterminado + traducciones
-php artisan db:seed --class="Rivalex\Lingua\Database\Seeders\LinguaSeeder"
+# 4. Agregar tu idioma predeterminado e inicializar sus traducciones
+php artisan lingua:add en
 ```
+
+Consulta [Publicación de Assets](/es/guide/publishing) para la lista completa de tags.
 
 ---
 
 ## Proteger la interfaz de gestión
 
-Por defecto, las rutas de Lingua solo usan el middleware `web` - no se aplica ningún guard de autenticación automáticamente. **Debes agregar tu propio middleware** antes de pasar a producción.
+<Badge type="tip" text="Nuevo en 2.0" /> Lingua 2.0 es **seguro por defecto**. Las
+rutas de gestión se publican con el middleware `['web', 'auth']` aplicado
+automáticamente — los visitantes anónimos no pueden acceder a la interfaz.
 
-### Mediante configuración
+### Restringir el acceso con una puerta (gate)
+
+Para el acceso basado en roles, define una puerta de autorización y apunta Lingua
+hacia ella con la variable de entorno `LINGUA_GATE`. Lingua añade `can:{gate}`
+a sus rutas de administración:
+
+```env
+LINGUA_GATE=manage-translations
+```
+
+```php
+// app/Providers/AppServiceProvider.php — boot()
+use App\Models\User;
+use Illuminate\Support\Facades\Gate;
+
+Gate::define('manage-translations', fn (User $user) => $user->hasRole('admin'));
+```
+
+También puedes editar el array de middleware directamente:
 
 ```php
 // config/lingua.php
-'middleware' => ['web', 'auth'],
-```
-
-### Con guards de roles/permisos (p. ej. Spatie Permission)
-
-```php
 'middleware' => ['web', 'auth', 'role:admin'],
-// o
-'middleware' => ['web', 'auth', 'can:manage-translations'],
 ```
 
 ::: tip
-Cualquier middleware aceptado por el router de Laravel puede añadirse al array. Los cambios tienen efecto inmediato - no es necesario limpiar la caché.
+Cualquier middleware aceptado por el router de Laravel puede añadirse al array.
+Los cambios tienen efecto inmediato — no es necesario limpiar la caché.
 :::
+
+Consulta la [referencia de seguridad](/es/guide/security) para la descripción
+completa del refuerzo.
 
 ---
 
 ## Lista de verificación post-instalación
 
-- [ ] Agregar middleware de autenticación en `config/lingua.php`
-- [ ] Añadir el componente selector de idioma a tu layout (ver [Selector de Idioma](/es/features/language-selector))
-- [ ] Configurar `dir` y `lang` en tu etiqueta `<html>` (ver [Soporte RTL/LTR](/es/features/rtl-support))
-- [ ] Agregar idiomas adicionales con `php artisan lingua:add {locale}`
-- [ ] Configurar la barra de herramientas del editor en `config/lingua.php` si usas traducciones HTML/Markdown
+- [ ] Confirmar que el driver de almacenamiento en `config/lingua.php` coincide con tu
+      despliegue (`database` o `file`)
+- [ ] Opcionalmente establecer `LINGUA_GATE` para el acceso basado en roles
+- [ ] Añadir el componente selector de idioma a tu layout (ver
+      [Selector de Idioma](/es/features/language-selector))
+- [ ] Establecer `dir` y `lang` en tu etiqueta `<html>` (ver
+      [Soporte RTL/LTR](/es/features/rtl-support))
+- [ ] Añadir idiomas adicionales con `php artisan lingua:add {locale}`
+- [ ] Configurar la barra de herramientas del editor en `config/lingua.php` si usas
+      traducciones HTML/Markdown (driver de base de datos)

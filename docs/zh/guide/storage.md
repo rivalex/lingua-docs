@@ -1,101 +1,111 @@
-# 翻译存储
+# 存储驱动
 
-了解翻译的存储方式有助于您正确地查询、导入和导出翻译内容。
+Lingua 2.0 支持两种可插拔的存储驱动，用于保存翻译数据。在安装时选择一种，或随时通过一条命令切换。
 
-## `language_lines` 表
+## 驱动对比
 
-`language_lines` 中的每一行代表一个可翻译的**字符串**--而不是一个语言环境。所有语言环境的值存储在单个 JSON `text` 列中：
-
-```
-group      | key        | type | text
------------|------------|------|---------------------------------------------------
-validation | required   | text | {"en":"The :attribute field is required.","fr":"Le champ :attribute est obligatoire."}
-auth       | failed     | text | {"en":"These credentials do not match.","it":"Le credenziali non corrispondono."}
-single     | Welcome    | text | {"en":"Welcome","fr":"Bienvenue","de":"Willkommen"}
-emails     | subject    | html | {"en":"<b>Welcome</b> to our platform!"}
-```
-
-### 这种设计的优势
-
-- **每个字符串一行** - 无需管理每个语言环境的单独行
-- **添加语言环境是非破坏性的** - 只需在 JSON 对象中添加新键
-- **缺失翻译是显式的** - 如果 `fr` 不在 JSON 中，则该字符串尚未翻译
-- **单次查询** - 一条 `SELECT` 语句即可获取一个键的所有语言环境值
-
-### 直接查询
-
-您可以使用标准 Eloquent JSON 列语法查询 `language_lines`：
-
-```php
-use Rivalex\Lingua\Models\Translation;
-
-// 所有具有法语值的翻译
-Translation::whereNotNull('text->fr')->get();
-
-// 仅缺失的法语翻译
-Translation::whereNull('text->fr')->get();
-
-// 查找特定键
-Translation::where('key', 'required')->where('group', 'validation')->first();
-
-// 某个分组中的所有字符串
-Translation::where('group', 'auth')->get();
-```
-
-## 翻译类型
-
-每条翻译记录都有一个 `type`，决定界面中使用的编辑器：
-
-| 类型 | 使用场景 | 同步时自动检测 |
+| 功能 | `database` | `file` |
 |---|---|---|
-| `text` | 纯标签、消息、按钮文本 | 默认 |
-| `html` | 包含 HTML 标签的富内容 | 字符串包含 HTML 元素 |
-| `markdown` | Markdown 格式的内容 | 字符串可以解析为 Markdown |
+| 存储位置 | MySQL / Postgres / SQLite `language_lines` 表 | `lang/` PHP 和 JSON 文件 |
+| 翻译类型 | `text`、`html`、`markdown` | 纯 `text` |
+| UI 内联编辑 | 是 | 是（写入文件） |
+| 统计页面 | 是（SQL 聚合） | 是（文件遍历） |
+| 导入/导出 | 是 | 否（计划中） |
+| 供应商保护 | 是（`is_vendor` 标志） | 是（路径前缀检查） |
+| 精确缓存 | 是（按 locale+group） | 否（无数据库缓存层） |
+| 版本控制 | 否（数据在数据库中） | 是（`lang/` 文件可提交） |
+| CI 只读运行 | 否（需要数据库写入） | 是 |
+| `lingua:sync-to-database` | 是（从 `lang/` 导入） | 否（无操作） |
+| `lingua:sync-to-local` | 是（导出到 `lang/`） | 否（文件就是权威来源） |
 
-类型检测在 `lingua:sync-to-database` 期间执行。您可以随时通过界面中的编辑模态框更改类型。
+## 选择驱动
 
-### 示例：HTML 翻译
+### 什么时候用 `database`
 
-```php
-Translation::create([
-    'group' => 'marketing',
-    'key'   => 'hero_subtitle',
-    'type'  => 'html',
-    'text'  => ['en' => '<strong>Build faster</strong> with fewer tools.'],
-]);
+- 需要实时 UI 编辑（无部署）
+- 需要 HTML / Markdown 翻译类型
+- 需要翻译统计和覆盖率报告
+- 需要导入/导出（传输页面）
+- 非技术团队成员也会更新翻译
+
+### 什么时候用 `file`
+
+- 翻译由开发者管理并通过 Git 提交
+- 在 CI 流水线中只读运行
+- 更偏向基础设施即代码的方式
+- 从基于文件的工作流迁移到 Lingua UI，但暂不迁移到数据库
+
+## 设置驱动
+
+### 安装时
+
+在 `lingua:install` 交互提示中选择驱动。
+
+### 安装后切换
+
+```bash
+php artisan lingua:storage database
+# 或
+php artisan lingua:storage file
 ```
 
-### 示例：Markdown 翻译
+`lingua:storage` 命令：
 
-```php
-Translation::create([
-    'group' => 'emails',
-    'key'   => 'welcome_body',
-    'type'  => 'markdown',
-    'text'  => ['en' => "# Welcome!\n\nThank you for signing up.\n\n**Your account is now active.**"],
-]);
-```
+1. 将 `LINGUA_STORAGE_DRIVER` 写入 `.env`
+2. 发布任何缺失的迁移（`database` 驱动需要 `language_lines` 表）
+3. 提示运行迁移（如有需要）
+4. 清除翻译缓存
 
-## 翻译键
-
-Lingua 使用与标准 Laravel 翻译相同的 `group.key` 二段式约定：
-
-| 格式 | 示例 | `trans()` 调用 |
-|---|---|---|
-| PHP 文件键 | `auth.failed` | `__('auth.failed')` |
-| JSON / 单键 | `Welcome` | `__('Welcome')` |
-| 扩展包键 | `spatie::messages.error` | 通过 vendor 命名空间 |
-
-::: tip group 与 key 的区别
-`group` 列对应文件名（`auth` = `lang/en/auth.php`），`key` 对应该文件中的数组键。对于 JSON 文件，group 为 `'single'`。
+::: warning 切换驱动前先备份
+从 `database` 切换到 `file` 时，现有的 `language_lines` 数据**不会**自动迁移到磁盘。先运行 `php artisan lingua:sync-to-local`，再切换驱动。
 :::
 
-## 扩展包翻译
+## 文件驱动详解
 
-扩展包翻译使用 `is_vendor = true` 标记，并携带 `vendor` 字符串（例如 `'spatie'`、`'laravel'`）。它们从 `lang/vendor/{vendor}/{locale}/` 目录同步而来。
+文件驱动通过 `AtomicFileWriter` 类直接读写 `lang/` 目录：
 
-- 它们**可以在界面中编辑**（用于覆盖扩展包的原始措辞）
-- 它们**不能被删除** - 尝试删除会触发 `vendor_translation_protected` 事件
-- **编辑模态框中的** `group` 和 `key` 字段被**锁定**
+- **读取**：使用与 Laravel 的标准 `FileLoader` 相同的路径解析逻辑
+- **写入**：先写入 `.tmp` 文件，再原子性地重命名，并在之后调用 `opcache_invalidate($path, true)`，以便同一次请求中的 `include` 能读到新文件
 
-详情请参阅[扩展包翻译](/zh/features/vendor-translations)。
+```
+lang/
+  en/
+    auth.php          ← PHP 数组格式
+    validation.php
+  en.json             ← JSON 格式
+  fr/
+    auth.php
+  fr.json
+```
+
+::: tip 文件驱动没有 `language_lines` 表
+文件驱动发布时不会生成 `language_lines` 迁移。设置、语言元数据和 `lingua_settings` 仍然存储在数据库中。
+:::
+
+## 数据库驱动详解
+
+数据库驱动的完整功能说明参见[架构指南](/zh/guide/architecture)。主要特点：
+
+- 翻译存储在 `language_lines` 表中，每个键一行，JSON `text` 列存储所有语言区域值
+- `LinguaManager` 通过 `array_replace_recursive` 将数据库翻译合并到文件翻译之上——数据库值始终优先
+- 写入时按 `(locale, group)` 精确清除缓存——**不**进行全局 `cache:clear`
+- `is_vendor = true` 的行受 `VendorTranslationProtectedException` 保护
+
+## 卸载 Lingua
+
+如果要完全移除 Lingua：
+
+```bash
+php artisan lingua:uninstall
+```
+
+该命令会：
+
+1. 停止翻译路由（可选）
+2. 提示是否回滚迁移（`languages`、`language_lines`、`lingua_settings`）
+3. 提示是否移除已发布的配置和视图
+4. 提示是否从 `composer.json` 中移除包
+
+::: danger 不可逆操作
+回滚迁移会**永久删除**所有翻译、语言和设置数据。请确保已运行 `lingua:sync-to-local` 备份翻译到文件，或者在卸载前导出数据（通过传输页面）。
+:::

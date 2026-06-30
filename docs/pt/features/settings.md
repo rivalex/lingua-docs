@@ -1,77 +1,89 @@
 # Configurações
 
-A página de Configurações permite que você configure o comportamento da UI do Lingua pelo navegador — sem editar arquivos de configuração ou necessidade de redeploy.
+A página de Configurações (`/lingua/settings`) expõe as opções mais comuns em
+uma interface visual, sem precisar editar arquivos PHP diretamente. Ela compartilha
+o [menu de navegação](#menu-de-navegacao) com as outras páginas do Lingua.
 
-Navegue para `/lingua/settings` ou crie um link do seu painel administrativo:
+<Screenshot src="/screenshots/settings-page.png" alt="Página de Configurações do Lingua" caption="A página de configurações com controles de modo seletor, bandeiras e navegação." />
 
-```blade
-<a href="{{ route('lingua.settings') }}">Configurações do Lingua</a>
-```
+## Cadeia de prioridade
 
-<Screenshot src="/screenshots/settings-page.png" alt="Página de Configurações do Lingua" caption="A página de configurações com os controles de modo seletor e ícones de bandeira." />
+As configurações são lidas na seguinte ordem (maior prioridade primeiro):
 
-## Como funcionam as configurações
+1. **Banco de dados** — via model `LinguaSetting` (alterações feitas na UI de Configurações)
+2. **Variáveis de ambiente** — `.env` (ex: `LINGUA_STORAGE_DRIVER`)
+3. **Arquivo de configuração** — `config/lingua.php` (fallback padrão)
 
-As configurações são armazenadas na tabela do banco de dados `lingua_settings` como pares chave/valor tipados. Em cada requisição, o Lingua lê primeiro do banco de dados, depois recai sobre `config/lingua.php`, e então sobre os padrões do código.
+Você pode manter `config/lingua.php` como base e sobrescrever configurações
+específicas via UI — sem redeployar.
 
-**Cadeia de prioridade:**
-1. Tabela DB `lingua_settings` (maior prioridade — definida via esta UI)
-2. `config/lingua.php` (seu config publicado)
-3. Padrões do pacote (menor prioridade)
+## Modo do seletor
 
-Você pode manter seu `config/lingua.php` como base e sobrescrever configurações específicas por ambiente via UI sem tocar em arquivos.
-
-## Modo seletor
-
-Controla como o componente `<livewire:lingua::language-selector />` é renderizado para seus usuários finais.
+Controla como o componente `<livewire:lingua::language-selector />` é renderizado
+para usuários finais:
 
 | Modo | Descrição |
 |---|---|
-| `sidebar` | Renderiza como uma seção de navegação agrupada (padrão) |
-| `modal` | Renderiza como um botão que abre um modal completo de seleção de idioma |
-| `dropdown` | Renderiza como um botão dropdown compacto |
-| `headless` | Sem renderização integrada — você implementa a UI por conta própria |
-
-::: tip Modo headless
-Quando definido como `headless`, o seletor integrado não renderiza nada. Use `<livewire:lingua::headless-language-selector />` em vez disso para construir um seletor totalmente personalizado. Veja [Seletor Headless](./language-selector#modo-headless) para a documentação completa.
-:::
+| `sidebar` | Seção de navegação agrupada (padrão) |
+| `dropdown` | Botão dropdown compacto |
+| `modal` | Botão que abre um overlay de seleção |
+| `headless` | Sem markup integrado — use `<livewire:lingua::headless-language-selector />` |
 
 ## Exibir ícones de bandeira
 
-Ative ou desative a exibição de ícones de bandeiras de países ao lado dos nomes de idiomas no seletor. Quando desativado, apenas o nome do idioma é exibido.
+Ative ou desative a exibição de ícones de bandeiras de países ao lado dos nomes
+de idiomas no seletor.
 
-Os ícones de bandeira são associados ao código `regional` do idioma (ex. `en_US` → 🇺🇸). Se nenhum código regional estiver definido, a bandeira recai de forma elegante.
+## Menu de navegação <Badge type="tip" text="Novidade na versão 2.0" />
 
-## Acesso programático
+O toggle de **Navegação compartilhada** controla se o componente `x-lingua::nav`
+é exibido em todas as cinco páginas do Lingua. Quando ativo (padrão), você vê
+uma barra de navegação horizontal com links para Languages, Translations,
+Statistics, Transfer e Settings — com a página atual destacada.
 
-Você pode ler e escrever configurações em PHP usando o modelo `LinguaSetting`:
+```php
+// Também configurável via arquivo
+// config/lingua.php
+'nav' => ['enabled' => true],
+```
+
+## Driver de armazenamento (somente leitura)
+
+O driver ativo (`database` ou `file`) é exibido como informação, mas **não pode
+ser alterado pela UI** — é controlado por `LINGUA_STORAGE_DRIVER` ou
+`config/lingua.php`. Para alternar, use:
+
+```bash
+php artisan lingua:storage file
+php artisan lingua:storage database
+```
+
+Veja [Drivers de armazenamento](/pt/guide/storage).
+
+## Model LinguaSetting
+
+Configurações da UI são armazenadas em `lingua_settings` via `LinguaSetting`:
 
 ```php
 use Rivalex\Lingua\Models\LinguaSetting;
 
-// Ler com fallback config()
+// Ler com fallback
 $mode = LinguaSetting::get(
     LinguaSetting::KEY_SELECTOR_MODE,
     config('lingua.selector.mode', 'sidebar')
 );
 
-$showFlags = LinguaSetting::get(
-    LinguaSetting::KEY_SHOW_FLAGS,
-    config('lingua.selector.show_flags', true)
-);
-
 // Escrever
-LinguaSetting::set(LinguaSetting::KEY_SELECTOR_MODE, 'modal');
-LinguaSetting::set(LinguaSetting::KEY_SHOW_FLAGS, false);
+LinguaSetting::set(LinguaSetting::KEY_SELECTOR_MODE, 'dropdown');
+
+// Constantes disponíveis
+LinguaSetting::KEY_SELECTOR_MODE      // modo do widget seletor
+LinguaSetting::KEY_SELECTOR_SHOW_FLAGS // mostrar bandeiras
+LinguaSetting::KEY_NAV_ENABLED         // menu de navegação compartilhado
 ```
 
-Constantes disponíveis:
-
-| Constante | Chave | Tipo |
+| Constante | Chave DB | Tipo |
 |---|---|---|
-| `LinguaSetting::KEY_SELECTOR_MODE` | `selector.mode` | `string` |
-| `LinguaSetting::KEY_SHOW_FLAGS` | `selector.show_flags` | `bool` |
-
-::: warning Migração necessária
-A tabela `lingua_settings` é criada pela migração `create_lingua_settings_table`. Se você atualizou da versão 1.0.x, execute `php artisan migrate` para criá-la.
-:::
+| `KEY_SELECTOR_MODE` | `selector.mode` | `string` |
+| `KEY_SELECTOR_SHOW_FLAGS` | `selector.show_flags` | `bool` |
+| `KEY_NAV_ENABLED` | `nav.enabled` | `bool` |

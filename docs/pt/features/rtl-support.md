@@ -1,8 +1,10 @@
 # Suporte RTL / LTR
 
-O Lingua armazena a direção do texto (`ltr` ou `rtl`) para cada idioma instalado e a expõe via `Lingua::getDirection()`. Configurar o suporte adequado a RTL requer uma pequena alteração única no seu layout Blade.
+O Lingua armazena a **direção de leitura** (`ltr` ou `rtl`) para cada idioma
+instalado e a expõe via `Lingua::getDirection()`. Configurar suporte RTL requer
+uma única alteração no layout Blade.
 
-## Idiomas RTL suportados (exemplos)
+## Idiomas RTL suportados
 
 | Locale | Idioma | Direção |
 |---|---|---|
@@ -13,14 +15,13 @@ O Lingua armazena a direção do texto (`ltr` ou `rtl`) para cada idioma instala
 | `ps` | Pashto | `rtl` |
 | `ug` | Uigur | `rtl` |
 
-Todos os outros locales (incluindo europeus, asiáticos e a maioria dos idiomas com escrita latina) retornam `ltr`.
+Todos os outros locales retornam `ltr`.
 
-## Configurando seu layout Blade
+## Configurando o layout Blade
 
-Adicione os atributos `lang` e `dir` à tag `<html>` no seu arquivo de layout principal:
+Adicione `lang` e `dir` à tag `<html>` no seu arquivo de layout principal:
 
 ```blade
-{{-- resources/views/layouts/app.blade.php --}}
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}" dir="{{ Lingua::getDirection() }}">
 <head>
@@ -28,71 +29,64 @@ Adicione os atributos `lang` e `dir` à tag `<html>` no seu arquivo de layout pr
 </head>
 ```
 
-`Lingua::getDirection()` usa o locale da aplicação atual automaticamente, portanto segue cada troca de locale sem nenhum código adicional.
+`Lingua::getDirection()` usa o locale ativo automaticamente, seguindo cada troca
+de locale sem código adicional.
 
 ::: tip Por que `lang` e `dir`?
-- `lang` informa ao navegador e leitores de tela qual idioma usar para pronúncia, hifenização e verificação ortográfica.
-- `dir` informa ao navegador, CSS e motores de layout a direção do fluxo de texto. Ambos são necessários para conformidade total de acessibilidade (WCAG 2.1 AA).
+- `lang` informa ao navegador e leitores de tela qual idioma usar para pronúncia,
+  hifenização e verificação ortográfica.
+- `dir` instrui o navegador e o motor de layout sobre a direção do fluxo de texto.
+  Ambos são necessários para conformidade com WCAG 2.1 AA.
 :::
 
 ## Locale explícito
 
-Passe um locale explícito quando precisar da direção fora do contexto da requisição atual:
+Passe um locale explícito quando precisar da direção fora do contexto da requisição:
 
 ```blade
-{{-- Ex: em um template de e-mail por idioma --}}
+{{-- Template de e-mail por idioma --}}
 <html lang="ar" dir="{{ Lingua::getDirection('ar') }}">
 ```
 
 ```php
-// Em contexto PHP
 $direction = Lingua::getDirection('he'); // 'rtl'
 ```
 
 ## Tailwind CSS
 
-Com `dir` definido em `<html>`, a variante `rtl:` integrada do Tailwind funciona automaticamente - sem plugin ou configuração necessária:
+Com `dir` definido em `<html>`, a variante `rtl:` do Tailwind funciona
+automaticamente — sem plugin ou configuração:
 
 ```html
-<!-- Inverter alinhamento de texto -->
-<p class="text-left rtl:text-right">Content</p>
-
-<!-- Inverter padding -->
-<div class="pl-4 rtl:pr-4 rtl:pl-0">Sidebar item</div>
-
-<!-- Inverter posicionamento de ícone -->
+<p class="text-left rtl:text-right">Conteúdo</p>
+<div class="pl-4 rtl:pr-4 rtl:pl-0">Item da sidebar</div>
 <div class="flex flex-row rtl:flex-row-reverse items-center gap-2">
     <svg>...</svg>
-    <span>Label</span>
+    <span>Rótulo</span>
 </div>
-
-<!-- Inverter borda -->
 <div class="border-l-4 rtl:border-r-4 rtl:border-l-0 border-blue-500">
-    Highlighted content
+    Conteúdo destacado
 </div>
 ```
 
 ## Propriedades lógicas CSS (recomendado)
 
-Para novos layouts ou componentes, prefira **propriedades lógicas CSS** em vez das direcionais. O navegador lida com a inversão LTR/RTL automaticamente:
+Para novos layouts, prefira **propriedades lógicas CSS** — o navegador lida com
+LTR/RTL automaticamente:
 
 ```css
-/* ❌ Direcional - precisa de sobrescritas RTL */
+/* ❌ Direcional — precisa de sobrescritas RTL */
 .card {
     padding-left: 1rem;
     border-left: 2px solid blue;
-    margin-right: auto;
 }
 
-/* ✅ Lógico - funciona em ambas as direções automaticamente */
+/* ✅ Lógico — funciona em ambas as direções */
 .card {
-    padding-inline-start: 1rem;   /* esquerda em LTR, direita em RTL */
+    padding-inline-start: 1rem;
     border-inline-start: 2px solid blue;
-    margin-inline-end: auto;
 }
 ```
-
-Mapeamentos de propriedades lógicas principais:
 
 | Direcional | Equivalente lógico |
 |---|---|
@@ -101,17 +95,21 @@ Mapeamentos de propriedades lógicas principais:
 | `margin-left` | `margin-inline-start` |
 | `margin-right` | `margin-inline-end` |
 | `border-left` | `border-inline-start` |
-| `border-right` | `border-inline-end` |
-| `left: 0` | `inset-inline-start: 0` |
 | `text-align: left` | `text-align: start` |
-| `float: left` | `float: inline-start` |
 
-## Verificando direção em Blade
+Tailwind 3+ expõe essas via `ms-`, `me-`, `ps-`, `pe-` que respeitam a direção
+de escrita automaticamente.
+
+## Considerações tipográficas
+
+Scripts RTL como árabe e hebraico usam fontes diferentes de scripts latinos:
 
 ```blade
 @if (Lingua::getDirection() === 'rtl')
-    {{-- Markup específico para RTL --}}
-    <link rel="stylesheet" href="{{ asset('css/rtl-overrides.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans Arabic', sans-serif; font-size: 1.05em; line-height: 1.7; }
+    </style>
 @endif
 ```
 
@@ -120,28 +118,14 @@ Mapeamentos de propriedades lógicas principais:
 ```php
 use Rivalex\Lingua\Facades\Lingua;
 
-$direction = Lingua::getDirection();       // locale atual
-$direction = Lingua::getDirection('ar');   // locale explícito
+$dir = Lingua::getDirection();        // locale atual
+$dir = Lingua::getDirection('ar');    // 'rtl'
 
-if ($direction === 'rtl') {
-    // Lógica específica para RTL
+$info = Lingua::info('ar');
+if ($info !== null) {
+    $info->direction; // 'rtl'
 }
 ```
 
-## Considerações sobre fontes
-
-Muitos idiomas RTL requerem fontes específicas. Árabe e hebraico em particular renderizam mal com a maioria das fontes web latinas. Considere carregar uma fonte apropriada condicionalmente:
-
-```blade
-@if (Lingua::getDirection() === 'rtl')
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Noto Sans Arabic', sans-serif; }
-    </style>
-@endif
-```
-
-## Fallback seguro
-
-`Lingua::getDirection()` sempre retorna `'ltr'` como fallback se o locale não for encontrado no banco de dados - nunca lança uma exceção. É seguro chamar em qualquer ponto do ciclo de vida da requisição, inclusive antes que a tabela de idiomas seja populada.
+`Lingua::getDirection()` sempre retorna `'ltr'` como fallback se o locale não
+for encontrado — nunca lança exceção.

@@ -1,6 +1,7 @@
 # Inicio Rápido
 
-Esta guía te lleva desde una instalación nueva de Lingua hasta una aplicación completamente multilingüe en minutos.
+Esta guía te lleva desde una instalación nueva de Lingua hasta una aplicación
+completamente multilingüe en minutos.
 
 ## 1. Instalar e inicializar
 
@@ -9,7 +10,15 @@ composer require rivalex/lingua
 php artisan lingua:install
 ```
 
-El inglés es ahora tu idioma predeterminado y todas las cadenas de traducción de Laravel/vendor han sido importadas a la base de datos.
+Elige el driver **database** cuando se te solicite (recomendado). El inglés se convierte
+en tu idioma predeterminado y las cadenas de traducción integradas se importan a la
+base de datos — sin descargas de GitHub.
+
+::: tip Seguro por defecto
+Las rutas de gestión están protegidas por `['web', 'auth']` automáticamente.
+Establece `LINGUA_GATE` para el acceso basado en roles — consulta
+[Instalación](/es/guide/installation#proteger-la-interfaz-de-gestion).
+:::
 
 ## 2. Agregar tu segundo idioma
 
@@ -17,12 +26,11 @@ El inglés es ahora tu idioma predeterminado y todas las cadenas de traducción 
 php artisan lingua:add fr
 ```
 
-Este comando:
-- Descarga los archivos de traducción en francés a través de Laravel Lang
-- Crea un registro `Language` en la base de datos
-- Sincroniza todas las cadenas recién descargadas en `language_lines`
+Este comando es **nativo de la BD**: inicializa las cadenas en francés desde el conjunto
+de datos integrado y crea un registro `Language`. **No** descarga archivos ni escribe
+en `lang/`.
 
-Repite para todos los idiomas que necesites:
+Repite para todos los locales que necesites:
 
 ```bash
 php artisan lingua:add it es de pt_BR ar
@@ -30,7 +38,8 @@ php artisan lingua:add it es de pt_BR ar
 
 ## 3. Agregar el selector de idioma a tu layout
 
-Abre tu layout Blade principal (p. ej. `resources/views/layouts/app.blade.php`) y:
+Abre tu layout Blade principal (por ejemplo,
+`resources/views/layouts/app.blade.php`):
 
 **a) Establece `lang` y `dir` en la etiqueta `<html>`:**
 
@@ -48,9 +57,15 @@ Abre tu layout Blade principal (p. ej. `resources/views/layouts/app.blade.php`) 
 <livewire:lingua::language-selector mode="dropdown" />
 ```
 
+::: tip El cambio de locale recarga la página actual
+Cuando un usuario cambia de locale, Lingua recarga la **página en la que está**
+(no la página de inicio), protegido contra redirecciones abiertas. Consulta
+[Seguridad](/es/guide/security#proteccion-contra-redirecciones-abiertas).
+:::
+
 ## 4. Usar traducciones en tu aplicación
 
-Lingua es transparente - usa los helpers estándar de Laravel como siempre:
+Lingua es transparente — usa los helpers estándar de Laravel como siempre:
 
 ```blade
 {{ __('messages.welcome') }}
@@ -62,40 +77,53 @@ trans('validation.required')
 __('pagination.next')
 ```
 
-El `LinguaManager` personalizado fusiona las traducciones de la base de datos sobre las basadas en archivos automáticamente. No se necesitan cambios en el código.
+En el modo base de datos, `LinguaManager` fusiona las traducciones de la base de datos
+sobre las basadas en archivos automáticamente. No se necesitan cambios en el código.
 
 ## 5. Traducir mediante la interfaz
 
 Visita `/lingua/translations` para ver todas las cadenas de traducción. Para cada idioma:
 
-1. Usa el selector de idioma (arriba a la derecha) para seleccionar el idioma destino
+1. Usa el selector de locale (arriba a la derecha) para seleccionar el idioma destino
 2. Haz clic en cualquier fila para editar el valor en línea
 3. Usa **Mostrar solo faltantes** para centrarte en las cadenas sin traducir
 4. Para los tipos HTML o Markdown, el editor de texto enriquecido se activa automáticamente
 
-<Screenshot src="/screenshots/translations-page.png" alt="Página de gestión de traducciones de Lingua" caption="La página de traducciones con selector de idioma, filtro de grupo y editor en línea." />
+<Screenshot src="/screenshots/translations-page.png" alt="Página de gestión de traducciones de Lingua" caption="La página de traducciones con selector de locale, filtro de grupo y editor en línea." />
 
-## 6. Sincronizar de vuelta a archivos (opcional)
+## 6. Importar / exportar con la página de Transferencia
 
-Si necesitas archivos de traducción en disco (para control de versiones, CI/CD u otras herramientas):
+¿Necesitas editar traducciones en masa en una hoja de cálculo, o enviar un archivo a
+una agencia de traducción? Visita `/lingua/transfer`:
+
+- **Exportar** a CSV, JSON, XLSX u ODS — bilingüe, multi-locale o
+  disposición JSON-nativa
+- **Importar** con una **vista previa de diferencias en seco** antes de que se escriba nada
+
+XLSX/ODS requieren el paquete opcional `openspout/openspout`; CSV y JSON funcionan
+de serie.
+
+## 7. Sincronizar de vuelta a archivos (opcional)
+
+Si necesitas archivos de traducción en disco (para control de versiones o CI/CD):
 
 ```bash
 php artisan lingua:sync-to-local
 ```
 
-Esto exporta todas las traducciones de la base de datos de vuelta a `lang/` en el formato PHP/JSON correcto.
+Esto exporta todas las traducciones de la BD de vuelta a `lang/` en el formato
+PHP/JSON correcto.
 
 ---
 
 ## Patrones comunes
 
-### Crear una nueva clave de traducción programáticamente
+### Traducir una nueva clave programáticamente
 
 ```php
 use Rivalex\Lingua\Facades\Lingua;
+use Rivalex\Lingua\Models\Translation;
 
-// Crear la traducción en la base de datos para el idioma predeterminado
-// (normalmente se hace a través de la interfaz, pero también puedes hacerlo por script)
 Translation::create([
     'group' => 'emails',
     'key'   => 'welcome_subject',
@@ -103,35 +131,31 @@ Translation::create([
     'text'  => ['en' => 'Welcome to our platform!'],
 ]);
 
-// Luego, agregar traducciones para otros idiomas:
 Lingua::setTranslation('welcome_subject', 'Bienvenue sur notre plateforme !', 'fr');
-Lingua::setTranslation('welcome_subject', 'Benvenuto nella nostra piattaforma!', 'it');
 ```
 
-### Verificar la completitud de las traducciones
+### Inspeccionar un locale
 
 ```php
-$stats = Lingua::getLocaleStats('fr');
-// [
-//   'total'      => 1240,
-//   'translated' => 980,
-//   'missing'    => 260,
-//   'percentage' => 79.03,
-// ]
+use Rivalex\Lingua\Facades\Lingua;
+
+$info = Lingua::info('fr');
+
+if ($info !== null) {
+    $info->name;      // "French"
+    $info->native;    // "Français"
+    $info->direction; // "ltr"
+}
 ```
 
-### Cambiar el idioma programáticamente
+::: warning Cambiado en 2.0
+`Lingua::info()` ahora devuelve `?LocaleInfo` y retorna `null` para locales
+desconocidos en lugar de lanzar una excepción. Siempre guarda con `if ($info !== null)`.
+:::
+
+### Cambiar de locale programáticamente
 
 ```php
-// En un controlador, middleware o servicio
 app()->setLocale('fr');
 session()->put(config('lingua.session_variable'), 'fr');
 ```
-
-::: tip
-El componente `LanguageSelector` gestiona el cambio de idioma para los usuarios finales automáticamente. El enfoque manual anterior es útil en comandos de consola o jobs.
-:::
-
-### Exportar solo grupos específicos
-
-Si quieres exportar solo un subconjunto de traducciones a archivos, sincroniza a local primero y luego elimina los grupos que no necesitas de `lang/` - la base de datos siempre es la fuente de verdad en tiempo de ejecución.

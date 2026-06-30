@@ -1,61 +1,71 @@
-# ترجمات الحزم الخارجية
+# ترجمات المورّد
 
-ترجمات الحزم الخارجية هي النصوص التي تنتمي إلى حزم طرف ثالث - رسائل التحقق الخاصة بـ Laravel، تسميات الصفحات، نصوص إعادة تعيين كلمة المرور، وترجمات أي حزمة أخرى تشحن بمجلد `lang/` الخاص بها.
+ترجمات المورّد هي النصوص التي تنتمي إلى حزم طرف ثالث — رسائل التحقق
+الخاصة بـ Laravel، تسميات الصفحات، نصوص إعادة تعيين كلمة المرور، وترجمات
+أي حزمة أخرى تشحن بمجلد `lang/` الخاص بها.
 
 ## كيف يتم تحديدها
 
-أثناء `lingua:sync-to-database`، تمسح Lingua هيكل مجلد `lang/vendor/`. أي ملف ترجمة موجود هناك يُستورد بـ:
+أثناء `lingua:sync-to-database`، تمسح Lingua هيكل مجلد `lang/vendor/`.
+أي ترجمة موجودة هناك تُستورد بـ:
 
 - `is_vendor = true`
-- `vendor` = اسم الحزمة (مشتق من اسم المجلد، مثل `spatie`, `laravel`, `filament`)
-
-مثال على صفوف قاعدة البيانات بعد المزامنة:
+- `vendor` = اسم الحزمة (مثل `laravel`، `filament`)
 
 ```
-group      | key          | is_vendor | vendor   | text
------------|--------------|-----------|----------|-----------------------------
-validation | required     | false     | null     | {"en":"The :attribute…"}
-passwords  | reset        | true      | laravel  | {"en":"Your password…"}
-auth       | failed       | true      | laravel  | {"en":"These credentials…"}
+group      | key      | is_vendor | vendor  | text
+-----------|----------|-----------|---------|-----------------------------
+auth       | failed   | true      | laravel | {"en":"These credentials…"}
+passwords  | reset    | true      | laravel | {"en":"Your password…"}
+messages   | welcome  | false     | null    | {"en":"Welcome!","fr":"…"}
 ```
 
 ::: tip
-ملفات `lang/en/*.php` الخاصة بـ Laravel (auth، validation، pagination، passwords) تُعامَل كـ **ترجمات حزم خارجية** لأنها تأتي من الإطار، وليس من كود تطبيقك.
+ملفات `lang/en/*.php` الخاصة بـ Laravel (`auth`، `validation`، `pagination`،
+`passwords`) تُعامَل كترجمات مورّد لأنها تأتي من الإطار، وليس من كود
+تطبيقك. في Lingua 2.0، تُبذَر هذه الترجمات من مجموعة البيانات المدمجة
+(26 لغة، 5902 سلسلة نصية) — بدون تنزيلات.
 :::
 
-## ما يمكنك فعله مع ترجمات الحزم الخارجية
+---
+
+## ما يمكنك فعله مع ترجمات المورّد
 
 | الإجراء | مسموح؟ | ملاحظات |
 |---|---|---|
-| **تعديل القيمة** | ✅ نعم | تجاوز أي نص من حزمة خارجية بصياغتك الخاصة |
+| **تعديل القيمة** | ✅ نعم | تجاوز أي نص من المورّد بصياغتك الخاصة |
 | **تغيير النوع** | ✅ نعم | التبديل بين text / html / markdown |
-| **تعديل المجموعة أو المفتاح** | ❌ لا | حقلا المجموعة والمفتاح مقفلان في نافذة التعديل |
-| **الحذف** | ❌ لا | محمية بـ `VendorTranslationProtectedException` |
+| **تعديل المجموعة أو المفتاح** | ❌ لا | حقلا المجموعة والمفتاح مقفلان |
+| **الحذف** | ❌ لا | محمية بحارس F5 — `VendorTranslationProtectedException` |
 
-## تجاوز نص من حزمة خارجية
+---
 
-الحالة الأكثر شيوعًا هي تجاوز رسائل التحقق في Laravel لتتناسب مع أسلوب تطبيقك:
+## تجاوز نص من المورّد
+
+### عبر الواجهة
 
 1. افتح `/lingua/translations`
 2. ابحث عن النص (مثل `validation.required`)
-3. انقر على أيقونة التعديل لفتح نافذة التعديل
-4. غيِّر القيمة لأي لغة
-5. احفظ - يسري التجاوز فورًا في الطلب التالي
+3. انقر على خلية اللغة المطلوبة وعدِّلها مباشرةً
+4. احفظ — يسري التجاوز فوراً في الطلب التالي
+
+### برمجياً
 
 ```php
-// Or programmatically via the facade:
 use Rivalex\Lingua\Facades\Lingua;
 
 Lingua::setVendorTranslation(
     vendor: 'laravel',
     group:  'validation',
     key:    'required',
-    value:  'Please fill in the :attribute field.',
-    locale: 'en'
+    value:  'يجب ملء حقل :attribute.',
+    locale: 'ar'
 );
 ```
 
-## الاستعلام عن ترجمات الحزم الخارجية
+---
+
+## الاستعلام عن ترجمات المورّد
 
 ```php
 use Rivalex\Lingua\Facades\Lingua;
@@ -67,55 +77,47 @@ $all = Translation::where('is_vendor', true)->get();
 // All vendor translations for a specific package
 $laravel = Lingua::getVendorTranslations('laravel');
 
-// All vendor translations for a package with French values
+// With locale filter
 $frenchLaravel = Lingua::getVendorTranslations('laravel', 'fr');
-
-// Filter by group and key manually
-$required = Translation::where('is_vendor', true)
-    ->where('vendor', 'laravel')
-    ->where('group', 'validation')
-    ->where('key', 'required')
-    ->first();
 ```
 
-## آلية الحماية
+---
 
-محاولة حذف ترجمة حزمة خارجية (من الواجهة أو عبر `Lingua::forgetTranslation()`) تُلقي استثناء `VendorTranslationProtectedException`:
+## آلية الحماية (F5)
+
+محاولة حذف ترجمة مورّد تُلقي `VendorTranslationProtectedException`:
 
 ```php
-use Rivalex\Lingua\Facades\Lingua;
 use Rivalex\Lingua\Exceptions\VendorTranslationProtectedException;
 
 try {
-    Lingua::forgetTranslation('required', 'en'); // key belongs to a vendor translation
+    Lingua::forgetTranslation('required', 'en');
 } catch (VendorTranslationProtectedException $e) {
     // Handle gracefully
 }
 ```
 
-في واجهة Livewire، محاولات الحذف تُطلق حدث `vendor_translation_protected` وتغلق النافذة دون حذف أي شيء. يمكن الاستماع إلى الحدث في مكونات Livewire الخاصة بك أو كود Alpine.js:
+في واجهة Livewire، محاولات الحذف تُطلق حدث `vendor_translation_protected`
+وتغلق النافذة دون حذف أي شيء:
 
 ```js
-// Alpine.js / Livewire event listener
 window.addEventListener('vendor_translation_protected', () => {
     alert('This translation is protected and cannot be deleted.');
 });
 ```
 
-## إعادة مزامنة ترجمات الحزم الخارجية
+---
 
-إذا أضافت حزمة تعتمد عليها مفاتيح ترجمة جديدة في ترقية، أعِد المزامنة لاستيرادها:
+## إعادة مزامنة ترجمات المورّد
+
+إذا أضافت حزمة ترقية مفاتيح ترجمة جديدة، أعِد المزامنة:
 
 ```bash
-# Pull the latest from laravel-lang and sync to DB
+# Update bundled dataset then sync
 php artisan lingua:update-lang
 
-# Or manually re-sync from your existing lang/ files
+# Or re-sync from existing lang/ files
 php artisan lingua:sync-to-database
 ```
 
-تستخدم Lingua `updateOrCreate` عند المزامنة، لذا تُحافظ على التجاوزات الموجودة (القيم المعدَّلة).
-
-## تعطيل استيراد ترجمات الحزم الخارجية
-
-إذا لم تكن تريد ترجمات الحزم الخارجية في قاعدة البيانات على الإطلاق، قم بالمزامنة فقط بعد إزالة مجلد `lang/vendor/`. تستورد Lingua فقط ما تجده على القرص.
+تستخدم Lingua `updateOrCreate` عند المزامنة — تُحافظ على التجاوزات الموجودة.

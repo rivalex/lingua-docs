@@ -3,8 +3,8 @@ layout: home
 
 hero:
   name: "LINGUA"
-  text: "Traducciones gestionadas desde la base de datos para Laravel"
-  tagline: Instala idiomas, gestiona traducciones y cambia de idioma - todo a través de una hermosa interfaz Livewire, sin necesidad de despliegues.
+  text: "Traducciones orientadas a base de datos para Laravel"
+  tagline: Sin dependencias externas. Dos drivers de almacenamiento. Importación/exportación completa. Seguridad reforzada. Diseñado para PHP 8.3+ y Laravel 11–13.
   image:
     light: /logoLinguaVertical-light.svg
     dark: /logoLinguaVertical-dark.svg
@@ -18,39 +18,39 @@ hero:
       link: https://github.com/rivalex/lingua
 
 features:
+  - icon: 🔒
+    title: Sin dependencias externas
+    details: Lingua incluye su propio cargador de traducciones, registro de locales y conjunto de datos integrado. Sin Spatie, sin laravel-lang — nada que mantener sincronizado.
+
   - icon: 🗄️
-    title: Traducciones en base de datos
-    details: Todas las traducciones viven en la base de datos y son editables al instante - sin necesidad de desplegar archivos. Spatie's laravel-translation-loader se encarga de la capa de carga.
+    title: Dos drivers de almacenamiento
+    details: Ejecuta traducciones desde la base de datos (edición en vivo en la UI, sin despliegues) o desde archivos (con control de versiones, compatible con CI). Cambia con un solo comando.
+
+  - icon: 📤
+    title: Importación / Exportación
+    details: "Mueve traducciones entre formatos: CSV, JSON, XLSX, ODS. Bilingüe, multi-locale o json-nativo. Vista previa en seco antes de confirmar."
+
+  - icon: 🛡️
+    title: Seguridad reforzada
+    details: "Refuerzo F1–F9: sanitizador XSS, protección contra path traversal, prohibición de inyección SQL, protección de vendor, puerta de autenticación, no-divulgación de excepciones, y más."
 
   - icon: ⚡
-    title: Livewire + Flux UI
-    details: Interfaz de gestión reactiva y en tiempo real construida con Livewire 4 y Flux 2. Cada acción - agregar idioma, editar traducción, sincronizar - ocurre sin recargar la página.
-
-  - icon: 🔄
-    title: Sincronización bidireccional
-    details: Importa tus archivos PHP/JSON existentes en la base de datos con un comando, o exporta todo de vuelta a archivos para control de versiones y despliegues.
+    title: UI reactiva
+    details: Cinco páginas Livewire — Idiomas, Traducciones, Estadísticas, Configuración y Transferencia. Cada acción es en vivo, sin necesidad de despliegue para corregir errores tipográficos.
 
   - icon: 🌐
-    title: Más de 70 idiomas
-    details: Instala cualquier idioma del ecosistema Laravel Lang con un solo comando Artisan. Los archivos de idioma, registros en la base de datos y traducciones se configuran automáticamente.
-
-  - icon: ✍️
-    title: Soporte de texto enriquecido
-    details: Cada traducción puede ser texto plano, HTML o Markdown. El editor correcto se activa automáticamente según el tipo de traducción.
+    title: Más de 129 locales incluidos
+    details: "Instala cualquier locale desde el registro integrado. Sin descarga de internet. Incluidos: 26 locales, 5902 cadenas, alineados con Laravel 13.14."
 
   - icon: ↔️
-    title: Soporte RTL / LTR
-    details: Los idiomas árabes, hebreo, persa y otros idiomas RTL están completamente soportados. Lingua almacena y expone la dirección del texto para cada idioma.
-
-  - icon: 📦
-    title: Traducciones de proveedores
-    details: Gestiona las traducciones de paquetes (mensajes de validación, paginación, etc.) junto con tus propias cadenas, con protección integrada contra eliminaciones accidentales.
+    title: RTL / LTR listo
+    details: El árabe, el hebreo, el persa y otros idiomas RTL son totalmente compatibles. Los metadatos de dirección se almacenan y exponen para cada idioma.
 
   - icon: 📊
-    title: Seguimiento de progreso
-    details: Cada idioma muestra un porcentaje de completitud y el número de traducciones faltantes, para que siempre sepas qué necesita traducirse.
+    title: Cobertura de traducciones
+    details: Estadísticas de finalización por idioma — total de cadenas, recuento de traducidas y claves faltantes por grupo. Siempre sabrás qué necesita traducción.
 
   - icon: 🧪
-    title: Completamente testado
-    details: Más de 150 tests Pest que cubren todos los comandos Artisan, componentes Livewire, componentes Blade, helpers y la API completa del facade.
+    title: 783 pruebas
+    details: PHP 8.3+ · Laravel 11–13 · Livewire 4.1+ · Flux 2.12+. El conjunto cubre comandos, componentes, drivers, importación/exportación y la API completa de la facade.
 ---

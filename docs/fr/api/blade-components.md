@@ -1,33 +1,127 @@
 # Composants Blade
 
-Lingua enregistre plusieurs composants Blade anonymes sous le préfixe `lingua::`. Ils sont utilisés en interne par les vues Livewire et peuvent aussi être réutilisés dans vos propres templates.
+Lingua enregistre plusieurs composants Blade anonymes sous le préfixe `lingua::`.
+Ils sont utilisés en interne par les vues Livewire et peuvent être réutilisés dans
+vos propres templates.
+
+---
+
+## `<x-lingua::nav>` <Badge type="tip" text="Nouveau dans la 2.0" />
+
+La barre de navigation partagée qui apparaît sur les cinq pages de Lingua. Active
+l'onglet courant automatiquement.
+
+```blade
+<x-lingua::nav :current="'languages'" />
+```
+
+Activé/désactivé via `config('lingua.nav.enabled')` ou le toggle dans les Paramètres.
+
+### Props
+
+| Prop | Type | Description |
+|---|---|---|
+| `current` | string | Identifiant de la page active (`'languages'`, `'translations'`, etc.) |
+
+---
+
+## `<x-lingua::select>` <Badge type="tip" text="Nouveau dans la 2.0" />
+
+Sélecteur de locale en ligne utilisant l'API Popover native (`popover="manual"`).
+Évite le piège `transform`+`overflow` des dialogs Flux.
+
+```blade
+<x-lingua::select
+    :languages="$languages"
+    :current="app()->getLocale()"
+    wire:model="locale"
+/>
+```
+
+### Props
+
+| Prop | Type | Description |
+|---|---|---|
+| `languages` | Collection | Collection de modèles `Language` |
+| `current` | string | Code de la locale active |
+| `wire:model` | - | Propriété Livewire à lier |
+
+---
+
+## `<x-lingua::stat>` <Badge type="tip" text="Nouveau dans la 2.0" />
+
+Carte de statistique KPI pour la page Statistiques.
+
+```blade
+<x-lingua::stat
+    label="Traductions"
+    :value="$total"
+    :secondary="$missing . ' manquantes'"
+/>
+```
+
+### Props
+
+| Prop | Type | Description |
+|---|---|---|
+| `label` | string | Libellé de la carte |
+| `value` | int\|string | Valeur principale |
+| `secondary` | string | Texte secondaire optionnel |
+
+---
+
+## `<x-lingua::card>` <Badge type="tip" text="Nouveau dans la 2.0" />
+
+Conteneur de carte avec titre et slot de contenu.
+
+```blade
+<x-lingua::card title="Langues installées">
+    {{-- contenu --}}
+</x-lingua::card>
+```
+
+### Props
+
+| Prop | Type | Description |
+|---|---|---|
+| `title` | string | Titre de la carte |
+
+---
+
+## `<x-lingua::branding>` <Badge type="tip" text="Nouveau dans la 2.0" />
+
+Logo et branding Lingua pour les pages de gestion.
+
+```blade
+<x-lingua::branding />
+```
+
+Aucune prop — rendu statique du logo SVG Lingua.
+
+---
+
+## `<x-lingua::validation-errors>` <Badge type="tip" text="Nouveau dans la 2.0" />
+
+Affiche les erreurs de validation Livewire de manière cohérente.
+
+```blade
+<x-lingua::validation-errors :errors="$errors" />
+```
+
+### Props
+
+| Prop | Type | Description |
+|---|---|---|
+| `errors` | MessageBag | Sac d'erreurs de validation |
+
+---
 
 ## `<x-lingua::editor>`
 
-Un composant éditeur polymorphe qui rend un `<textarea>`, un éditeur HTML TipTap ou un éditeur Markdown TipTap selon la prop `type`.
+Éditeur polymorphe — `<textarea>`, TipTap HTML ou TipTap Markdown selon `type`.
 
 ```blade
-{{-- Texte brut --}}
-<x-lingua::editor
-    wire:model="value"
-    type="text"
-    placeholder="Saisir du texte…"
-/>
-
-{{-- HTML --}}
-<x-lingua::editor
-    wire:model="value"
-    type="html"
-    label="Contenu du corps"
-    :required="true"
-/>
-
-{{-- Markdown --}}
-<x-lingua::editor
-    wire:model="value"
-    type="markdown"
-    placeholder="Écrire en Markdown…"
-/>
+<x-lingua::editor wire:model="value" type="html" label="Contenu" :required="true" />
 ```
 
 ### Props
@@ -35,16 +129,17 @@ Un composant éditeur polymorphe qui rend un `<textarea>`, un éditeur HTML TipT
 | Prop | Type | Par défaut | Description |
 |---|---|---|---|
 | `type` | string | `'text'` | `'text'`, `'html'` ou `'markdown'` |
-| `label` | string | `''` | Libellé optionnel au-dessus du champ |
+| `label` | string | `''` | Libellé optionnel |
 | `placeholder` | string | `''` | Texte d'espace réservé |
-| `required` | bool | `false` | Affiche un badge obligatoire |
-| `wire:model` | - | - | Liaison au modèle Livewire |
+| `required` | bool | `false` | Badge obligatoire |
+
+Voir [Texte riche](/fr/features/rich-text) pour la documentation complète.
 
 ---
 
 ## `<x-lingua::clipboard>`
 
-Un wrapper qui ajoute un bouton de copie dans le presse-papiers autour de son contenu slot.
+Wrapper ajoutant un bouton de copie dans le presse-papiers.
 
 ```blade
 <x-lingua::clipboard text-to-copy="auth.failed">
@@ -52,20 +147,18 @@ Un wrapper qui ajoute un bouton de copie dans le presse-papiers autour de son co
 </x-lingua::clipboard>
 ```
 
-Un clic sur le composant copie `text-to-copy` dans le presse-papiers et affiche brièvement une coche.
-
 ### Props
 
 | Prop | Type | Description |
 |---|---|---|
-| `text-to-copy` | string | Le texte à copier dans le presse-papiers |
-| `show-tooltip` | bool | Afficher une infobulle au survol (par défaut : `false`) |
+| `text-to-copy` | string | Texte à copier |
+| `show-tooltip` | bool | Afficher une infobulle (par défaut : `false`) |
 
 ---
 
 ## `<x-lingua::language-flag>`
 
-Rend une icône de drapeau et le nom de langue pour une locale donnée.
+Drapeau et nom de langue pour une locale donnée.
 
 ```blade
 <x-lingua::language-flag
@@ -75,21 +168,11 @@ Rend une icône de drapeau et le nom de langue pour une locale donnée.
 />
 ```
 
-### Props
-
-| Prop | Type | Description |
-|---|---|---|
-| `name` | string | Nom de langue en anglais |
-| `code` | string | Code de locale pour la recherche du drapeau |
-| `description` | string | Nom natif de la langue (sous-titre) |
-
-Utilise `outhebox/blade-flags` pour les SVG de drapeaux. Si aucun drapeau n'est disponible pour le code, retombe gracieusement sur l'affichage du texte du code.
-
 ---
 
 ## `<x-lingua::message>`
 
-Un composant de message transitoire qui s'affiche pendant une courte durée après un événement Livewire.
+Message transitoire qui s'affiche après un événement Livewire.
 
 ```blade
 <x-lingua::message on="translation_saved" :delay="2000">
@@ -101,14 +184,14 @@ Un composant de message transitoire qui s'affiche pendant une courte durée apr�
 
 | Prop | Type | Par défaut | Description |
 |---|---|---|---|
-| `on` | string | - | Nom de l'événement Livewire à écouter |
-| `delay` | int | `1500` | Durée en millisecondes avant la disparition |
+| `on` | string | - | Nom de l'événement Livewire |
+| `delay` | int | `1500` | Durée en ms avant disparition |
 
 ---
 
 ## `<x-lingua::autocomplete>`
 
-Un composant de saisie avec autocomplétion utilisé dans le formulaire de création de traduction.
+Saisie avec autocomplétion pour le formulaire de création de traduction.
 
 ```blade
 <x-lingua::autocomplete
@@ -118,40 +201,12 @@ Un composant de saisie avec autocomplétion utilisé dans le formulaire de créa
 />
 ```
 
-### Props
-
-| Prop | Type | Description |
-|---|---|---|
-| `wire:model` | - | Liaison au modèle Livewire |
-| `suggestions` | array | Tableau de suggestions d'autocomplétion |
-| `placeholder` | string | Espace réservé du champ de saisie |
-
----
-
-## `<x-lingua::menu-group>`
-
-Un composant de groupe de navigation pour les menus de barre latérale.
-
-```blade
-<x-lingua::menu-group heading="Languages">
-    {{-- slot éléments de menu --}}
-</x-lingua::menu-group>
-```
-
-### Props
-
-| Prop | Type | Description |
-|---|---|---|
-| `heading` | string | Texte du titre du groupe |
-
 ---
 
 ## Personnaliser les composants
-
-Publiez toutes les vues de composants pour les remplacer :
 
 ```bash
 php artisan vendor:publish --tag="lingua-views"
 ```
 
-Les vues publiées se trouvent dans `resources/views/vendor/lingua/components/`. Laravel utilise automatiquement votre version publiée.
+Vues publiées dans `resources/views/vendor/lingua/components/`.

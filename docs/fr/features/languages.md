@@ -1,128 +1,84 @@
-# Gestion des langues
+# Page Langues
 
-La page Langues (`/lingua/languages`) est votre centre de contrôle pour toutes les locales installées.
+La page **Langues** (`/lingua/languages`) est le point de départ de la gestion des locales.
+Elle liste toutes les langues installées, affiche leur progression de traduction et vous
+permet d'en ajouter, supprimer ou réorganiser.
 
-<Screenshot src="/screenshots/languages-page.png" alt="Page de gestion des langues Lingua" caption="Page des langues - affichant les locales installées avec les statistiques de complétion." />
+## Barre d'outils
+
+La barre d'outils est divisée en deux lignes qui s'adaptent à la largeur disponible :
+
+**Ligne 1 — Recherche & ajout de langue**
+- Champ de recherche pour filtrer les langues affichées
+- Bouton **Nouvelle langue** — ouvre la modal d'ajout depuis le registre de 129+ locales
+
+**Ligne 2 — Synchronisation (pilote base de données)**
+- **Synchroniser vers la base de données** — importe les fichiers `lang/` dans la DB
+- **Synchroniser vers les fichiers** — exporte la DB vers `lang/`
+- **Mettre à jour les langues** — récupère les nouvelles chaînes depuis le jeu de données groupé
+
+::: tip Mode fichier
+En pilote `file`, les boutons de synchronisation sont masqués — les fichiers sont la
+source de vérité.
+:::
 
 ## Ajouter une langue
 
-### Depuis l'interface
+Cliquez sur **Nouvelle langue**. La modal affiche toutes les locales du registre groupé
+(129+). Tapez pour filtrer, puis cliquez sur une locale pour l'installer.
 
-Cliquez sur **Ajouter une langue**, sélectionnez l'une des 70+ locales disponibles, et confirmez. Lingua va :
-
-1. Télécharger les fichiers de langue depuis Laravel Lang
-2. Créer un enregistrement `Language` dans la base de données
-3. Synchroniser toutes les nouvelles chaînes dans `language_lines`
-4. Rafraîchir le tableau avec la nouvelle locale
-
-<Screenshot src="/screenshots/language-add-modal.png" alt="Modale d'ajout de langue" caption="La modale d'ajout de langue avec le sélecteur de locale avec recherche." width="640px" :center="true"/>
-
-### Depuis la ligne de commande
+Langue installée via `lingua:add` ou la modal — dans les deux cas, les chaînes groupées
+sont importées depuis le jeu de données embarqué. **Aucun téléchargement GitHub.**
 
 ```bash
-php artisan lingua:add it
-php artisan lingua:add pt_BR
-php artisan lingua:add ar
+# Équivalent en ligne de commande
+php artisan lingua:add fr
 ```
-
-### Par programmation
-
-```php
-use Rivalex\Lingua\Facades\Lingua;
-
-// Installer les fichiers de langue (wrapper de lang:add)
-Lingua::addLanguage('fr');
-
-// Puis créer l'enregistrement en DB + synchroniser (ce que la commande Artisan fait entièrement)
-// → utilisez lingua:add pour le flux complet et orchestré
-```
-
-::: tip
-Utilisez `Lingua::notInstalled()` pour obtenir la liste des locales disponibles mais pas encore installées :
-
-```php
-$available = Lingua::notInstalled(); // ['af', 'ar', 'az', …]
-```
-:::
 
 ## Supprimer une langue
 
-Cliquez sur l'icône de corbeille sur n'importe quelle ligne de langue non définie par défaut. Une modale de confirmation empêche la suppression accidentelle - vous devez saisir le nom de la langue pour confirmer.
+Cliquez sur l'icône corbeille à côté d'une langue dans la liste. Un dialogue de confirmation
+s'affiche. La **langue par défaut ne peut pas être supprimée** — changez d'abord la langue
+par défaut dans les Paramètres.
 
-En coulisses, l'opération de suppression :
-1. Supprime les fichiers de langue via `lang:rm {locale} --force`
-2. Supprime toutes les entrées `{locale}` de la colonne JSON `language_lines.text`
-3. Supprime l'enregistrement `Language`
-4. Réordonne les valeurs de tri des langues restantes
-
-::: warning
-La **langue par défaut ne peut pas être supprimée**. Définissez d'abord une autre langue comme langue par défaut.
-:::
-
-```bash
-# Depuis la ligne de commande
-php artisan lingua:remove fr
-```
-
-## Définir la langue par défaut
-
-Cliquez sur l'icône étoile (⭐) sur n'importe quelle ligne de langue. Une seule langue peut être par défaut à la fois. La modification est enveloppée dans une transaction de base de données pour éviter un intervalle où aucune langue n'est marquée comme par défaut.
-
-```php
-// Par programmation
-Lingua::setDefaultLocale('fr');
-
-// Ou via le modèle
-$french = Language::where('code', 'fr')->first();
-Language::setDefault($french);
-```
-
-::: warning Suppression de la valeur par défaut
-Si vous définissez une nouvelle langue par défaut, assurez-vous que toutes vos traductions sont au moins partiellement complètes pour cette locale. La langue par défaut est utilisée comme référence dans l'éditeur de l'interface (la colonne de gauche affiche la valeur par défaut comme référence).
+::: warning Suppression en mode base de données
+La suppression d'une langue efface toutes ses valeurs de la colonne JSON `text` dans
+`language_lines`. Cette opération est **irréversible** depuis l'UI — exportez d'abord si
+vous avez besoin d'une sauvegarde.
 :::
 
 ## Réordonner les langues
 
-Faites glisser et déposez les lignes de langue pour contrôler leur ordre d'affichage dans toute l'application - dans le widget sélecteur de langue, le sélecteur de locale des traductions, et partout où vous utilisez `Lingua::languages()`.
+Glissez-déposez les lignes de la liste pour changer l'ordre d'affichage. L'ordre est
+persistant dans la colonne `sort` de la table `languages`. Le composant sélecteur de
+langue respecte cet ordre.
 
-L'ordre de tri est stocké dans la colonne entière `sort` et réattribué séquentiellement après chaque glisser-déposer.
+## Statistiques de complétude
 
-## Voir les statistiques de complétion
+Chaque carte de langue affiche :
 
-Chaque ligne de langue affiche :
+- **Chaînes totales** — nombre de traductions dans la locale par défaut
+- **Traduites** — combien ont une valeur dans cette locale
+- **Barre de progression** — pourcentage visuel
 
-| Métrique | Description |
+Cliquez sur une carte pour aller directement à la page Traductions filtrée sur cette langue.
+
+## Langue par défaut
+
+La langue marquée avec l'indicateur **par défaut** est celle utilisée comme valeur de
+repli. Une seule langue peut être par défaut.
+
+Pour changer la langue par défaut :
+1. Rendez-vous dans **Paramètres** (`/lingua/settings`)
+2. Section « Langue par défaut »
+3. Sélectionnez la nouvelle locale par défaut
+
+## Commandes associées
+
+| Commande | Description |
 |---|---|
-| **Complétion %** | `traduit / total * 100`, arrondi à 2 décimales |
-| **Manquants** | Nombre de chaînes sans valeur pour cette locale |
-
-Ces valeurs sont calculées au moment de la requête via des sous-requêtes de base de données sur la table `language_lines`, elles sont donc toujours à jour.
-
-```php
-// Obtenir les statistiques pour une locale spécifique
-$stats = Lingua::getLocaleStats('fr');
-// [
-//   'total'      => 1240,
-//   'translated' => 980,
-//   'missing'    => 260,
-//   'percentage' => 79.03,
-// ]
-
-// Ou obtenir toutes les langues avec les statistiques en une seule requête
-$languages = Lingua::languagesWithStatistics();
-foreach ($languages as $lang) {
-    echo "{$lang->name}: {$lang->completion_percentage}%";
-}
-```
-
-## Contrôles de synchronisation
-
-La barre d'outils de la page Langues possède trois boutons de synchronisation :
-
-| Bouton | Action |
-|---|---|
-| **Synchroniser vers la base de données** | Importe tous les fichiers `lang/` locaux dans `language_lines` |
-| **Synchroniser vers le stockage local** | Exporte toutes les traductions de la DB vers les fichiers `lang/` |
-| **Mettre à jour via Laravel Lang** | Exécute `lang:update` pour récupérer les dernières chaînes en amont, puis synchronise vers la DB |
-
-Les trois opérations s'exécutent de manière **asynchrone** (attribut Livewire `#[Async]`) pour que l'interface reste réactive lors des synchronisations longues.
+| `php artisan lingua:add {locale}` | Ajouter une locale depuis le registre groupé |
+| `php artisan lingua:remove {locale}` | Supprimer une locale et ses traductions |
+| `php artisan lingua:sync-to-database` | Synchroniser `lang/` → DB |
+| `php artisan lingua:sync-to-local` | Synchroniser DB → `lang/` |
+| `php artisan lingua:update-lang` | Mettre à jour les traductions depuis le jeu de données groupé |

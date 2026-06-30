@@ -1,139 +1,124 @@
 # نشر الأصول
 
-تشحن Lingua بعدة مجموعات قابلة للنشر حتى تتمكن من تجاوز الأجزاء التي تحتاجها فقط.
+يوفر Lingua مجموعة من الوسوم القابلة للنشر لتخصيص ملفات الإعداد
+والهجرات وملفات الترجمة والعروض.
 
-## نشر كل شيء دفعة واحدة
+## وسوم النشر المتاحة
 
-```bash
-php artisan vendor:publish --provider="Rivalex\Lingua\LinguaServiceProvider"
-```
+| الوسم | الوصف |
+|---|---|
+| `lingua-config` | ملف الإعداد الرئيسي (`config/lingua.php`) |
+| `lingua-migrations` | ملفات الهجرة الواعية بالمحرك |
+| `lingua-translations` | ملفات ترجمة واجهة Lingua نفسها |
+| `lingua-views` | عروض Blade القابلة للتجاوز |
 
-## الوسوم الفردية
+::: tip وسم `lingua-assets` مُزال في 2.0
+في الإصدارات السابقة، كان وسم `lingua-assets` يُنشر ملفات CSS/JS إلى
+`public/vendor/lingua`. **أُزيل هذا الوسم في 2.0** — الأصول تُقدَّم
+الآن عبر مسار مُضمَّن في الحزمة بدون حاجة للنشر.
+:::
 
-### `lingua-config`
+---
 
-ينشر ملف الإعدادات.
+## lingua-config
 
 ```bash
 php artisan vendor:publish --tag="lingua-config"
 ```
 
-**الناتج:** `config/lingua.php`
+يُنشر إلى: `config/lingua.php`
 
-استخدم هذا لتخصيص المسارات والوسيط ووضع المحدد وشريط أدوات المحرر أو أي خيار آخر.
+يحتوي هذا الملف على جميع إعدادات Lingua. راجع صفحة
+[الإعداد](/ar/guide/configuration) لتوثيق كل مفتاح.
+
+لإعادة النشر مع التجاوز:
+
+```bash
+php artisan vendor:publish --tag="lingua-config" --force
+```
 
 ---
 
-### `lingua-migrations`
-
-ينشر هجرات قاعدة البيانات.
+## lingua-migrations
 
 ```bash
 php artisan vendor:publish --tag="lingua-migrations"
 ```
 
-**الناتج:** `database/migrations/YYYY_MM_DD_HHMMSS_create_lingua_table.php`
+يُنشر إلى: `database/migrations/`
 
-استخدم هذا إذا كنت بحاجة إلى تعديل مخطط `languages` أو `language_lines` - مثلًا لإضافة فهارس أو تغيير أنواع الأعمدة. بعد النشر، شغِّل `php artisan migrate` كالمعتاد.
+في Lingua 2.0، الهجرات **واعية بالمحرك**:
 
-::: warning
-معالج `lingua:install` ينشر ويشغّل الهجرات تلقائيًا. انشر يدويًا فقط إذا كنت بحاجة إلى تخصيص المخطط قبل تشغيلها.
+- اختيار `database` في `lingua:install` ينشر **3 ملفات هجرة**:
+  1. `create_languages_table.php`
+  2. `create_language_lines_table.php`
+  3. `create_lingua_settings_table.php`
+
+- اختيار `file` في `lingua:install` ينشر **2 ملف هجرة**:
+  1. `create_languages_table.php`
+  2. `create_lingua_settings_table.php`
+
+::: tip لا تُعدِّل الهجرات مباشرةً
+لتخصيص المخطط (مثل إضافة فهارس إضافية)، أنشئ هجرة منفصلة
+تُعدِّل الجداول. تجنب تعديل الملفات المنشورة مباشرةً لتسهيل
+الترقية.
 :::
 
 ---
 
-### `lingua-translations`
-
-ينشر نصوص ترجمة واجهة الحزمة نفسها.
+## lingua-translations
 
 ```bash
 php artisan vendor:publish --tag="lingua-translations"
 ```
 
-**الناتج:** `lang/vendor/lingua/{locale}/lingua.php`
+يُنشر إلى: `lang/vendor/lingua/`
 
-يكشف هذا كل تسمية وعنوان وزر ورسالة مستخدمة في واجهة Lingua. تجاوز أي نص لـ:
-- ترجمة الواجهة إلى لغة تطبيقك
-- تكييف الصياغة مع أسلوب مشروعك (مثل "Add language" → "Install locale")
+هذه ملفات ترجمة واجهة Lingua **نفسها** (أسماء القوائم، رسائل الأخطاء،
+حوارات التأكيد). إذا أردت تخصيص نصوص الواجهة أو إضافة لغة غير مدعومة،
+انشر هذا الوسم وعدِّله.
 
-الملفات المنشورة تتبع هيكل ترجمة الحزمة القياسي في Laravel:
+اللغات المدعومة في واجهة Lingua: `ar`، `de`، `en`، `es`، `fr`، `hi`، `it`، `pt`، `ru`، `zh`.
 
 ```
-lang/
-└── vendor/
-    └── lingua/
-        ├── en/
-        │   └── lingua.php
-        ├── fr/
-        │   └── lingua.php
-        └── it/
-            └── lingua.php
+lang/vendor/lingua/
+├── ar/lingua.php
+├── en/lingua.php
+├── fr/lingua.php
+└── …
 ```
 
 ---
 
-### `lingua-views`
-
-ينشر جميع عروض Blade وLivewire.
+## lingua-views
 
 ```bash
 php artisan vendor:publish --tag="lingua-views"
 ```
 
-**الناتج:** `resources/views/vendor/lingua/`
+يُنشر إلى: `resources/views/vendor/lingua/`
 
-استخدم هذا لتخصيص التخطيطات والنوافذ المنبثقة أو مكون محدد اللغة. يستخدم Laravel تلقائيًا عروضك المنشورة بدلًا من إعدادات الحزمة الافتراضية.
+ينشر جميع قوالب Blade لصفحات إدارة Lingua والمكوّنات.
 
-```
-resources/views/vendor/lingua/
-├── components/
-│   ├── autocomplete.blade.php
-│   ├── clipboard.blade.php
-│   ├── editor.blade.php
-│   ├── language-flag.blade.php
-│   ├── menu-group.blade.php
-│   └── message.blade.php
-└── livewire/
-    ├── languages.blade.php
-    ├── language-selector.blade.php
-    ├── translations.blade.php
-    └── translation/
-        ├── create.blade.php
-        ├── delete.blade.php
-        ├── row.blade.php
-        └── update.blade.php
-```
-
-::: tip
-انشر فقط العروض التي تنوي تغييرها. العروض غير المنشورة تُقدَّم مباشرة من الحزمة وتتلقى التحديثات الصادرة تلقائيًا.
+::: warning تجاوز العروض
+عند تخصيص العروض المنشورة، تتحمل مسؤولية دمج التغييرات
+عند ترقية Lingua. استخدم هذا الوسم بتحفُّظ — حاول التخصيص بـ
+CSS مخصص أو عبر خيارات الإعداد أولاً.
 :::
 
 ---
 
-### `lingua-assets`
+## النشر عبر معالج التثبيت
 
-ينشر CSS وJavaScript المُجمَّعين إلى `public/`.
+يتولى معالج `lingua:install` نشر الوسوم الضرورية تلقائياً. الأمر
+اليدوي مفيد لـ:
 
-```bash
-php artisan vendor:publish --tag="lingua-assets"
-```
-
-**الناتج:** `public/vendor/lingua/`
-
-مطلوب فقط إذا كنت تقدِّم الأصول مباشرة من `public/` بدلًا من Vite أو CDN. **أعِد التشغيل بعد كل ترقية لـ Lingua** للحفاظ على تزامن الأصول.
-
----
-
-## التحديث بعد الترقيات
-
-بعد تحديث Lingua عبر Composer، أعِد نشر الأصول المتغيرة:
+- إعادة نشر ملف إعداد بعد ترقية
+- نشر عروض للتخصيص
+- تخصيص واجهة Lingua للغة غير مدعومة
 
 ```bash
-# Always re-publish compiled assets
-php artisan vendor:publish --tag="lingua-assets" --force
-
-# Re-publish UI translations if you haven't customised them
+# Re-publish all tags after upgrade
+php artisan vendor:publish --tag="lingua-config" --force
 php artisan vendor:publish --tag="lingua-translations" --force
 ```
-
-علامة `--force` تستبدل الملفات الموجودة. احذفها لـ `lingua-views` و`lingua-config` للحفاظ على تخصيصاتك المحلية.

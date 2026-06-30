@@ -1,20 +1,74 @@
-:root {
-  --vp-c-brand-1: rgb(179, 10, 0);
-  --vp-c-brand-2: rgb(253, 45, 32);
-  --vp-c-brand-3: rgb(83, 86, 90);
-  --vp-c-brand-white: rgb(255, 255, 255);
-  --vp-c-brand-soft: rgba(179, 10, 0, 0.14);
+/* ─── Lingua v2.0 Design Tokens ─────────────────────────────────────────── */
 
-  --vp-button-brand-border: transparent;
-  --vp-button-brand-text: var(--vp-c-brand-white);
-  --vp-button-brand-bg: var(--vp-c-brand-1);
-  --vp-button-brand-hover-border: transparent;
-  --vp-button-brand-hover-text: var(--vp-c-brand-white);
-  --vp-button-brand-hover-bg: var(--vp-c-brand-2);
+:root {
+  /* Brand — identity-preservation (existing committed colors, expressed in OKLCH) */
+  --lingua-brand-primary: oklch(38% 0.19 29);   /* #B30A00 */
+  --lingua-brand-accent:  oklch(61% 0.23 27);   /* #FF2D20 */
+  --lingua-brand-muted:   oklch(49% 0.09 30);   /* dark rose-grey for active state */
+  --lingua-brand-tint:    oklch(38% 0.19 29 / 0.12);
+
+  /* Map to VitePress brand slots */
+  --vp-c-brand-1: var(--lingua-brand-primary);
+  --vp-c-brand-2: var(--lingua-brand-accent);
+  --vp-c-brand-3: var(--lingua-brand-muted);
+  --vp-c-brand-soft: var(--lingua-brand-tint);
+  --vp-c-brand-white: oklch(100% 0 0);
+
+  /* Buttons */
+  --vp-button-brand-border:        transparent;
+  --vp-button-brand-text:          var(--vp-c-brand-white);
+  --vp-button-brand-bg:            var(--lingua-brand-primary);
+  --vp-button-brand-hover-border:  transparent;
+  --vp-button-brand-hover-text:    var(--vp-c-brand-white);
+  --vp-button-brand-hover-bg:      var(--lingua-brand-accent);
   --vp-button-brand-active-border: transparent;
-  --vp-button-brand-active-text: var(--vp-c-brand-white);
-  --vp-button-brand-active-bg: var(--vp-c-brand-3);
+  --vp-button-brand-active-text:   var(--vp-c-brand-white);
+  --vp-button-brand-active-bg:     var(--lingua-brand-muted);
+
+  /* Semantic z-index scale */
+  --z-dropdown:       100;
+  --z-sticky:         200;
+  --z-modal-backdrop: 300;
+  --z-modal:          400;
+  --z-toast:          500;
+  --z-tooltip:        600;
+
+  /* Custom callout surfaces (light) */
+  --lingua-security-bg:   oklch(96% 0.01 30);
+  --lingua-security-border: oklch(55% 0.19 29);
+  --lingua-security-text:   oklch(28% 0.13 29);
+
+  --lingua-new-bg:     oklch(96% 0.02 145);
+  --lingua-new-border: oklch(52% 0.16 150);
+  --lingua-new-text:   oklch(28% 0.12 145);
+
+  --lingua-breaking-bg:     oklch(97% 0.03 60);
+  --lingua-breaking-border: oklch(58% 0.16 65);
+  --lingua-breaking-text:   oklch(30% 0.12 55);
+
+  /* Screenshot shadow */
+  --lingua-screenshot-shadow: 0 2px 8px oklch(0% 0 0 / 0.08),
+                               0 8px 28px oklch(0% 0 0 / 0.10);
 }
+
+.dark {
+  --lingua-security-bg:     oklch(22% 0.04 29);
+  --lingua-security-border: oklch(55% 0.19 29);
+  --lingua-security-text:   oklch(82% 0.06 30);
+
+  --lingua-new-bg:     oklch(22% 0.04 145);
+  --lingua-new-border: oklch(52% 0.16 150);
+  --lingua-new-text:   oklch(82% 0.06 145);
+
+  --lingua-breaking-bg:     oklch(22% 0.04 60);
+  --lingua-breaking-border: oklch(55% 0.16 65);
+  --lingua-breaking-text:   oklch(82% 0.06 60);
+
+  --lingua-screenshot-shadow: 0 2px 8px oklch(0% 0 0 / 0.3),
+                               0 8px 28px oklch(0% 0 0 / 0.4);
+}
+
+/* ─── Global nav ─────────────────────────────────────────────────────────── */
 
 .VPImage.logo {
   margin-right: 0;
@@ -24,37 +78,195 @@
 
 .VPNav .title {
   font-weight: 900;
-  color: var(--vp-c-brand-1);
+  letter-spacing: -0.02em;
+  color: var(--lingua-brand-primary);
 }
 
-.VPNav .title:where(.dark, .dark *) {
-  color: var(--vp-c-brand-2);
+.dark .VPNav .title {
+  color: var(--lingua-brand-accent);
 }
 
-/* Home hero */
+/* ─── Hero ───────────────────────────────────────────────────────────────── */
+
+/* No gradient text — Impeccable absolute ban.
+   Use a single solid brand color for the hero name. */
 .VPHero .name {
   font-weight: 900;
-  background: linear-gradient(135deg, var(--vp-c-brand-1) 0%, var(--vp-c-brand-2) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  letter-spacing: -0.04em;
+  color: var(--lingua-brand-primary) !important;
+  /* Undo VitePress gradient defaults */
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: unset !important;
+  background-clip: unset !important;
 }
 
-/* Feature grid */
+.dark .VPHero .name {
+  color: var(--lingua-brand-accent) !important;
+}
+
+.VPHero .text {
+  text-wrap: balance;
+}
+
+.VPHero .tagline {
+  text-wrap: pretty;
+  max-width: 52ch;
+}
+
+/* ─── Feature grid ───────────────────────────────────────────────────────── */
+
+.VPFeature {
+  transition: box-shadow 0.18s ease-out, transform 0.18s ease-out;
+}
+
+.VPFeature:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px oklch(0% 0 0 / 0.10);
+}
+
 .VPFeature .icon {
-  font-size: 2rem;
+  font-size: 1.75rem;
+  line-height: 1;
 }
 
-/* Tip/warning callout colors */
-.vp-doc .tip {
-  border-color: var(--vp-c-brand-1);
+@media (prefers-reduced-motion: reduce) {
+  .VPFeature {
+    transition: none;
+  }
+  .VPFeature:hover {
+    transform: none;
+  }
 }
 
-/* Screenshot container */
-.screenshot {
-  border-radius: 12px;
+/* ─── Callouts ───────────────────────────────────────────────────────────── */
+
+/* Override VitePress tip to use brand colour */
+.vp-doc .custom-block.tip {
+  border-color: var(--lingua-brand-primary);
+}
+
+/* Security callout */
+.vp-doc .custom-block.security,
+.lingua-security {
+  background: var(--lingua-security-bg);
+  border: 1px solid var(--lingua-security-border);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+  color: var(--lingua-security-text);
+}
+
+.vp-doc .custom-block.security .custom-block-title,
+.lingua-security strong {
+  color: var(--lingua-security-border);
+  font-weight: 700;
+}
+
+/* ─── Badges ─────────────────────────────────────────────────────────────── */
+
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  vertical-align: middle;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+/* "New in 2.0" */
+.badge.new,
+.badge[data-type="new"] {
+  background: var(--lingua-new-bg);
+  color: var(--lingua-new-text);
+  border: 1px solid var(--lingua-new-border);
+}
+
+/* Tip / info */
+.badge.tip {
+  background: oklch(95% 0.02 240);
+  color: oklch(32% 0.12 240);
+  border: 1px solid oklch(62% 0.14 240);
+}
+
+.dark .badge.tip {
+  background: oklch(22% 0.04 240);
+  color: oklch(80% 0.07 240);
+  border-color: oklch(52% 0.14 240);
+}
+
+/* Warning */
+.badge.warning {
+  background: var(--lingua-breaking-bg);
+  color: var(--lingua-breaking-text);
+  border: 1px solid var(--lingua-breaking-border);
+}
+
+/* Deprecated */
+.badge.deprecated {
+  background: oklch(94% 0.01 0);
+  color: oklch(40% 0.04 0);
+  border: 1px solid oklch(65% 0.05 0);
+  text-decoration: line-through;
+}
+
+.dark .badge.deprecated {
+  background: oklch(22% 0.02 0);
+  color: oklch(72% 0.03 0);
+  border-color: oklch(45% 0.04 0);
+}
+
+/* VitePress Badge component overrides */
+.vp-badge.new   { --vp-badge-info-border: var(--lingua-new-border); --vp-badge-info-text: var(--lingua-new-text); --vp-badge-info-bg: var(--lingua-new-bg); }
+.vp-badge.tip   { font-weight: 600; }
+
+/* ─── Screenshot component ───────────────────────────────────────────────── */
+
+.screenshot-figure {
+  margin: 2rem 0;
+  border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  box-shadow: var(--lingua-screenshot-shadow);
+  border: 1px solid var(--vp-c-divider);
+  background: var(--vp-c-bg-soft);
+  transition: box-shadow 0.2s ease-out;
+}
+
+.screenshot-figure:hover {
+  box-shadow: 0 4px 16px oklch(0% 0 0 / 0.12),
+              0 16px 48px oklch(0% 0 0 / 0.14);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .screenshot-figure {
+    transition: none;
+  }
+}
+
+.screenshot-figure img {
+  width: 100%;
+  display: block;
+  margin: 0;
+}
+
+.screenshot-figure figcaption {
+  font-size: 0.82rem;
+  color: var(--vp-c-text-2);
+  text-align: center;
+  padding: 0.6rem 1rem;
+  background: var(--vp-c-bg-soft);
+  border-top: 1px solid var(--vp-c-divider);
+  font-style: italic;
+}
+
+/* Legacy .screenshot class (backwards compat) */
+.screenshot {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: var(--lingua-screenshot-shadow);
   margin: 1.5rem 0;
   border: 1px solid var(--vp-c-divider);
 }
@@ -66,46 +278,89 @@
 }
 
 .screenshot-caption {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   color: var(--vp-c-text-2);
   text-align: center;
   padding: 0.5rem 1rem;
   background: var(--vp-c-bg-soft);
   border-top: 1px solid var(--vp-c-divider);
+  font-style: italic;
 }
 
-/* Code labels */
+/* ─── Code helpers ───────────────────────────────────────────────────────── */
+
 .code-label {
   display: inline-block;
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.72rem;
+  font-weight: 700;
   padding: 0.1rem 0.5rem;
   border-radius: 4px;
-  background: var(--vp-c-brand-soft);
-  color: var(--vp-c-brand-1);
+  background: var(--lingua-brand-tint);
+  color: var(--lingua-brand-primary);
   margin-bottom: 0.5rem;
   font-family: var(--vp-font-family-mono);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
-/* Badge */
-.badge {
-  display: inline-block;
-  padding: 0.15rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  vertical-align: middle;
-}
-.badge.new { background: #dcfce7; color: #166534; }
-.badge.tip { background: #dbeafe; color: #1e40af; }
-.badge.warning { background: #fef9c3; color: #854d0e; }
+/* ─── Command table ──────────────────────────────────────────────────────── */
 
-/* Logo light/dark switching in content */
+.command-table td:first-child code {
+  white-space: nowrap;
+}
+
+/* ─── Logo light/dark switching ──────────────────────────────────────────── */
+
 .logo-dark { display: none; }
 .dark .logo-dark { display: block; }
 .dark .logo-light { display: none; }
 
-/* Command table */
-.command-table td:first-child code {
-  white-space: nowrap;
+/* ─── Doc body improvements ──────────────────────────────────────────────── */
+
+/* Cap prose line length for readability */
+.vp-doc > div > p,
+.vp-doc > div > ul,
+.vp-doc > div > ol {
+  max-width: 68ch;
+}
+
+/* Improve heading balance */
+.vp-doc h1,
+.vp-doc h2,
+.vp-doc h3 {
+  text-wrap: balance;
+}
+
+/* ─── Sidebar active state ───────────────────────────────────────────────── */
+
+.VPSidebarItem.is-active > .item > .link {
+  color: var(--lingua-brand-primary);
+  font-weight: 600;
+}
+
+.dark .VPSidebarItem.is-active > .item > .link {
+  color: var(--lingua-brand-accent);
+}
+
+/* ─── Home hero entrance (subtle, respects reduced-motion) ──────────────── */
+
+@media (prefers-reduced-motion: no-preference) {
+  .VPHero .container {
+    animation: lingua-fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .VPFeatures .items {
+    animation: lingua-fade-up 0.65s 0.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  @keyframes lingua-fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }

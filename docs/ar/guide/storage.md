@@ -1,101 +1,116 @@
-# تخزين الترجمات
+# محركات التخزين
 
-فهم كيفية تخزين الترجمات يساعدك على الاستعلام عنها واستيرادها وتصديرها بشكل صحيح.
+<Badge type="tip" text="جديد في 2.0" /> يدعم Lingua 2.0 محركَي تخزين:
+**`database`** (الافتراضي) و**`file`**. اخترهما عند التثبيت أو
+غيِّرهما لاحقاً بأمر واحد.
 
-## جدول `language_lines`
+## اختيار المحرك
 
-كل صف في `language_lines` يمثل **نصًا** واحدًا قابلًا للترجمة - وليس لغة واحدة. جميع قيم اللغات مخزّنة معًا في عمود JSON واحد لـ `text`:
+| المحرك | الأنسب لـ… |
+|---|---|
+| `database` | تطبيقات الإنتاج حيث يُعدِّل أعضاء غير تقنيين الترجمات، أو تحتاج فيها إلى واجهة إدارة كاملة مع إحصائيات ونقل وحارس مورّد. |
+| `file` | التدفقات القائمة على التحكم بالإصدار؛ بيئات CI/CD للقراءة فقط؛ التهجير من مشاريع ملفات الترجمة الأخرى. |
 
-```
-group      | key        | type | text
------------|------------|------|---------------------------------------------------
-validation | required   | text | {"en":"The :attribute field is required.","fr":"Le champ :attribute est obligatoire."}
-auth       | failed     | text | {"en":"These credentials do not match.","it":"Le credenziali non corrispondono."}
-single     | Welcome    | text | {"en":"Welcome","fr":"Bienvenue","de":"Willkommen"}
-emails     | subject    | html | {"en":"<b>Welcome</b> to our platform!"}
-```
+## المحرك database (الافتراضي)
 
-### فوائد هذا التصميم
+في وضع `database`:
 
-- **صف واحد لكل نص** - لا صفوف لكل لغة للإدارة
-- **إضافة لغة غير مدمِّرة** - فقط أضف مفتاحًا جديدًا لكائن JSON
-- **الترجمات الناقصة صريحة** - إذا غابت `fr` من JSON، النص لم يُترجم بعد
-- **استعلام واحد** - `SELECT` واحد يجلب جميع قيم اللغات لمفتاح ما
+- **كل الترجمات تُخزَّن في `language_lines`** — عمود JSON
+  يحمل جميع قيم اللغات لمفتاح واحد.
+- يدمج `LinguaManager` ترجمات قاعدة البيانات **فوق** الترجمات المستندة
+  إلى الملفات؛ قيم قاعدة البيانات تفوز دائماً عند التعارض.
+- جميع ميزات الواجهة مُفعَّلة: التحرير المضمَّن، الإحصائيات، صفحة النقل
+  (استيراد/تصدير)، حارس المورّد، التخزين المؤقت الدقيق.
+- أنواع الترجمة (`text`، `html`، `markdown`) مدعومة بالكامل.
 
-### الاستعلام المباشر
-
-يمكنك الاستعلام عن `language_lines` باستخدام صياغة عمود JSON القياسية في Eloquent:
-
-```php
-use Rivalex\Lingua\Models\Translation;
-
-// All translations that have a French value
-Translation::whereNotNull('text->fr')->get();
-
-// Only missing French translations
-Translation::whereNull('text->fr')->get();
-
-// Find a specific key
-Translation::where('key', 'required')->where('group', 'validation')->first();
-
-// All strings in a group
-Translation::where('group', 'auth')->get();
+```env
+LINGUA_STORAGE_DRIVER=database
 ```
 
-## أنواع الترجمات
-
-كل صف ترجمة له `type` يحدد المحرر المستخدم في الواجهة:
-
-| النوع | حالة الاستخدام | يُكشف تلقائيًا عند المزامنة |
-|---|---|---|
-| `text` | تسميات عادية، رسائل، نص أزرار | الافتراضي |
-| `html` | محتوى غني بوسوم HTML | النص يحتوي على عناصر HTML |
-| `markdown` | محتوى منسَّق بـ Markdown | النص يُحلَّل كـ Markdown |
-
-يُنجَز اكتشاف النوع أثناء `lingua:sync-to-database`. يمكنك تغيير النوع في أي وقت عبر نافذة التعديل في الواجهة.
-
-### مثال: ترجمة HTML
-
-```php
-Translation::create([
-    'group' => 'marketing',
-    'key'   => 'hero_subtitle',
-    'type'  => 'html',
-    'text'  => ['en' => '<strong>Build faster</strong> with fewer tools.'],
-]);
+```
+group      | key      | type | text
+-----------|----------|------|--------------------------------------------------
+auth       | failed   | text | {"en":"Wrong credentials","fr":"Identifiants…"}
+marketing  | hero     | html | {"en":"<b>Build faster</b>"}
+single     | Welcome  | text | {"en":"Welcome","fr":"Bienvenue","de":"Willkommen"}
 ```
 
-### مثال: ترجمة Markdown
+### البذر الأولي
 
-```php
-Translation::create([
-    'group' => 'emails',
-    'key'   => 'welcome_body',
-    'type'  => 'markdown',
-    'text'  => ['en' => "# Welcome!\n\nThank you for signing up.\n\n**Your account is now active.**"],
-]);
+عند إضافة لغة جديدة، استخدم `lingua:add {locale}` أو
+`lingua:sync-to-database` لملء قاعدة البيانات من ملفاتك
+المحلية `lang/`.
+
+## المحرك file
+
+في وضع `file`:
+
+- **الترجمات تُقرأ من ملفات `lang/` وتُكتب إليها** — PHP + JSON.
+- لا استعلامات إلى `language_lines`؛ هجرة `language_lines` لا تُنشر
+  عند الاختيار بـ `lingua:install`.
+- صفحة الترجمات الخاصة بـ Lingua تعمل مع ملفات `lang/`، مع التحرير
+  المضمَّن.
+- **أنواع الترجمة** (`html`، `markdown`) **غير مدعومة** — القيم مُسوَّاة
+  إلى نص عادي.
+- الإحصائيات والنقل وحارس المورّد وعمليات التخزين المؤقت الدقيق **غير
+  متاحة** بدون جدول قاعدة بيانات.
+
+```env
+LINGUA_STORAGE_DRIVER=file
 ```
 
-## مفاتيح الترجمة
-
-تستخدم Lingua نفس اتفاقية `group.key` المكونة من جزأين كترجمات Laravel القياسية:
-
-| الصيغة | مثال | استدعاء `trans()` |
-|---|---|---|
-| مفتاح ملف PHP | `auth.failed` | `__('auth.failed')` |
-| مفتاح JSON / فردي | `Welcome` | `__('Welcome')` |
-| مفتاح حزمة خارجية | `spatie::messages.error` | عبر مساحة اسم الحزمة |
-
-::: tip group مقابل key
-عمود `group` يرتبط باسم الملف (`auth` = `lang/en/auth.php`) وعمود `key` يرتبط بمفتاح المصفوفة داخل ذلك الملف. لملفات JSON، المجموعة هي `'single'`.
+::: tip لا تخزين مؤقت إضافي في وضع الملفات
+في وضع الملفات، تُقرأ ملفات `lang/` مباشرةً وتُخزَّن مؤقتاً
+بـ PHP opcache — بدون طبقة تخزين مؤقت إضافية من Lingua.
 :::
 
-## ترجمات الحزم الخارجية
+## التبديل بين المحركين
 
-ترجمات الحزم الخارجية مُصنَّفة بـ `is_vendor = true` وتحمل سلسلة `vendor` (مثل `'spatie'`, `'laravel'`). تُزامَن من مجلدات `lang/vendor/{vendor}/{locale}/`.
+استخدم `lingua:storage` للتبديل في أي وقت:
 
-- **يمكن تعديلها** في الواجهة (لتجاوز صياغة الحزمة)
-- **لا يمكن حذفها** - محاولة الحذف تُطلق حدث `vendor_translation_protected`
-- حقلا `group` و`key` **مقفلان** في نافذة التعديل
+```bash
+# Switch to file driver
+php artisan lingua:storage file
 
-انظر [ترجمات الحزم الخارجية](/ar/features/vendor-translations) للتفاصيل الكاملة.
+# Switch to database driver
+php artisan lingua:storage database
+```
+
+المعالج يقوم بـ:
+
+1. **التحقق من الصحة** — يُؤكِّد أن الهجرات مشغَّلة (إذا لزم الأمر)
+2. **تحذير الهجرة** — يعرض تحذيراً وطلب تأكيد
+3. **تحديث `LINGUA_STORAGE_DRIVER`** في ملف `.env`
+4. **اختياري** — تزامن البيانات في الاتجاه المناسب
+
+::: warning التبديل بدون فقدان للبيانات
+التحويل من `file` إلى `database` لا يحذف ملفات `lang/`.
+التحويل من `database` إلى `file` لا يحذف جدول `language_lines`.
+يمكنك التبديل في كلا الاتجاهين بأمان — العملية غير مدمِّرة دائماً.
+:::
+
+## إلغاء التثبيت
+
+```bash
+php artisan lingua:uninstall
+```
+
+يرشدك المعالج عبر الإزالة الآمنة:
+
+1. يُدرج ما سيُزال (إعداد، هجرات، بيانات، أصول)
+2. يطلب تأكيداً لكل خطوة
+3. لا يُنفِّذ أي إجراء مدمِّر بدون موافقتك
+
+## مقارنة المحركين
+
+| الميزة | `database` | `file` |
+|---|---|---|
+| التحرير عبر الواجهة | ✓ | ✓ (محدود) |
+| أنواع HTML/Markdown | ✓ | — |
+| الإحصائيات | ✓ | — |
+| النقل (استيراد/تصدير) | ✓ | — |
+| حارس المورّد | ✓ | — |
+| تخزين مؤقت دقيق | ✓ | — |
+| صديق للـ CI/CD (ملفات Git) | — | ✓ |
+| لا يتطلب جدول `language_lines` | — | ✓ |
+| أنواع الترجمة | text/html/md | text فقط |

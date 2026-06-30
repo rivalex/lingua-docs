@@ -1,66 +1,66 @@
 # Translation Statistics
 
-The Statistics page gives you a real-time overview of your translation coverage across all installed languages.
+The Statistics page (`/lingua/statistics`) gives you a real-time overview of translation coverage across all installed languages. It shares the [navigation menu](/en/features/settings#navigation-menu) with the other Lingua pages.
 
 ```blade
 <a href="{{ route('lingua.statistics') }}">Translation Statistics</a>
 ```
 
-<Screenshot src="/screenshots/statistics-page.png" alt="Translation Statistics page" caption="The statistics page showing coverage per language, group breakdown, and missing keys." />
+<Screenshot src="/screenshots/statistics-page.png" alt="Translation Statistics page" caption="Coverage per language, group breakdown, and missing keys." />
 
 ## Overview
 
-The page shows three summary counters at the top:
+Three summary counters sit at the top:
 
-- **Total keys** — total number of translation strings in the database
+- **Total keys** — total number of translation strings
 - **Total groups** — number of distinct translation groups
 - **Installed languages** — number of languages registered in the system
 
-You can toggle **Include vendor translations** to include or exclude package translations from all statistics.
+Toggle **Include vendor translations** to include or exclude package-owned strings from every figure on the page.
 
 ## Coverage by language
 
-<Screenshot src="/screenshots/statistics-coverage.png" alt="Coverage by language section" caption="Each language row shows a progress bar, percentage, and missing key count." />
+<Screenshot src="/screenshots/statistics-coverage.png" alt="Coverage by language section" caption="Each language row shows a progress bar, percentage, and missing-key count." />
 
-For each installed language you can see:
+For each installed language:
 
 | Column | Description |
 |---|---|
-| Language | Name and flag of the language |
+| Language | Name and flag |
 | Coverage | Progress bar with completion percentage |
-| Translated | Number of keys that have a value for this locale |
-| Missing | Number of keys without a value — click to expand the missing-keys panel |
+| Translated | Number of keys with a value for this locale |
+| Missing | Keys without a value — click to expand the missing-keys panel |
 
-The **default language** is highlighted with a badge. Since the default locale drives the reference key set, it always shows 100% coverage.
+The **default language** is badged. Because it drives the reference key set, it always shows 100% coverage.
 
 ## Missing keys drill-down
 
-Click the **missing count badge** on any language row to expand the missing-keys panel inline.
+Click the **missing count** on any language row to expand the missing-keys panel inline.
 
-<Screenshot src="/screenshots/statistics-missing.png" alt="Missing keys panel expanded" caption="The missing-keys panel shows group, key, and a direct link to the translation editor." />
+<Screenshot src="/screenshots/statistics-missing.png" alt="Missing keys panel expanded" caption="Group, key, and a direct link to the translation editor." />
 
-Each row in the panel shows:
+Each panel row shows:
 
-- **Group** — the translation group (e.g. `validation`, `auth`)
-- **Key** — the translation key (e.g. `required`, `failed`)
-- **Translate →** link — opens the Translations page pre-filtered to that locale
+- **Group** — e.g. `validation`, `auth`
+- **Key** — e.g. `required`, `failed`
+- **Translate →** — opens the Translations page pre-filtered to that locale
 
-Click the same language row again to collapse the panel.
+Click the row again to collapse the panel.
 
 ## Breakdown by group
 
-<Screenshot src="/screenshots/statistics-breakdown.png" alt="Breakdown by group table" caption="The breakdown table shows translated key counts per locale for every group." />
+<Screenshot src="/screenshots/statistics-breakdown.png" alt="Breakdown by group table" caption="Translated key counts per locale, for every group." />
 
-The breakdown table lists every translation group with the number of translated keys per installed language. Use it to identify which groups are fully translated and which need attention.
+The breakdown table lists every group with the number of translated keys per installed language — useful for spotting which groups are complete and which need attention.
 
 ## Vendor translations toggle
 
-By default, vendor translations (from packages like `laravel/framework`) are excluded from the statistics. Toggle **Include vendor translations** to include them.
+By default, vendor translations (from packages like `laravel/framework`) are excluded. Enable **Include vendor translations** to count them.
 
 ::: info
-Vendor translations are often maintained upstream by the package author. Including them in your statistics may lower your apparent coverage if you haven't added locale-specific overrides.
+Vendor translations are usually maintained upstream by the package author. Including them may lower your apparent coverage if you have not added locale-specific overrides.
 :::
 
 ::: tip Working efficiently
-Sort by the missing count to prioritise your translation effort. Languages with the most missing keys at the top of your list need the most attention.
+Sort by missing count to prioritise effort — the locales with the most gaps need attention first.
 :::

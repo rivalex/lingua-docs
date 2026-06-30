@@ -1,26 +1,26 @@
 # Vendor Translations
 
-Vendor translations are strings that belong to third-party packages - Laravel's own validation messages, pagination labels, password reset strings, and translations from any other package that ships its own `lang/` directory.
+Vendor translations are strings owned by third-party packages — Laravel's own validation messages, pagination labels, and password-reset strings, plus any other package that ships its own `lang/` directory.
 
 ## How they are identified
 
-During `lingua:sync-to-database`, Lingua scans the `lang/vendor/` directory structure. Any translation file found there is imported with:
+During `lingua:sync-to-database`, Lingua scans the `lang/vendor/` directory. Every file it finds is imported with:
 
 - `is_vendor = true`
-- `vendor` = the package name (derived from the directory name, e.g. `spatie`, `laravel`, `filament`)
+- `vendor` = the package name (derived from the directory, e.g. `laravel`, `filament`)
 
-Example database rows after sync:
+Example rows after sync:
 
 ```
-group      | key          | is_vendor | vendor   | text
------------|--------------|-----------|----------|-----------------------------
-validation | required     | false     | null     | {"en":"The :attribute…"}
-passwords  | reset        | true      | laravel  | {"en":"Your password…"}
-auth       | failed       | true      | laravel  | {"en":"These credentials…"}
+group      | key       | is_vendor | vendor   | text
+-----------|-----------|-----------|----------|-----------------------------
+validation | required  | false     | null     | {"en":"The :attribute…"}
+passwords  | reset     | true      | laravel  | {"en":"Your password…"}
+auth       | failed    | true      | laravel  | {"en":"These credentials…"}
 ```
 
 ::: tip
-Laravel's own `lang/en/*.php` files (auth, validation, pagination, passwords) are treated as **vendor translations** because they come from the framework, not your application code.
+Laravel's framework `lang/*` files (auth, validation, pagination, passwords) are treated as **vendor translations** because they come from the framework, not your application code.
 :::
 
 ## What you can do with vendor translations
@@ -29,21 +29,21 @@ Laravel's own `lang/en/*.php` files (auth, validation, pagination, passwords) ar
 |---|---|---|
 | **Edit value** | ✅ Yes | Override any vendor string with your own wording |
 | **Change type** | ✅ Yes | Switch between text / html / markdown |
-| **Edit group or key** | ❌ No | Group and key fields are locked in the Edit modal |
+| **Edit group or key** | ❌ No | Group and key are locked in the Edit modal |
 | **Delete** | ❌ No | Protected by `VendorTranslationProtectedException` |
+| **Overwrite via import** | ❌ No | Vendor rows are skipped during [Transfer import](/en/features/transfer#vendor-protection) |
 
 ## Overriding a vendor string
 
-The most common use case is overriding Laravel's validation messages to match your application's tone:
+The common case is matching Laravel's validation messages to your app's tone:
 
 1. Open `/lingua/translations`
 2. Find the string (e.g. `validation.required`)
-3. Click the edit icon to open the Update modal
+3. Click the edit icon
 4. Change the value for any locale
-5. Save - the override takes effect immediately on the next request
+5. Save — the override takes effect on the next request
 
 ```php
-// Or programmatically via the facade:
 use Rivalex\Lingua\Facades\Lingua;
 
 Lingua::setVendorTranslation(
@@ -55,6 +55,8 @@ Lingua::setVendorTranslation(
 );
 ```
 
+`setVendorTranslation()` updates the **value** of an existing vendor row and respects the protection rules — it never creates a new key (it throws `ModelNotFoundException` if the record does not exist).
+
 ## Querying vendor translations
 
 ```php
@@ -64,39 +66,33 @@ use Rivalex\Lingua\Models\Translation;
 // All vendor translations
 $all = Translation::where('is_vendor', true)->get();
 
-// All vendor translations for a specific package
+// For a specific package
 $laravel = Lingua::getVendorTranslations('laravel');
 
-// All vendor translations for a package with French values
+// For a package, with French values
 $frenchLaravel = Lingua::getVendorTranslations('laravel', 'fr');
-
-// Filter by group and key manually
-$required = Translation::where('is_vendor', true)
-    ->where('vendor', 'laravel')
-    ->where('group', 'validation')
-    ->where('key', 'required')
-    ->first();
 ```
 
 ## Protection mechanism
 
-Attempting to delete a vendor translation (from the UI or via `Lingua::forgetTranslation()`) throws a `VendorTranslationProtectedException`:
+Vendor translations are protected **at the repository level in both storage drivers** — `DatabaseRepository` and `FileRepository` enforce it identically, so the guarantee holds regardless of how your app stores translations.
+
+Deleting a vendor translation (from the UI or via `Lingua::forgetTranslation()`) throws `VendorTranslationProtectedException`:
 
 ```php
 use Rivalex\Lingua\Facades\Lingua;
 use Rivalex\Lingua\Exceptions\VendorTranslationProtectedException;
 
 try {
-    Lingua::forgetTranslation('required', 'en'); // key belongs to a vendor translation
+    Lingua::forgetTranslation('required', 'en'); // belongs to a vendor row
 } catch (VendorTranslationProtectedException $e) {
     // Handle gracefully
 }
 ```
 
-In the Livewire UI, deletion attempts dispatch a `vendor_translation_protected` event and close the modal without deleting anything. The event can be listened to in your own Livewire components or Alpine.js code:
+In the Livewire UI, a deletion attempt dispatches a `vendor_translation_protected` event and closes the modal without deleting anything:
 
 ```js
-// Alpine.js / Livewire event listener
 window.addEventListener('vendor_translation_protected', () => {
     alert('This translation is protected and cannot be deleted.');
 });
@@ -104,18 +100,18 @@ window.addEventListener('vendor_translation_protected', () => {
 
 ## Re-syncing vendor translations
 
-If a package you depend on adds new translation keys in a version bump, re-sync to import them:
+When a dependency adds new keys in a version bump, re-sync to import them:
 
 ```bash
-# Pull the latest from laravel-lang and sync to DB
+# Re-sync from the bundled dataset + local lang/ files
 php artisan lingua:update-lang
 
-# Or manually re-sync from your existing lang/ files
+# Or import directly from your existing lang/ files (includes vendor)
 php artisan lingua:sync-to-database
 ```
 
-Lingua uses `updateOrCreate` when syncing, so existing overrides (edited values) are preserved.
+Syncing uses `updateOrCreate`, so your existing overrides are preserved.
 
-## Disabling vendor translation imports
+## Disabling vendor imports
 
-If you don't want vendor translations in the database at all, sync only after removing the `lang/vendor/` directory. Lingua only imports what it finds on disk.
+If you do not want vendor translations in the database at all, remove the `lang/vendor/` directory before syncing. Lingua only imports what it finds on disk.

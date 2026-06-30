@@ -4,7 +4,7 @@ layout: home
 hero:
   name: "LINGUA"
   text: "Database-driven translations for Laravel"
-  tagline: Install languages, manage translations, and switch locales - all through a beautiful Livewire UI, with zero deployments.
+  tagline: Zero external dependencies. Two storage drivers. Full import/export. Security-hardened. Built for PHP 8.3+ and Laravel 11–13.
   image:
     light: /logoLinguaVertical-light.svg
     dark: /logoLinguaVertical-dark.svg
@@ -18,39 +18,39 @@ hero:
       link: https://github.com/rivalex/lingua
 
 features:
+  - icon: 🔒
+    title: Zero dependencies
+    details: Lingua ships its own translation loader, locale registry, and bundled dataset. No Spatie, no laravel-lang — nothing to keep in sync.
+
   - icon: 🗄️
-    title: Database-backed translations
-    details: All translations live in the database and are editable instantly - no file deploys needed. Spatie's laravel-translation-loader handles the loading layer.
+    title: Two storage drivers
+    details: Run translations from the database (live UI editing, zero deploys) or from files (version-controlled, CI-friendly). Switch with one command.
+
+  - icon: 📤
+    title: Import / Export
+    details: "Move translations between formats: CSV, JSON, XLSX, ODS. Bilingual, multi-locale, or json-native. Dry-run preview before committing."
+
+  - icon: 🛡️
+    title: Security-hardened
+    details: "F1–F9 hardening: XSS sanitizer, path traversal guard, SQL injection ban, vendor protection, auth gate, exception non-disclosure, and more."
 
   - icon: ⚡
-    title: Livewire + Flux UI
-    details: Reactive, real-time management interface built with Livewire 4 and Flux 2. Every action - add language, edit translation, sync - happens without a page reload.
-
-  - icon: 🔄
-    title: Bi-directional sync
-    details: Import your existing PHP/JSON lang files into the database with one command, or export everything back to files for version control and deployments.
+    title: Reactive UI
+    details: Five Livewire pages — Languages, Translations, Statistics, Settings, and Transfer. Every action is live, so no deployment is needed to push a typo fix.
 
   - icon: 🌐
-    title: 70+ languages
-    details: Install any locale from the Laravel Lang ecosystem with a single Artisan command. Language files, DB records, and translations are set up automatically.
-
-  - icon: ✍️
-    title: Rich text support
-    details: Each translation can be plain text, HTML, or Markdown. The correct editor activates automatically based on the translation type.
+    title: 129+ locales bundled
+    details: "Install any locale from the built-in registry. No internet download. Bundled: 26 locales, 5902 strings, aligned to Laravel 13.14."
 
   - icon: ↔️
-    title: RTL / LTR support
-    details: Arabic, Hebrew, Persian and other RTL languages are fully supported. Lingua stores and exposes the text direction for every language.
-
-  - icon: 📦
-    title: Vendor translations
-    details: Manage package translations (validation messages, pagination, etc.) alongside your own strings, with built-in protection against accidental deletion.
+    title: RTL / LTR ready
+    details: Arabic, Hebrew, Persian and other RTL scripts are fully supported. Direction metadata is stored and exposed for every language.
 
   - icon: 📊
-    title: Progress tracking
-    details: Every language shows a completion percentage and missing-translation count so you always know what needs translating.
+    title: Translation coverage
+    details: Per-language completion stats — total strings, translated count, and missing keys by group. Always know what needs translating.
 
   - icon: 🧪
-    title: Fully tested
-    details: 150+ Pest tests covering all Artisan commands, Livewire components, Blade components, helpers, and the complete facade API.
+    title: 783 tests
+    details: PHP 8.3+ · Laravel 11–13 · Livewire 4.1+ · Flux 2.12+. The suite covers commands, components, drivers, import/export, and the full facade API.
 ---

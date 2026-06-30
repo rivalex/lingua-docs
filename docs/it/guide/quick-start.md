@@ -1,6 +1,7 @@
 # Avvio rapido
 
-Questa guida ti accompagna da una nuova installazione di Lingua a un'applicazione completamente multilingue in pochi minuti.
+Questa guida ti accompagna da una nuova installazione di Lingua a
+un'applicazione completamente multilingue in pochi minuti.
 
 ## 1. Installa e popola il database
 
@@ -9,7 +10,15 @@ composer require rivalex/lingua
 php artisan lingua:install
 ```
 
-L'inglese è ora la tua lingua predefinita e tutte le stringhe di traduzione di Laravel/vendor sono state importate nel database.
+Scegli il driver **database** quando richiesto (consigliato). L'inglese
+diventa la lingua predefinita e le stringhe di traduzione integrate vengono
+importate nel database — nessun download da GitHub.
+
+::: tip Sicuro per impostazione predefinita
+Le route di gestione sono protette automaticamente da `['web', 'auth']`.
+Imposta `LINGUA_GATE` per l'accesso basato sui ruoli — vedi
+[Installazione](/it/guide/installation#proteggere-linterfaccia-di-gestione).
+:::
 
 ## 2. Aggiungi la seconda lingua
 
@@ -17,10 +26,9 @@ L'inglese è ora la tua lingua predefinita e tutte le stringhe di traduzione di 
 php artisan lingua:add fr
 ```
 
-Questo comando:
-- Scarica i file della lingua francese tramite Laravel Lang
-- Crea un record `Language` nel database
-- Sincronizza tutte le nuove stringhe in `language_lines`
+Questo comando è **nativo DB**: popola le stringhe francesi dal dataset
+integrato e crea un record `Language`. **Non** scarica file né scrive in
+`lang/`.
 
 Ripeti per tutte le locale di cui hai bisogno:
 
@@ -30,7 +38,8 @@ php artisan lingua:add it es de pt_BR ar
 
 ## 3. Aggiungi il selettore di lingua al tuo layout
 
-Apri il tuo layout Blade principale (es. `resources/views/layouts/app.blade.php`) e:
+Apri il tuo layout Blade principale (es.
+`resources/views/layouts/app.blade.php`):
 
 **a) Imposta `lang` e `dir` sul tag `<html>`:**
 
@@ -48,9 +57,16 @@ Apri il tuo layout Blade principale (es. `resources/views/layouts/app.blade.php`
 <livewire:lingua::language-selector mode="dropdown" />
 ```
 
+::: tip Il cambio di locale ricarica la pagina corrente
+Quando un utente cambia lingua, Lingua ricarica la **pagina su cui si trova**
+(non la home), protetto contro i redirect aperti. Vedi
+[Sicurezza](/it/guide/security#protezione-redirect-aperto).
+:::
+
 ## 4. Usa le traduzioni nella tua applicazione
 
-Lingua è trasparente - usa gli helper standard di Laravel come hai sempre fatto:
+Lingua è trasparente — usa gli helper standard di Laravel come hai sempre
+fatto:
 
 ```blade
 {{ __('messages.welcome') }}
@@ -62,28 +78,48 @@ trans('validation.required')
 __('pagination.next')
 ```
 
-Il `LinguaManager` personalizzato unisce le traduzioni del database a quelle basate su file automaticamente. Non sono necessarie modifiche al codice.
+In modalità database, `LinguaManager` unisce automaticamente le traduzioni del
+database a quelle basate su file. Non sono necessarie modifiche al codice.
 
 ## 5. Traduci tramite l'interfaccia
 
-Visita `/lingua/translations` per vedere tutte le stringhe di traduzione. Per ogni lingua:
+Visita `/lingua/translations` per vedere tutte le stringhe di traduzione. Per
+ogni lingua:
 
-1. Usa il selettore di locale (in alto a destra) per selezionare la lingua di destinazione
+1. Usa il selettore di locale (in alto a destra) per selezionare la lingua di
+   destinazione
 2. Clicca su qualsiasi riga per modificare il valore inline
-3. Usa **Mostra solo le mancanti** per concentrarti sulle stringhe non tradotte
-4. Per i tipi HTML o Markdown l'editor di testo ricco si attiva automaticamente
+3. Usa **Mostra solo le mancanti** per concentrarti sulle stringhe non
+   tradotte
+4. Per i tipi HTML o Markdown l'editor di testo ricco si attiva
+   automaticamente
 
 <Screenshot src="/screenshots/translations-page.png" alt="Pagina di gestione delle traduzioni di Lingua" caption="La pagina delle traduzioni con selettore di locale, filtro per gruppo e editor inline." />
 
-## 6. Sincronizza nuovamente in file (opzionale)
+## 6. Import / export con la pagina Transfer
 
-Se hai bisogno dei file di traduzione su disco (per il controllo versione, CI/CD o altri strumenti):
+Hai bisogno di modificare le traduzioni in blocco in un foglio di calcolo o
+di consegnare un file a un'agenzia di traduzione? Visita `/lingua/transfer`:
+
+- **Esporta** in CSV, JSON, XLSX o ODS — layout bilingue, multi-locale o
+  JSON-native
+- **Importa** con un'**anteprima diff** dry-run prima di scrivere qualsiasi
+  cosa
+
+XLSX/ODS richiedono il pacchetto opzionale `openspout/openspout`; CSV e JSON
+funzionano senza installazioni aggiuntive.
+
+## 7. Sincronizza nuovamente in file (opzionale)
+
+Se hai bisogno dei file di traduzione su disco (per il controllo versione o
+CI/CD):
 
 ```bash
 php artisan lingua:sync-to-local
 ```
 
-Questo esporta ogni traduzione del DB nuovamente in `lang/` nel formato PHP/JSON corretto.
+Questo esporta ogni traduzione DB nuovamente in `lang/` nel formato PHP/JSON
+corretto.
 
 ---
 
@@ -93,9 +129,8 @@ Questo esporta ogni traduzione del DB nuovamente in `lang/` nel formato PHP/JSON
 
 ```php
 use Rivalex\Lingua\Facades\Lingua;
+use Rivalex\Lingua\Models\Translation;
 
-// Crea la traduzione nel database per la locale predefinita
-// (di solito si fa tramite l'interfaccia, ma puoi farlo anche via script)
 Translation::create([
     'group' => 'emails',
     'key'   => 'welcome_subject',
@@ -103,35 +138,32 @@ Translation::create([
     'text'  => ['en' => 'Welcome to our platform!'],
 ]);
 
-// In seguito, aggiungi le traduzioni per altre locale:
 Lingua::setTranslation('welcome_subject', 'Bienvenue sur notre plateforme !', 'fr');
-Lingua::setTranslation('welcome_subject', 'Benvenuto nella nostra piattaforma!', 'it');
 ```
 
-### Verificare la completezza delle traduzioni
+### Ispezionare una locale
 
 ```php
-$stats = Lingua::getLocaleStats('fr');
-// [
-//   'total'      => 1240,
-//   'translated' => 980,
-//   'missing'    => 260,
-//   'percentage' => 79.03,
-// ]
+use Rivalex\Lingua\Facades\Lingua;
+
+$info = Lingua::info('fr');
+
+if ($info !== null) {
+    $info->name;      // "French"
+    $info->native;    // "Français"
+    $info->direction; // "ltr"
+}
 ```
+
+::: warning Modificato in 2.0
+`Lingua::info()` ora restituisce `?LocaleInfo` e ritorna `null` per le locale
+sconosciute invece di lanciare un'eccezione. Aggiungi sempre la guardia
+`if ($info !== null)`.
+:::
 
 ### Cambiare la locale in modo programmatico
 
 ```php
-// In un controller, middleware o service
 app()->setLocale('fr');
 session()->put(config('lingua.session_variable'), 'fr');
 ```
-
-::: tip
-Il componente `LanguageSelector` gestisce il cambio di locale per gli utenti finali automaticamente. L'approccio manuale sopra è utile nei comandi console o nei job.
-:::
-
-### Esportare solo gruppi specifici
-
-Se vuoi esportare solo un sottoinsieme di traduzioni in file, sincronizza in locale prima, poi elimina i gruppi di cui non hai bisogno da `lang/` - il database è sempre la fonte di verità a runtime.

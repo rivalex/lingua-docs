@@ -1,152 +1,89 @@
-# द्विदिशीय Sync
+# Bi-directional Sync
 
-Lingua local files से translations को डेटाबेस में import कर सकता है और उन्हें वापस export भी कर सकता है - आपको दोनों का सर्वश्रेष्ठ देता है: **database-driven runtime** और **file-based version control**।
+Lingua local files से translations को database में import कर सकता है और उन्हें वापस export भी कर सकता है — **database-driven runtime** और **file-based version control** दोनों का सर्वश्रेष्ठ।
 
-## दो दिशाएँ
+## दो दिशाएं
 
-```
-lang/en/*.php        ──┐
-lang/en.json           │  lingua:sync-to-database ──►  language_lines (DB)
-lang/it/*.php          │
-lang/it.json           │
-lang/vendor/…          │  ◄── lingua:sync-to-local
-                      ─┘
-```
+| Direction | Command | UI Button | काम |
+|---|---|---|---|
+| Files → DB | `lingua:sync-to-database` | Sync to DB | `lang/` files पढ़ता है और DB में import करता है |
+| DB → Files | `lingua:sync-to-local` | Sync to Local | DB से `lang/` PHP/JSON files generate करता है |
 
-## Database में Sync
+## Bundled Dataset — कोई laravel-lang नहीं
 
-`lang/` (और इसकी subdirectories) से सभी translation files को `language_lines` टेबल में import करता है।
+Lingua 2.0 एक **बंडल translation dataset** शिप करता है। `laravel-lang/common` download की आवश्यकता नहीं:
+
+- **26 locales** — ar, cs, da, de, el, en, es, fa, fi, fr, he, hi, hu, id, it, ja, ko, nl, no, pl, pt, ru, sv, tr, uk, zh
+- **7 groups** — auth, pagination, passwords, validation, notifications, settings, transfer
+- **5902 strings** — Laravel v13.14.0 के अनुरूप
+
+`lingua:add {locale}` या `lingua:update-lang {locale}` इस बंडल से seed करता है।
+
+## Sync to Database
 
 ```bash
 php artisan lingua:sync-to-database
 ```
 
-### क्या import होता है
+**क्या करता है:**
 
-- `lang/{locale}/*.php` - मानक PHP translation files
-- `lang/{locale}.json` - JSON translation files
-- `lang/vendor/{package}/{locale}/*.php` - vendor package translations
+1. `lang_dir` (default: `lang/`) में सभी PHP और JSON files पढ़ता है
+2. हर key को `language_lines` में upsert करता है
+3. Vendor namespace strings को protect करता है
+4. Affected `(locale, group)` pairs की cache bust करता है — surgical, global नहीं
 
-### Upsert व्यवहार
+**UI से:** Languages पेज पर **Sync to Database** button।
 
-Lingua `group` + `key` पर match करते हुए `updateOrCreate` का उपयोग करता है। इसका अर्थ है:
-- **नई keys** insert होती हैं
-- **मौजूदा keys** के `text` JSON को merge किया जाता है - UI में आपके द्वारा संपादित locale values **preserved रहती हैं**
-- **Type detection** `text` / `html` / `markdown` निर्धारित करने के लिए value पर चलती है
-
-### Type auto-detection
-
-| नियम | असाइन किया गया type |
-|---|---|
-| String में HTML tags हैं (`<…>`) | `html` |
-| String Markdown (headings, lists, आदि) के रूप में parse होती है | `markdown` |
-| कोई भी नहीं | `text` |
-
-::: tip
-Type detection conservative है - यह केवल तभी `html` या `markdown` असाइन करती है जब content clearly match करे। Plain strings को हमेशा `text` मिलता है। आप Edit modal के माध्यम से type manually बदल सकते हैं।
-:::
-
-### Facade के माध्यम से
-
-```php
-use Rivalex\Lingua\Facades\Lingua;
-
-Lingua::syncToDatabase();
-```
-
-::: warning
-Facade `Translation::syncToDatabase()` को internally call करता है, जो एक static call है। Artisan commands और Livewire components में, `app(Translation::class)->syncToDatabase()` का उपयोग किया जाता है ताकि Mockery tests में इसे intercept कर सके।
-:::
-
----
-
-## Local में Sync
-
-`language_lines` से सभी translations को वापस `lang/` PHP और JSON files में export करता है।
+## Sync to Local
 
 ```bash
 php artisan lingua:sync-to-local
 ```
 
-### क्या export होता है
+**क्या करता है:**
 
-- सभी non-vendor translations → `lang/{locale}/{group}.php`
-- JSON-group keys (`single`) → `lang/{locale}.json`
-- Vendor translations → `lang/vendor/{vendor}/{locale}/{group}.php`
+1. DB से सभी translations read करता है
+2. `lang/{locale}/{group}.php` और `lang/{locale}.json` files generate करता है
+3. Existing files को atomic write से overwrite करता है
+4. File write के बाद `opcache_invalidate()` call करता है
 
-### उपयोग के मामले
+**UI से:** Languages पेज पर **Sync to Local** button।
 
-- **Version control** - समय के साथ translation changes track करने के लिए exported files commit करें
-- **Deployment pipelines** - यदि downstream tooling file-based translations expect करता है तो deploy करने से पहले export करें
-- **Backups** - सभी translations का point-in-time snapshot बनाएँ
-- **अन्य tools** - translation management service या CSV importer में उपयोग के लिए export करें
-
-### Facade के माध्यम से
-
-```php
-Lingua::syncToLocal();
-```
-
----
-
-## Laravel Lang से Update
-
-`laravel-lang` ecosystem से latest translation strings pull करता है और उन्हें डेटाबेस में sync करता है। Laravel upgrade करने या translations ship करने वाला नया package जोड़ने के बाद उपयोगी।
+## Update — Bundled Dataset Merge
 
 ```bash
-php artisan lingua:update-lang
+php artisan lingua:update-lang fr
 ```
 
-यह `lang:update` (`laravel-lang/common` से) के बाद `lingua:sync-to-database` चलाता है।
+बंडल dataset से **नई keys** merge करता है बिना existing translations को overwrite किए। Laravel नए validation rules add करने पर useful।
 
----
+## Surgical Cache Invalidation
 
-## स्वचालित sync workflows
+Sync operations केवल changed `(locale, group)` pairs की cache invalidate करती हैं:
 
-### Deployment पर
+```
+"lingua.trans.fr.auth"      ← केवल यही bust होती है यदि fr/auth changed हो
+"lingua.trans.fr.validation" ← unchanged, cache में रहती है
+```
 
-Committed lang files के साथ डेटाबेस को sync में रखने के लिए एक post-deploy step जोड़ें:
+कोई global `php artisan cache:clear` नहीं। High-traffic production के लिए safe।
+
+## Automated Workflows
+
+CI/CD में sync integrate करें:
+
+```yaml
+# GitHub Actions उदाहरण
+- name: Sync translations to database
+  run: php artisan lingua:sync-to-database
+  env:
+    DB_CONNECTION: mysql
+    DB_HOST: ${{ secrets.DB_HOST }}
+```
+
+या Git hook में:
 
 ```bash
-# अपने deploy script या CI/CD pipeline में
+# .git/hooks/post-merge
 php artisan lingua:sync-to-database
-php artisan optimize:clear
 ```
-
-### Scheduler के माध्यम से
-
-यदि आपकी translation team सीधे files संपादित करती है (UI के बजाय), तो periodic sync schedule करें:
-
-```php
-// routes/console.php
-Schedule::command('lingua:sync-to-database')->hourly();
-```
-
-### Package install पर
-
-जब आप translations ship करने वाला नया package `composer require` करें, तो चलाएँ:
-
-```bash
-php artisan lingua:update-lang
-```
-
-यह installed package से कोई भी नई strings pick up करता है।
-
----
-
-## Tips और gotchas
-
-::: tip DB को source of truth रखें
-डेटाबेस को primary source मानें। केवल तभी local में sync करें जब आपको files चाहिए (version control, deployment, आदि)। DB use में होने पर local files को directly संपादित करने से बचें - यदि keys पहले से मौजूद हैं तो अगला sync-to-database आपके edits overwrite कर देगा।
-:::
-
-::: warning Locale files और DB out of sync
-यदि आप `lingua:sync-to-database` चलाए बिना manually नई locale PHP files जोड़ते हैं, तो नई keys केवल file loader (DB से कम priority) के माध्यम से उपलब्ध होंगी। उन्हें properly import करने के लिए sync चलाएँ।
-:::
-
-::: tip Full roundtrip
-Translations reorganize करने का एक safe तरीका:
-1. `lingua:sync-to-local` - सब कुछ export करें
-2. Disk पर files संपादित करें
-3. `lingua:sync-to-database` - फिर से import करें
-:::

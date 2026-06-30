@@ -1,10 +1,13 @@
 # Componenti Blade
 
-Lingua registra diversi componenti Blade anonimi con il prefisso `lingua::`. Vengono usati internamente dalle viste Livewire e possono essere riutilizzati anche nei tuoi template.
+Lingua registra diversi componenti Blade anonimi con il prefisso `lingua::`.
+Vengono usati internamente dalle viste Livewire e possono essere riutilizzati
+anche nei tuoi template.
 
 ## `<x-lingua::editor>`
 
-Un componente editor polimorfico che renderizza un `<textarea>`, un editor HTML TipTap o un editor Markdown TipTap in base alla prop `type`.
+Un componente editor polimorfico che renderizza un `<textarea>`, un editor
+HTML TipTap o un editor Markdown TipTap in base alla prop `type`.
 
 ```blade
 {{-- Testo semplice --}}
@@ -38,13 +41,40 @@ Un componente editor polimorfico che renderizza un `<textarea>`, un editor HTML 
 | `label` | string | `''` | Etichetta opzionale sopra il campo |
 | `placeholder` | string | `''` | Testo segnaposto |
 | `required` | bool | `false` | Mostra un badge richiesto |
-| `wire:model` | - | - | Collegamento al modello Livewire |
+| `wire:model` | — | — | Collegamento al modello Livewire |
+
+---
+
+## `<x-lingua::select>`
+
+<Badge type="tip" text="Novità in 2.0" /> Dropdown personalizzato Alpine +
+Tailwind costruito sulla **Popover API nativa** (`popover="manual"` +
+`showPopover()` / `hidePopover()`). Funziona correttamente anche quando è
+annidato all'interno di modali o dialog Flux (che applicano `overflow` e
+`transform` al loro container).
+
+```blade
+<x-lingua::select
+    wire:model="selectedLocale"
+    :options="$localeOptions"
+    placeholder="Seleziona una lingua…"
+/>
+```
+
+### Props
+
+| Prop | Tipo | Default | Descrizione |
+|---|---|---|---|
+| `wire:model` | — | — | Collegamento al modello Livewire |
+| `options` | array | `[]` | Array di `['value' => …, 'label' => …]` |
+| `placeholder` | string | `''` | Testo da mostrare quando non è selezionato nulla |
 
 ---
 
 ## `<x-lingua::clipboard>`
 
-Un wrapper che aggiunge un pulsante copia-negli-appunti attorno al contenuto del suo slot.
+Un wrapper che aggiunge un pulsante copia-negli-appunti attorno al contenuto
+del suo slot.
 
 ```blade
 <x-lingua::clipboard text-to-copy="auth.failed">
@@ -52,7 +82,8 @@ Un wrapper che aggiunge un pulsante copia-negli-appunti attorno al contenuto del
 </x-lingua::clipboard>
 ```
 
-Cliccando il componente si copia `text-to-copy` negli appunti e viene brevemente mostrato un segno di spunta.
+Cliccando si copia `text-to-copy` negli appunti e viene brevemente mostrato
+un segno di spunta.
 
 ### Props
 
@@ -83,13 +114,16 @@ Renderizza un'icona bandiera e il nome della lingua per una data locale.
 | `code` | string | Codice locale per la ricerca della bandiera |
 | `description` | string | Nome nativo della lingua (sottotitolo) |
 
-Usa `outhebox/blade-flags` per gli SVG delle bandiere. Se non è disponibile alcuna bandiera per il codice, fa il fallback in modo sicuro al testo del codice.
+Usa `outhebox/blade-flags` per gli SVG delle bandiere. Se non è disponibile
+alcuna bandiera per il codice, fa il fallback in modo sicuro al testo del
+codice.
 
 ---
 
 ## `<x-lingua::message>`
 
-Un componente di messaggio transitorio che appare per una breve durata dopo un evento Livewire.
+Un componente di messaggio transitorio che appare per una breve durata dopo
+un evento Livewire.
 
 ```blade
 <x-lingua::message on="translation_saved" :delay="2000">
@@ -101,14 +135,15 @@ Un componente di messaggio transitorio che appare per una breve durata dopo un e
 
 | Prop | Tipo | Default | Descrizione |
 |---|---|---|---|
-| `on` | string | - | Nome dell'evento Livewire da ascoltare |
+| `on` | string | — | Nome dell'evento Livewire da ascoltare |
 | `delay` | int | `1500` | Durata in millisecondi prima di nascondersi |
 
 ---
 
 ## `<x-lingua::autocomplete>`
 
-Un componente di input di testo con autocompletamento usato nel form di creazione delle traduzioni.
+Un componente di input di testo con autocompletamento usato nel form di
+creazione delle traduzioni.
 
 ```blade
 <x-lingua::autocomplete
@@ -122,27 +157,25 @@ Un componente di input di testo con autocompletamento usato nel form di creazion
 
 | Prop | Tipo | Descrizione |
 |---|---|---|
-| `wire:model` | - | Collegamento al modello Livewire |
+| `wire:model` | — | Collegamento al modello Livewire |
 | `suggestions` | array | Array di suggerimenti per l'autocompletamento |
 | `placeholder` | string | Segnaposto dell'input |
 
 ---
 
-## `<x-lingua::menu-group>`
+## `<x-lingua::nav>`
 
-Un componente gruppo di navigazione per i menu della sidebar.
+<Badge type="tip" text="Novità in 2.0" /> Componente di navigazione condivisa
+usato su tutte e cinque le pagine admin di Lingua. La pagina corrente è
+evidenziata automaticamente tramite un confronto del prefisso della route.
 
 ```blade
-<x-lingua::menu-group heading="Languages">
-    {{-- slot degli elementi del menu --}}
-</x-lingua::menu-group>
+<x-lingua::nav />
 ```
 
-### Props
-
-| Prop | Tipo | Descrizione |
-|---|---|---|
-| `heading` | string | Testo dell'intestazione del gruppo |
+Non richiede props — il menu di navigazione viene controllato dal toggle
+`nav.enabled` in `config/lingua.php` / tabella `lingua_settings`. Vedi
+[Impostazioni](/it/features/settings#menu-di-navigazione).
 
 ---
 
@@ -154,4 +187,6 @@ Pubblica tutte le viste dei componenti per sovrascriverle:
 php artisan vendor:publish --tag="lingua-views"
 ```
 
-Le viste pubblicate si trovano in `resources/views/vendor/lingua/components/`. Laravel usa automaticamente la tua versione pubblicata.
+Le viste pubblicate si trovano in
+`resources/views/vendor/lingua/components/`. Laravel usa automaticamente la
+tua versione pubblicata al posto di quella predefinita del pacchetto.

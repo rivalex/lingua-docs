@@ -1,185 +1,150 @@
 # أوامر Artisan
 
-تشحن Lingua بستة أوامر Artisan لإدارة اللغات والترجمات من الطرفية.
+يشحن Lingua بـ **8 أوامر** Artisan لإدارة اللغات والترجمات والمحركات.
 
-## إدارة اللغات
+## مرجع سريع
 
-### `lingua:add {locale}`
-
-يثبّت لغة جديدة - يُنزِّل الملفات، ينشئ سجل قاعدة البيانات، يزامن الترجمات.
-
-```bash
-php artisan lingua:add it
-php artisan lingua:add pt_BR
-php artisan lingua:add ar
-```
-
-**ما يفعله:**
-1. يجلب بيانات اللغة من `laravel-lang/locales`
-2. يشغِّل `lang:add {locale}` لتثبيت ملفات اللغة
-3. ينشئ سجل `Language` في قاعدة البيانات
-4. يشغِّل `lingua:sync-to-database` لاستيراد النصوص الجديدة
-
-**الناتج:**
-```
-Adding language: it...
-Installing language files via Laravel Lang...
-Creating language record in database...
-Syncing translations to database...
-Language 'it' added successfully.
-```
-
-::: tip
-بعد إضافة لغة، زر `/lingua/translations/it` لمعرفة النصوص التي لا تزال تحتاج إلى ترجمة.
-:::
+| الأمر | الوصف |
+|---|---|
+| `lingua:install` | معالج الإعداد التفاعلي (مرة واحدة) |
+| `lingua:storage {driver}` | تبديل محرك التخزين (`database`/`file`) |
+| `lingua:add {locale}` | تثبيت لغة (بيانات + قاعدة بيانات + بذر) |
+| `lingua:remove {locale}` | إزالة لغة (بيانات + قاعدة بيانات) |
+| `lingua:update-lang` | تحديث الترجمات المدمجة |
+| `lingua:sync-to-database` | استيراد ملفات `lang/` → قاعدة البيانات |
+| `lingua:sync-to-local` | تصدير قاعدة البيانات → ملفات `lang/` |
+| `lingua:uninstall` | إزالة Lingua بشكل آمن |
 
 ---
 
-### `lingua:remove {locale}`
-
-يزيل لغة - يحذف الملفات، ينظف قاعدة البيانات، يُعيد ترتيب اللغات المتبقية.
-
-```bash
-php artisan lingua:remove fr
-```
-
-**ما يفعله:**
-1. يتحقق من أن اللغة ليست الافتراضية (يتوقف بخطأ إذا كانت كذلك)
-2. يشغِّل `lang:rm {locale} --force` لإزالة ملفات اللغة
-3. يزيل جميع قيم `{locale}` من `language_lines.text`
-4. يحذف سجل `Language`
-5. يُعيد ترتيب قيم الفرز للغات المتبقية
-6. يشغِّل `lingua:sync-to-database`
-
-::: warning حماية اللغة الافتراضية
-لا يمكنك إزالة اللغة الافتراضية. عيِّن لغة أخرى كافتراضية أولًا:
-```bash
-php artisan lingua:add fr       # add the new default
-# then via the UI: set French as default
-php artisan lingua:remove en    # now safe to remove English
-```
-:::
-
----
-
-### `lingua:update-lang`
-
-يُحدِّث جميع ملفات اللغة المثبتة عبر Laravel Lang، ثم يُعيد المزامنة مع قاعدة البيانات.
-
-```bash
-php artisan lingua:update-lang
-```
-
-شغِّله بعد:
-- ترقية Laravel (رسائل التحقق الجديدة، إلخ)
-- تثبيت حزمة جديدة تشحن بترجمات
-- تحديث حزم `laravel-lang/*`
-
----
-
-## مزامنة الترجمات
-
-### `lingua:sync-to-database`
-
-يستورد جميع ملفات ترجمة PHP/JSON المحلية إلى جدول `language_lines`.
-
-```bash
-php artisan lingua:sync-to-database
-```
-
-**ما يُستورد:**
-- `lang/{locale}/*.php` - ملفات PHP
-- `lang/{locale}.json` - ملفات JSON
-- `lang/vendor/{package}/{locale}/*.php` - ملفات حزم الطرف الثالث
-
-يستخدم `updateOrCreate` مع تطابق `group + key`، لذا تُحافظ التعديلات الموجودة من الواجهة.
-
-**حالات الاستخدام النموذجية:**
-```bash
-# After a fresh clone - populate the DB from committed lang files
-php artisan lingua:sync-to-database
-
-# After lang:update - import new strings
-php artisan lingua:sync-to-database
-
-# In a deployment script
-php artisan migrate
-php artisan lingua:sync-to-database
-php artisan optimize
-```
-
----
-
-### `lingua:sync-to-local`
-
-يُصدِّر جميع ترجمات قاعدة البيانات مرة أخرى إلى ملفات PHP/JSON المحلية.
-
-```bash
-php artisan lingua:sync-to-local
-```
-
-**ما يُصدَّر:**
-- ترجمات قاعدة البيانات → `lang/{locale}/{group}.php`
-- مجموعة JSON (`single`) → `lang/{locale}.json`
-- ترجمات الحزم الخارجية → `lang/vendor/{vendor}/{locale}/{group}.php`
-
-**حالات الاستخدام النموذجية:**
-```bash
-# Before committing - export DB state to files for version control
-php artisan lingua:sync-to-local
-git add lang/
-git commit -m "chore: sync translations"
-
-# Before deploying to a server that reads from files
-php artisan lingua:sync-to-local
-```
-
----
-
-### `lingua:install`
-
-معالج الإعداد التفاعلي لأول مرة. يُشغَّل مرة واحدة بعد `composer require`.
+## `lingua:install`
 
 ```bash
 php artisan lingua:install
 ```
 
-غير مُعَدّ لإعادة التشغيل بعد الإعداد الأولي. إذا كنت بحاجة إلى إعادة نشر أصول فردية، استخدم وسوم `vendor:publish` بدلًا من ذلك.
+معالج الإعداد التفاعلي لمرة واحدة بعد `composer require`. يقوم بـ:
+
+1. عرض محدد محرك التخزين بمفاتيح الأسهم
+2. نشر الإعداد والهجرات **الواعية بالمحرك**
+3. تشغيل الهجرات (اختياري)
+4. بذر اللغة الافتراضية وترجماتها من المجموعة المدمجة
+5. خيار تمييز بنجمة على GitHub
 
 ---
 
-## مرجع سريع للأوامر
+## `lingua:storage {driver}`
 
-<div class="command-table">
+```bash
+php artisan lingua:storage database
+php artisan lingua:storage file
+```
 
-| الأمر | الوصف |
-|---|---|
-| `lingua:add {locale}` | تثبيت لغة (ملفات + قاعدة البيانات + مزامنة) |
-| `lingua:remove {locale}` | إزالة لغة (ملفات + قاعدة البيانات + مزامنة) |
-| `lingua:update-lang` | تحديث ملفات اللغة عبر Laravel Lang + مزامنة |
-| `lingua:sync-to-database` | استيراد الملفات المحلية → قاعدة البيانات |
-| `lingua:sync-to-local` | تصدير قاعدة البيانات → الملفات المحلية |
-| `lingua:install` | معالج الإعداد التفاعلي لأول مرة |
+يبدِّل محرك التخزين النشط. يُحدِّث `.env` ويُرشدك عبر
+خطوات الهجرة/المزامنة. غير مدمِّر في كلا الاتجاهين.
 
-</div>
+---
+
+## `lingua:add {locale}`
+
+```bash
+php artisan lingua:add fr
+php artisan lingua:add pt_BR ar zh
+```
+
+يثبّت لغة جديدة:
+
+1. يبحث عن اللغة في سجل Lingua المدمج (129+ لغة)
+2. ينشئ سجل `Language` في قاعدة البيانات
+3. يبذر ترجماتها من مجموعة البيانات المدمجة — **بدون تنزيلات**
+4. يُحدِّث ترتيب الفرز
+
+**لا يستدعي `lang:add` بعد الآن.** أصيل لقاعدة البيانات — لا كتابة إلى ملفات `lang/`.
+
+---
+
+## `lingua:remove {locale}`
+
+```bash
+php artisan lingua:remove fr
+```
+
+يزيل لغة بشكل كامل:
+
+1. يتحقق من أن اللغة ليست الافتراضية
+2. يزيل جميع قيم `{locale}` من `language_lines.text`
+3. يحذف سجل `Language`
+4. يُعيد ترتيب الفرز
+
+::: warning حماية اللغة الافتراضية
+لا يمكن إزالة اللغة الافتراضية. عيِّن لغة أخرى كافتراضية أولاً.
+:::
+
+---
+
+## `lingua:update-lang`
+
+```bash
+php artisan lingua:update-lang
+```
+
+يُحدِّث **الترجمات المدمجة فقط** (مجموعات `auth`، `validation`، إلخ)
+من مجموعة البيانات الداخلية لـ Lingua. لا يلمس ترجماتك المخصصة.
+
+شغِّله بعد:
+- ترقية Laravel (رسائل تحقق جديدة)
+- إضافة حزمة تشحن بترجمات
+
+---
+
+## `lingua:sync-to-database`
+
+```bash
+php artisan lingua:sync-to-database
+```
+
+يستورد جميع ملفات `lang/` إلى `language_lines` باستخدام `updateOrCreate`.
+التعديلات الموجودة في الواجهة تُحافظ عليها.
+
+```bash
+# After a fresh clone
+php artisan migrate && php artisan lingua:sync-to-database
+
+# In CI/CD deploy script
+php artisan lingua:sync-to-database
+```
+
+---
+
+## `lingua:sync-to-local`
+
+```bash
+php artisan lingua:sync-to-local
+```
+
+يُصدِّر جميع ترجمات قاعدة البيانات إلى ملفات PHP/JSON في `lang/`.
+
+```bash
+# Before committing
+php artisan lingua:sync-to-local && git add lang/ && git commit -m "sync translations"
+```
+
+---
+
+## `lingua:uninstall`
+
+```bash
+php artisan lingua:uninstall
+```
+
+يرشدك عبر الإزالة الآمنة خطوةً بخطوة. لا ينفِّذ أي إجراء
+مدمِّر بدون تأكيدك الصريح.
 
 ---
 
 ## نصائح
 
-::: tip أتمتة المزامنة في CI/CD
-أضف المزامنة إلى خط النشر للحفاظ على تزامن قاعدة البيانات مع مستودعك:
-
-```yaml
-# GitHub Actions deploy step (example)
-- name: Sync translations
-  run: php artisan lingua:sync-to-database
-```
-:::
-
-::: tip إضافة لغات متعددة دفعة واحدة
-لا يوجد أمر إضافة جماعية، لكن يمكنك تسلسل الاستدعاءات في حلقة shell:
-
+::: tip إضافة لغات متعددة
 ```bash
 for locale in fr it de es pt_BR; do
   php artisan lingua:add $locale
@@ -187,11 +152,9 @@ done
 ```
 :::
 
-::: tip التحقق مما سيُزامَن
-قبل تشغيل `lingua:sync-to-database`، يمكنك معاينة عدد الملفات واللغات التي ستُعالَج بفحص `lang/`:
-
-```bash
-ls lang/
-# en  fr  it  vendor
+::: tip أتمتة في CI/CD
+```yaml
+- name: Sync translations
+  run: php artisan lingua:sync-to-database
 ```
 :::

@@ -1,50 +1,74 @@
 # Settings
 
-The Settings page lets you configure Lingua's UI behaviour from the browser — no config file edits or redeployment needed.
-
-Navigate to `/lingua/settings` or link from your admin panel:
+The Settings page (`/lingua/settings`) lets you configure Lingua's UI behaviour from the browser — no config edits or redeployment needed.
 
 ```blade
 <a href="{{ route('lingua.settings') }}">Lingua Settings</a>
 ```
 
-<Screenshot src="/screenshots/settings-page.png" alt="Lingua Settings page" caption="The settings page with selector mode and flag icon controls." />
+<Screenshot src="/screenshots/settings-page.png" alt="Lingua Settings page" caption="Selector mode, flag icons, navigation, and storage driver controls." />
 
 ## How settings work
 
-Settings are stored in the `lingua_settings` database table as typed key/value pairs. On each request, Lingua reads from the database first, then falls back to `config/lingua.php`, then to hardcoded defaults.
+Settings are stored in the `lingua_settings` table as typed key/value pairs. On each request, Lingua reads the database first, then falls back to `config/lingua.php`, then to package defaults.
 
 **Priority chain:**
 1. `lingua_settings` DB table (highest — set via this UI)
 2. `config/lingua.php` (your published config)
 3. Package defaults (lowest)
 
-This means you can keep your `config/lingua.php` as the baseline and override specific settings per environment via the UI without touching files.
+Keep `config/lingua.php` as your baseline and override per environment from the UI without touching files.
 
 ## Selector mode
 
-Controls how the `<livewire:lingua::language-selector />` component renders for your end users.
+Controls how `<livewire:lingua::language-selector />` renders for end users.
 
 | Mode | Description |
 |---|---|
-| `sidebar` | Renders as a grouped navigation section (default) |
-| `modal` | Renders as a button that opens a full language picker modal |
-| `dropdown` | Renders as a compact dropdown button |
-| `headless` | No built-in rendering — you implement the UI yourself |
+| `sidebar` | Grouped navigation section (default) |
+| `dropdown` | Compact dropdown button |
+| `modal` | Button that opens a full language picker |
+| `headless` | No built-in rendering — you implement the UI |
 
 ::: tip Headless mode
-When set to `headless`, the built-in selector renders nothing. Use `<livewire:lingua::headless-language-selector />` instead to build a fully custom switcher. See [Headless Selector](./language-selector#headless-mode) for full documentation.
+When set to `headless`, the built-in selector renders nothing. Use `<livewire:lingua::headless-language-selector />` instead. See [Headless Selector](/en/features/language-selector#headless-mode).
 :::
 
 ## Show flag icons
 
-Toggle the display of country flag icons next to language names in the selector. When disabled, only the language name is shown.
+Toggle country flag icons next to language names in the selector. Flags are matched to the language's `regional` code (e.g. `en_US` → 🇺🇸), falling back gracefully when absent.
 
-Flag icons are matched to the language's `regional` code (e.g. `en_US` → 🇺🇸). If no regional code is set, the flag falls back gracefully.
+## Navigation menu <Badge type="tip" text="New in 2.0" />
+
+The **Show navigation menu** toggle (under **Routing & Navigation**) controls the shared `x-lingua::nav` menu that renders on all five Lingua pages — Languages, Translations, Statistics, Transfer, and Settings — with active-page highlighting.
+
+<Screenshot src="/screenshots/settings-nav-toggle.png" alt="Navigation toggle in settings" caption="Toggle the shared navigation menu on or off." />
+
+The equivalent config default:
+
+```php
+// config/lingua.php
+'nav' => [
+    'enabled' => true,
+],
+```
+
+## Storage driver <Badge type="tip" text="New in 2.0" />
+
+The page displays the active [storage driver](/en/guide/storage) — `database` or `file` — as **read-only** information.
+
+::: warning Change the driver from the CLI
+The driver is not switchable from the UI because it changes how runtime lookups resolve. Use the Artisan command instead:
+
+```bash
+php artisan lingua:storage file
+php artisan lingua:storage database
+```
+:::
 
 ## Programmatic access
 
-You can read and write settings in PHP using the `LinguaSetting` model:
+Read and write settings via the `LinguaSetting` model:
 
 ```php
 use Rivalex\Lingua\Models\LinguaSetting;
@@ -55,23 +79,16 @@ $mode = LinguaSetting::get(
     config('lingua.selector.mode', 'sidebar')
 );
 
-$showFlags = LinguaSetting::get(
-    LinguaSetting::KEY_SHOW_FLAGS,
-    config('lingua.selector.show_flags', true)
-);
-
 // Write
 LinguaSetting::set(LinguaSetting::KEY_SELECTOR_MODE, 'modal');
 LinguaSetting::set(LinguaSetting::KEY_SHOW_FLAGS, false);
+LinguaSetting::set(LinguaSetting::KEY_NAV_ENABLED, true);
 ```
 
-Available constants:
+Common constants:
 
 | Constant | Key | Type |
 |---|---|---|
 | `LinguaSetting::KEY_SELECTOR_MODE` | `selector.mode` | `string` |
 | `LinguaSetting::KEY_SHOW_FLAGS` | `selector.show_flags` | `bool` |
-
-::: warning Migration required
-The `lingua_settings` table is created by the `create_lingua_settings_table` migration. If you upgraded from 1.0.x, run `php artisan migrate` to create it.
-:::
+| `LinguaSetting::KEY_NAV_ENABLED` | `nav.enabled` | `bool` |

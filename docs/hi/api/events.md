@@ -1,6 +1,6 @@
 # Livewire Events
 
-Lingua के Livewire components named events के माध्यम से communicate करते हैं। आप इन events को अपने Livewire components, Alpine.js code, या JavaScript में सुन सकते हैं।
+Lingua के Livewire components named events के माध्यम से communicate करते हैं। इन events को अपने Livewire components, Alpine.js code, या JavaScript में सुन सकते हैं।
 
 ## Livewire में सुनना
 
@@ -12,7 +12,7 @@ class MyComponent extends Component
     #[On('language_added')]
     public function handleLanguageAdded(): void
     {
-        // नई भाषा जोड़ने पर कुछ refresh करें
+        // नई भाषा जोड़ने पर refresh करें
     }
 }
 ```
@@ -24,7 +24,7 @@ window.addEventListener('language_added', (event) => {
     console.log('A new language was added!', event.detail);
 });
 
-// या Livewire के event system के माध्यम से:
+// Livewire के event system के माध्यम से:
 Livewire.on('language_added', () => {
     // ...
 });
@@ -32,17 +32,24 @@ Livewire.on('language_added', () => {
 
 ---
 
-## Language events
+## Language Events
 
 | Event | कब dispatch होता है |
 |---|---|
 | `language_added` | नई भाषा सफलतापूर्वक जोड़ी गई |
 | `language_added_fail` | भाषा जोड़ना failed |
-| `refreshLanguages` | कोई भी language change जिसके लिए language list को re-render करना हो |
+| `refreshLanguages` | Language list re-render आवश्यक |
 | `language_default_set` | Default भाषा बदली गई |
 | `language_default_fail` | Default भाषा सेट करना failed |
-| `languages_sorted` | Drag-and-drop के माध्यम से भाषाएँ reorder की गईं |
+| `languages_sorted` | Drag-and-drop से भाषाएं reorder हुईं |
 | `languages_sorted_fail` | Language reordering failed |
+
+---
+
+## DB Sync Events
+
+| Event | कब dispatch होता है |
+|---|---|
 | `lang_updated` | `lingua:update-lang` सफलतापूर्वक completed |
 | `lang_updated_fail` | `lingua:update-lang` failed |
 | `synced_database` | Sync-to-database सफलतापूर्वक completed |
@@ -52,32 +59,54 @@ Livewire.on('language_added', () => {
 
 ---
 
-## Translation events
+## Translation Events
 
 | Event | कब dispatch होता है |
 |---|---|
-| `translation_deleted` | Translation record पूरी तरह delete किया गया |
+| `translation_deleted` | Translation record पूरी तरह delete हुआ |
 | `translation_delete_fail` | Translation delete करना failed |
-| `translation_locale_deleted` | Translation से किसी single locale की value remove की गई |
+| `translation_locale_deleted` | Translation से single locale की value remove हुई |
 | `translation_locale_delete_fail` | Locale value remove करना failed |
 | `vendor_translation_protected` | Vendor translation delete करने का प्रयास किया गया |
-| `refreshTranslationsTableDefaults` | Translations table को अपना default-locale column reload करना चाहिए |
-| `refreshTranslationRow.{id}` | एक specific translation row को refresh करना चाहिए (translation ID द्वारा parameterised) |
-| `updateTranslationModal.{id}` | Translation के लिए update modal को refresh करना चाहिए |
+| `refreshTranslationsTableDefaults` | Translations table को default-locale column reload करना चाहिए |
+| `refreshTranslationRow.{id}` | Specific translation row refresh करनी चाहिए (ID parameterised) |
+| `updateTranslationModal.{id}` | Translation के लिए update modal refresh करनी चाहिए |
 
 ---
 
-## UI refresh events
+## Settings Events
 
 | Event | कब dispatch होता है |
 |---|---|
-| `refreshLanguageRows` | सभी language rows को re-render करना चाहिए (उदाहरण: default change के बाद) |
+| `settings_saved` | Settings सफलतापूर्वक save हुई |
+| `settings_save_fail` | Settings save करना failed |
+| `settings_reset` | Settings defaults पर reset हुई |
 
 ---
 
-## उदाहरण: भाषा जोड़ने पर toast दिखाएँ
+## Transfer Events
 
-Alpine.js और एक toast library का उपयोग करके:
+| Event | कब dispatch होता है |
+|---|---|
+| `export_completed` | Export file generate हो गई |
+| `export_failed` | Export generation failed |
+| `import_diff_ready` | Dry-run diff calculate हो गया, preview ready |
+| `import_applied` | Import commit सफलतापूर्वक apply हुआ |
+| `import_failed` | Import apply करना failed |
+
+---
+
+## UI Refresh Events
+
+| Event | कब dispatch होता है |
+|---|---|
+| `refreshLanguageRows` | सभी language rows re-render करनी चाहिए (उदाहरण: default change के बाद) |
+
+---
+
+## उदाहरण: भाषा जोड़ने पर toast दिखाएं
+
+Alpine.js और एक toast library के साथ:
 
 ```blade
 <div
@@ -90,8 +119,6 @@ Alpine.js और एक toast library का उपयोग करके:
 
 ## उदाहरण: Locale change के बाद redirect करें
 
-यदि आप language selector के locale switch करने के बाद (वर्तमान पेज के बजाय) किसी अलग URL पर redirect करना चाहते हैं:
-
 ```php
 // LanguageSelector publish करें और changeLocale() override करें:
 public function changeLocale($locale): void
@@ -99,6 +126,6 @@ public function changeLocale($locale): void
     if (! Lingua::hasLocale($locale)) return;
     Session::put(config('lingua.session_variable'), $locale);
     app()->setLocale($locale);
-    $this->redirect(route('home'), navigate: true); // home पर redirect करें
+    $this->redirect(route('home'), navigate: true);
 }
 ```

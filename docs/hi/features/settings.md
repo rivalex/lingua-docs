@@ -1,77 +1,60 @@
-# सेटिंग्स
+# Settings
 
-सेटिंग्स पृष्ठ आपको ब्राउज़र से Lingua का UI व्यवहार कॉन्फ़िगर करने देता है — कोई config file संपादन या redeployment की आवश्यकता नहीं।
+Settings पेज (`/lingua/settings`) Lingua का UI व्यवहार browser से configure करने देता है — config file संपादन या redeployment की आवश्यकता नहीं।
 
-`/lingua/settings` पर जाएं या अपने admin panel से लिंक करें:
+## Priority Chain
 
-```blade
-<a href="{{ route('lingua.settings') }}">Lingua सेटिंग्स</a>
-```
+Settings तीन layers से आती हैं (highest priority पहले):
 
-<Screenshot src="/screenshots/settings-page.png" alt="Lingua सेटिंग्स पृष्ठ" caption="Selector mode और flag icon controls के साथ सेटिंग्स पृष्ठ।" />
+1. **Database** (`lingua_settings` टेबल) — Settings UI से
+2. **Config file** (`config/lingua.php`) — `vendor:publish` के बाद
+3. **Package defaults** — built-in fallback
 
-## सेटिंग्स कैसे काम करती हैं
+## Selector Mode
 
-सेटिंग्स `lingua_settings` डेटाबेस तालिका में टाइप किए गए key/value pairs के रूप में संग्रहीत होती हैं। प्रत्येक request पर, Lingua पहले डेटाबेस से पढ़ता है, फिर `config/lingua.php` पर वापस आता है, फिर hardcoded defaults पर।
-
-**प्राथमिकता chain:**
-1. `lingua_settings` DB तालिका (सर्वोच्च — इस UI के माध्यम से सेट)
-2. `config/lingua.php` (आपका published config)
-3. Package defaults (न्यूनतम)
-
-इसका मतलब है कि आप अपने `config/lingua.php` को baseline के रूप में रख सकते हैं और files को छुए बिना UI के माध्यम से प्रति environment विशिष्ट सेटिंग्स override कर सकते हैं।
-
-## Selector mode
-
-नियंत्रित करता है कि `<livewire:lingua::language-selector />` component आपके अंतिम उपयोगकर्ताओं के लिए कैसे render होता है।
+Language selector का display mode बदलें:
 
 | Mode | विवरण |
 |---|---|
-| `sidebar` | Grouped navigation section के रूप में render करता है (default) |
-| `modal` | एक button के रूप में render करता है जो पूर्ण language picker modal खोलता है |
-| `dropdown` | Compact dropdown button के रूप में render करता है |
-| `headless` | कोई built-in rendering नहीं — आप UI स्वयं implement करते हैं |
+| `sidebar` | Grouped sidebar navigation item |
+| `dropdown` | Compact dropdown button |
+| `modal` | Button जो locale picker modal खोलता है |
+| `headless` | कोई built-in rendering नहीं |
 
-::: tip Headless mode
-जब `headless` पर सेट किया जाता है, तो built-in selector कुछ भी render नहीं करता। इसके बजाय पूरी तरह custom switcher बनाने के लिए `<livewire:lingua::headless-language-selector />` का उपयोग करें। पूर्ण दस्तावेज़ीकरण के लिए [Headless Selector](./language-selector#headless-मोड) देखें।
-:::
+## Flags दिखाएं
 
-## Flag icons दिखाएं
+Language names के बगल में country flag icons toggle करें।
 
-Selector में भाषा नामों के बगल में देश के flag icons का प्रदर्शन टॉगल करें। जब अक्षम होता है, केवल भाषा का नाम दिखाया जाता है।
+## Navigation Menu <Badge type="tip" text="2.0 में नया" />
 
-Flag icons भाषा के `regional` code से मेल खाते हैं (जैसे `en_US` → 🇺🇸)। यदि कोई regional code सेट नहीं है, तो flag gracefully वापस आता है।
+**Navigation Menu Enabled** toggle shared `x-lingua::nav` menu को enable/disable करता है जो सभी पाँच Lingua pages पर दिखता है।
 
-## Programmatic access
+यही toggle `config/lingua.php` में `nav.enabled` को correspond करता है।
 
-आप `LinguaSetting` model का उपयोग करके PHP में सेटिंग्स पढ़ और लिख सकते हैं:
+## Storage Driver (Read-only)
+
+Settings पेज active storage driver (`database` या `file`) दिखाता है — read-only। Driver बदलने के लिए `lingua:storage` command use करें। देखें [Storage Drivers](/hi/guide/storage)।
+
+## Programmatic Access
+
+Settings को PHP में access करें:
 
 ```php
 use Rivalex\Lingua\Models\LinguaSetting;
 
-// config() fallback के साथ पढ़ें
-$mode = LinguaSetting::get(
-    LinguaSetting::KEY_SELECTOR_MODE,
-    config('lingua.selector.mode', 'sidebar')
-);
+// एक setting पढ़ें
+$mode = LinguaSetting::get('selector_mode', 'sidebar');
 
-$showFlags = LinguaSetting::get(
-    LinguaSetting::KEY_SHOW_FLAGS,
-    config('lingua.selector.show_flags', true)
-);
+// एक setting set करें
+LinguaSetting::set('selector_mode', 'dropdown');
 
-// लिखें
-LinguaSetting::set(LinguaSetting::KEY_SELECTOR_MODE, 'modal');
-LinguaSetting::set(LinguaSetting::KEY_SHOW_FLAGS, false);
+// Facade के माध्यम से
+use Rivalex\Lingua\Facades\Lingua;
+
+$mode = Lingua::getSetting('selector_mode');
+Lingua::setSetting('selector_mode', 'modal');
 ```
 
-उपलब्ध constants:
+## Settings Reset
 
-| Constant | Key | Type |
-|---|---|---|
-| `LinguaSetting::KEY_SELECTOR_MODE` | `selector.mode` | `string` |
-| `LinguaSetting::KEY_SHOW_FLAGS` | `selector.show_flags` | `bool` |
-
-::: warning Migration आवश्यक
-`lingua_settings` तालिका `create_lingua_settings_table` migration द्वारा बनाई जाती है। यदि आपने 1.0.x से upgrade किया है, तो इसे बनाने के लिए `php artisan migrate` चलाएं।
-:::
+Settings पेज पर **Reset to Defaults** button सभी `lingua_settings` records delete करता है — config file और package defaults फिर से active होते हैं।

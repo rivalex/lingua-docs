@@ -38,13 +38,19 @@ Livewire.on('language_added', () => {
 |---|---|
 | `language_added` | A new language was successfully added |
 | `language_added_fail` | Adding a language failed |
-| `refreshLanguages` | Any language change that requires the language list to re-render |
 | `language_default_set` | The default language was changed |
-| `language_default_fail` | Setting the default language failed |
+| `language_default_set_fail` | Setting the default language failed |
 | `languages_sorted` | Languages were reordered via drag-and-drop |
 | `languages_sorted_fail` | Language reordering failed |
 | `lang_updated` | `lingua:update-lang` completed successfully |
 | `lang_updated_fail` | `lingua:update-lang` failed |
+
+---
+
+## Database sync events
+
+| Event | Dispatched when |
+|---|---|
 | `synced_database` | Sync-to-database completed successfully |
 | `synced_database_fail` | Sync-to-database failed |
 | `synced_local` | Sync-to-local completed successfully |
@@ -56,49 +62,56 @@ Livewire.on('language_added', () => {
 
 | Event | Dispatched when |
 |---|---|
+| `translation_added` | A new translation key was created |
+| `translation_add_fail` | Creating a translation failed |
+| `translation_updated` | A translation value was saved |
+| `translation_update_fail` | Saving a translation failed |
 | `translation_deleted` | A translation record was fully deleted |
 | `translation_delete_fail` | Deleting a translation failed |
 | `translation_locale_deleted` | A single locale's value was removed from a translation |
 | `translation_locale_delete_fail` | Removing a locale value failed |
-| `vendor_translation_protected` | An attempt was made to delete a vendor translation |
-| `refreshTranslationsTableDefaults` | The translations table should reload its default-locale column |
-| `refreshTranslationRow.{id}` | A specific translation row should refresh (parameterised by translation ID) |
-| `updateTranslationModal.{id}` | The update modal for a translation should refresh |
+| `vendor_translation_protected` <Badge type="tip" text="New in 2.0" /> | A `forgetTranslation()` call was blocked because the line is a protected vendor translation |
+
+::: tip Surfacing vendor protection to users
+`vendor_translation_protected` is dispatched whenever a delete is blocked for a vendor line. Listen for it to show the user a clear "this string is managed by a package and can't be deleted" message instead of a silent no-op.
+:::
+
+---
+
+## Settings events
+
+| Event | Dispatched when |
+|---|---|
+| `settings-saved` | The Settings page persisted its changes |
+
+---
+
+## Transfer events <Badge type="tip" text="New in 2.0" />
+
+The Transfer (import/export) page performs its work **synchronously** within the request — there are no asynchronous job-completion events to listen for. Import results (the dry-run diff and the commit outcome) are returned directly to the component state and rendered in the UI.
 
 ---
 
 ## UI refresh events
 
+These are used internally to coordinate re-renders. They are parameterised by translation ID where noted.
+
 | Event | Dispatched when |
 |---|---|
-| `refreshLanguageRows` | All language rows should re-render (e.g. after a default change) |
+| `refreshTranslationRow.{id}` | A specific translation row should refresh |
+| `updateTranslationModal.{id}` | The update modal for a translation should refresh |
+| `__close-others` | Open inline editors elsewhere should close |
+| `change` / `close` | Select / popover lifecycle signals |
 
 ---
 
 ## Example: Show a toast when a language is added
-
-Using Alpine.js and a toast library:
 
 ```blade
 <div
     x-data="{ show: false, message: '' }"
     x-on:language_added.window="message = 'Language added!'; show = true; setTimeout(() => show = false, 3000)"
 >
-    <div x-show="show" class="toast">{{ message }}</div>
+    <div x-show="show" class="toast" x-text="message"></div>
 </div>
-```
-
-## Example: Redirect after locale change
-
-If you want to redirect to a different URL after the language selector switches locale (instead of the current page):
-
-```php
-// Publish LanguageSelector and override changeLocale():
-public function changeLocale($locale): void
-{
-    if (! Lingua::hasLocale($locale)) return;
-    Session::put(config('lingua.session_variable'), $locale);
-    app()->setLocale($locale);
-    $this->redirect(route('home'), navigate: true); // redirect to home
-}
 ```

@@ -1,6 +1,8 @@
 # Editor di testo ricco
 
-Lingua incorpora [TipTap 3](https://tiptap.dev) come editor di testo ricco opzionale per i tipi di traduzione HTML e Markdown. L'editor corretto si attiva automaticamente in base alla colonna `type` della traduzione.
+Lingua incorpora [TipTap 3](https://tiptap.dev) come editor di testo ricco
+opzionale per i tipi di traduzione HTML e Markdown. L'editor corretto si
+attiva automaticamente in base alla colonna `type` della traduzione.
 
 ## Tipi di traduzione
 
@@ -12,7 +14,8 @@ Lingua incorpora [TipTap 3](https://tiptap.dev) come editor di testo ricco opzio
 
 ## Configurare la barra degli strumenti
 
-La barra degli strumenti dell'editor è controllata globalmente tramite `config/lingua.php`:
+La barra degli strumenti dell'editor è controllata globalmente tramite
+`config/lingua.php`:
 
 ```php
 'editor' => [
@@ -27,24 +30,39 @@ La barra degli strumenti dell'editor è controllata globalmente tramite `config/
 ],
 ```
 
-Abilita solo le opzioni di cui il tuo contenuto ha effettivamente bisogno. Mantenere la barra degli strumenti minimale riduce il carico cognitivo per i traduttori.
+Abilita solo le opzioni di cui il tuo contenuto ha effettivamente bisogno.
+Mantenere la barra degli strumenti minimale riduce il carico cognitivo per
+i traduttori.
 
 <Screenshot src="/screenshots/editor-toolbar.png" alt="Barra degli strumenti dell'editor" caption="La barra degli strumenti dell'editor HTML con le opzioni predefinite attive." />
 
 ## Cambiare il tipo di una traduzione
 
-Nella modale di modifica (icona a matita, solo locale predefinita), seleziona il tipo desiderato dal menu a tendina **Tipo**. L'editor si aggiorna immediatamente sulla riga senza ricaricare la pagina.
+Nella modale di modifica (icona a matita, solo locale predefinita), seleziona
+il tipo desiderato dal menu a tendina **Tipo**. L'editor si aggiorna
+immediatamente sulla riga senza ricaricare la pagina.
 
 ::: tip Rilevamento automatico
-Quando esegui per la prima volta `lingua:sync-to-database`, Lingua rileva automaticamente il tipo in base al contenuto. Puoi sovrascriverlo manualmente in qualsiasi momento - il valore memorizzato non cambia quando cambi il tipo, cambia solo il comportamento dell'editor.
+Quando esegui `lingua:sync-to-database`, Lingua rileva automaticamente il tipo
+in base al contenuto. Puoi sovrascriverlo manualmente in qualsiasi momento —
+il valore memorizzato non cambia quando cambi il tipo, cambia solo il
+comportamento dell'editor.
+:::
+
+::: danger Perdita di tipo in modalità file
+Il driver di archiviazione `file` archivia solo stringhe semplici. I tipi
+`html` e `markdown` vengono appiattiti a testo semplice quando si passa alla
+modalità file. Usa il driver database se fai affidamento sui tipi di
+traduzione ricchi. Vedi [Driver di archiviazione](/it/guide/storage).
 :::
 
 ## Lavorare con le traduzioni HTML
 
-Le traduzioni HTML vengono memorizzate come HTML grezzo nella colonna JSON `text`:
+Le traduzioni HTML vengono memorizzate come HTML grezzo nella colonna JSON
+`text`:
 
 ```json
-{"en": "<p>Welcome to <strong>Lingua</strong> - the translation manager for Laravel.</p>"}
+{"en": "<p>Welcome to <strong>Lingua</strong> — the translation manager for Laravel.</p>"}
 ```
 
 Per renderizzarle in Blade senza doppia codifica:
@@ -55,7 +73,11 @@ Per renderizzarle in Blade senza doppia codifica:
 ```
 
 ::: warning XSS
-Usa `{!! !!}` solo per le stringhe di traduzione gestite da utenti autorizzati in un pannello admin controllato. Non renderizzare mai input utente non attendibile come HTML grezzo.
+Usa `{!! !!}` solo per le stringhe di traduzione gestite da utenti
+autorizzati in un pannello admin controllato. Non renderizzare mai input
+utente non attendibile come HTML grezzo. Lingua sanitizza il contenuto HTML
+tramite `HtmlSanitizer` prima dell'archiviazione — vedi
+[Sicurezza](/it/guide/security#protezione-xss).
 :::
 
 ## Lavorare con le traduzioni Markdown
@@ -66,7 +88,7 @@ Le traduzioni Markdown memorizzano Markdown grezzo:
 {"en": "## Welcome!\n\nThank you for choosing **Lingua**.\n\n- Feature one\n- Feature two"}
 ```
 
-Per renderizzare Markdown in Blade, usa un parser Markdown. Laravel include `Str::markdown()`:
+Per renderizzare Markdown in Blade, usa `Str::markdown()` di Laravel:
 
 ```blade
 {!! Str::markdown(__('emails.welcome_body')) !!}
@@ -76,7 +98,8 @@ Oppure usa un pacchetto dedicato come [league/commonmark](https://commonmark.the
 
 ## Il componente `x-lingua::editor`
 
-L'editor è esposto come componente Blade riutilizzabile al di fuori dell'interfaccia di gestione di Lingua:
+L'editor è esposto come componente Blade riutilizzabile al di fuori
+dell'interfaccia di gestione di Lingua:
 
 ```blade
 {{-- Modalità text --}}
@@ -113,5 +136,11 @@ L'editor è esposto come componente Blade riutilizzabile al di fuori dell'interf
 | `required` | bool | Mostra un badge richiesto quando `true` |
 
 ::: tip
-Il componente `x-lingua::editor` è un ottimo punto di partenza per qualsiasi form Livewire che necessita di un campo di testo ricco. Pubblica la vista del componente per personalizzare la barra degli strumenti o lo stile.
+Il componente `x-lingua::editor` è un ottimo punto di partenza per qualsiasi
+form Livewire che necessita di un campo di testo ricco. Pubblica la vista del
+componente per personalizzare la barra degli strumenti o lo stile:
+
+```bash
+php artisan vendor:publish --tag="lingua-views"
+```
 :::

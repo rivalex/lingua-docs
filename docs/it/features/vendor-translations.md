@@ -1,49 +1,89 @@
 # Traduzioni vendor
 
-Le traduzioni vendor sono stringhe appartenenti a pacchetti di terze parti - i messaggi di validazione di Laravel, le etichette di paginazione, le stringhe di reset della password e le traduzioni di qualsiasi altro pacchetto che include la propria directory `lang/`.
+Le **traduzioni vendor** sono stringhe appartenenti a Laravel stesso o ad
+altri pacchetti di terze parti — i messaggi di validazione, le etichette di
+paginazione, le stringhe di reset della password e le traduzioni di qualsiasi
+altro pacchetto che include la propria directory `lang/`.
 
 ## Come vengono identificate
 
-Durante `lingua:sync-to-database`, Lingua analizza la struttura della directory `lang/vendor/`. Qualsiasi file di traduzione trovato lì viene importato con:
+Ogni riga `Translation` ha due colonne correlate al vendor:
 
-- `is_vendor = true`
-- `vendor` = il nome del pacchetto (derivato dal nome della directory, es. `spatie`, `laravel`, `filament`)
+| Colonna | Tipo | Significato |
+|---|---|---|
+| `is_vendor` | boolean | `true` se la riga appartiene a un vendor |
+| `vendor` | string, nullable | Nome del vendor (es. `laravel`, `jetstream`) |
 
-Esempio di righe del database dopo la sincronizzazione:
+Le righe vengono marcate come vendor durante `lingua:sync-to-database`:
+qualsiasi file trovato in `lang/vendor/` o appartenente ai gruppi core
+Laravel (`auth`, `validation`, `passwords`, `pagination`) riceve
+`is_vendor = true`. Le righe aggiunte manualmente tramite l'interfaccia non
+vengono mai marcate come vendor.
 
 ```
-group      | key          | is_vendor | vendor   | text
------------|--------------|-----------|----------|-----------------------------
-validation | required     | false     | null     | {"en":"The :attribute…"}
-passwords  | reset        | true      | laravel  | {"en":"Your password…"}
-auth       | failed       | true      | laravel  | {"en":"These credentials…"}
+group      | key      | is_vendor | vendor  | text
+-----------|----------|-----------|---------|---------------------------
+validation | required | false     | null    | {"en":"The :attribute…"}
+passwords  | reset    | true      | laravel | {"en":"Your password…"}
+auth       | failed   | true      | laravel | {"en":"These credentials…"}
 ```
 
-::: tip
-I file `lang/en/*.php` di Laravel (auth, validation, pagination, passwords) sono trattati come **traduzioni vendor** perché provengono dal framework, non dal codice della tua applicazione.
-:::
+```php
+use Rivalex\Lingua\Models\Translation;
+
+// Tutte le righe vendor
+Translation::where('is_vendor', true)->get();
+
+// Solo righe vendor Laravel
+Translation::where('vendor', 'laravel')->get();
+```
 
 ## Cosa puoi fare con le traduzioni vendor
 
 | Azione | Consentita? | Note |
 |---|---|---|
-| **Modifica valore** | ✅ Sì | Sovrascrivi qualsiasi stringa vendor con il tuo testo |
-| **Cambia tipo** | ✅ Sì | Passa tra text / html / markdown |
-| **Modifica gruppo o chiave** | ❌ No | I campi gruppo e chiave sono bloccati nella modale di modifica |
-| **Elimina** | ❌ No | Protetta da `VendorTranslationProtectedException` |
+| **Modifica valore** | Si | Sovrascrivi qualsiasi stringa vendor con il tuo testo |
+| **Cambia tipo** | Si | Passa tra `text` / `html` / `markdown` |
+| **Modifica gruppo o chiave** | No | I campi sono bloccati nella modale di modifica |
+| **Elimina** | No | Protetta da `VendorTranslationProtectedException` |
+
+## Meccanismo di protezione
+
+Il tentativo di eliminare una riga vendor (dall'interfaccia o tramite
+`Lingua::forgetTranslation()`) lancia `VendorTranslationProtectedException`
+a livello di repository:
+
+```php
+// DatabaseRepository::forgetTranslation()
+if ($translation->is_vendor) {
+    throw new VendorTranslationProtectedException($translation->key);
+}
+```
+
+Nell'interfaccia Traduzioni il pulsante elimina è nascosto per le righe
+vendor. I tentativi di eliminazione generano un evento
+`vendor_translation_protected` senza eliminare nulla.
+
+Le righe vendor importate tramite la pagina Transfer vengono riportate sotto
+**Skip** — vedi [Import / Export](/it/features/transfer#protezione-vendor).
+
+::: info Puoi modificare i valori vendor
+Le righe vendor possono essere **modificate** — solo l'eliminazione è
+bloccata. Modifica qualsiasi stringa vendor tramite l'editor inline o la
+modale di modifica per sovrascrivere il testo predefinito del vendor con il
+tuo.
+:::
 
 ## Sovrascrivere una stringa vendor
 
-Il caso d'uso più comune è sovrascrivere i messaggi di validazione di Laravel per adattarli al tono della tua applicazione:
-
 1. Apri `/lingua/translations`
-2. Trova la stringa (es. `validation.required`)
-3. Clicca sull'icona di modifica per aprire la modale di aggiornamento
-4. Cambia il valore per qualsiasi locale
-5. Salva - la sovrascrittura ha effetto immediatamente alla richiesta successiva
+2. Attiva il filtro **Includi vendor** per mostrare le righe vendor
+3. Trova la stringa (es. `validation.required`)
+4. Clicca sull'icona di modifica e aggiorna il valore per la locale
+5. Salva — la sovrascrittura ha effetto alla richiesta successiva
 
 ```php
-// Oppure in modo programmatico tramite il facade:
+// Oppure in modo programmatico:
 use Rivalex\Lingua\Facades\Lingua;
 
 Lingua::setVendorTranslation(
@@ -55,67 +95,35 @@ Lingua::setVendorTranslation(
 );
 ```
 
-## Interrogare le traduzioni vendor
+## Namespace vendor
 
-```php
-use Rivalex\Lingua\Facades\Lingua;
-use Rivalex\Lingua\Models\Translation;
+I pacchetti che pubblicano le proprie traduzioni con un namespace (es.
+`trans('mio-pacchetto::messages.welcome')`) vengono gestiti in modo
+trasparente da `LinguaManager`:
 
-// Tutte le traduzioni vendor
-$all = Translation::where('is_vendor', true)->get();
+- In modalità **database**: `LinguaManager::load()` serve le namespace vendor
+  dal DB (memorizzato in cache tramite `CacheKey::forVendorGroup()`) e si
+  fonde con le stringhe basate su file
+- In modalità **file**: si comporta come il `FileLoader` standard di Laravel
 
-// Tutte le traduzioni vendor per un pacchetto specifico
-$laravel = Lingua::getVendorTranslations('laravel');
-
-// Tutte le traduzioni vendor per un pacchetto con valori in francese
-$frenchLaravel = Lingua::getVendorTranslations('laravel', 'fr');
-
-// Filtra per gruppo e chiave manualmente
-$required = Translation::where('is_vendor', true)
-    ->where('vendor', 'laravel')
-    ->where('group', 'validation')
-    ->where('key', 'required')
-    ->first();
-```
-
-## Meccanismo di protezione
-
-Il tentativo di eliminare una traduzione vendor (dall'interfaccia o tramite `Lingua::forgetTranslation()`) genera una `VendorTranslationProtectedException`:
-
-```php
-use Rivalex\Lingua\Facades\Lingua;
-use Rivalex\Lingua\Exceptions\VendorTranslationProtectedException;
-
-try {
-    Lingua::forgetTranslation('required', 'en'); // la chiave appartiene a una traduzione vendor
-} catch (VendorTranslationProtectedException $e) {
-    // Gestisci in modo appropriato
-}
-```
-
-Nell'interfaccia Livewire, i tentativi di eliminazione generano un evento `vendor_translation_protected` e chiudono la modale senza eliminare nulla. L'evento può essere ascoltato nei tuoi componenti Livewire o nel codice Alpine.js:
-
-```js
-// Listener di eventi Alpine.js / Livewire
-window.addEventListener('vendor_translation_protected', () => {
-    alert('Questa traduzione è protetta e non può essere eliminata.');
-});
-```
+Le righe namespace vendor sono identificate nella tabella `language_lines` dal
+prefisso del gruppo — es. gruppo `mio-pacchetto::messages`.
 
 ## Risincronizzare le traduzioni vendor
 
-Se un pacchetto da cui dipendi aggiunge nuove chiavi di traduzione in un aggiornamento di versione, risincronizza per importarle:
+Se un vendor aggiunge nuove chiavi in un aggiornamento, risincronizza per
+importarle:
 
 ```bash
-# Recupera le ultime da laravel-lang e sincronizza nel DB
+# Aggiorna dal dataset integrato (no network)
 php artisan lingua:update-lang
 
-# Oppure risincronizza manualmente dai tuoi file lang/ esistenti
+# Oppure risincronizza dai tuoi file lang/ esistenti
 php artisan lingua:sync-to-database
 ```
 
-Lingua usa `updateOrCreate` durante la sincronizzazione, quindi le sovrascritture esistenti (valori modificati) vengono preservate.
+Lingua usa `updateOrCreate` durante la sincronizzazione, quindi le
+sovrascritture esistenti vengono preservate.
 
-## Disabilitare le importazioni delle traduzioni vendor
-
-Se non vuoi le traduzioni vendor nel database, sincronizza solo dopo aver rimosso la directory `lang/vendor/`. Lingua importa solo ciò che trova su disco.
+Vedi [Sincronizzazione bidirezionale](/it/features/sync#aggiornamento) per
+i dettagli completi.

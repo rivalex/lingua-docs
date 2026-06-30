@@ -1,256 +1,102 @@
 # Selector de Idioma
 
-El componente `<livewire:lingua::language-selector>` es un selector de idioma embebible para tus usuarios finales - completamente separado de la interfaz de administración.
+El componente `x-lingua::select` renderiza un widget de cambio de idioma listo para
+producción que puedes colocar en cualquier parte de tu aplicación — en la barra de
+navegación, el pie de página o una página de perfil.
+
+<Screenshot src="/screenshots/selector-light.png" alt="Selector de idioma de Lingua en modo claro" caption="El selector de idioma con los idiomas instalados." width="320px" :center="true"/>
 
 ## Uso básico
 
 ```blade
-<livewire:lingua::language-selector />
+{{-- Solo necesitas esto --}}
+<x-lingua::select />
 ```
 
-Agrégalo en cualquier lugar de tus layouts Blade. Se renderiza usando el modo configurado en `config/lingua.php` (`sidebar` por defecto).
+## Props
 
-## Modos de presentación
-
-### Modo Sidebar (predeterminado)
-
-Se renderiza como una sección de navegación agrupada - ideal para barras laterales de aplicaciones construidas con Flux.
-
-```blade
-<livewire:lingua::language-selector mode="sidebar" />
-```
-
-<Screenshot src="/screenshots/selector-sidebar.png" alt="Selector de idioma en modo barra lateral" caption="Modo sidebar - muestra todos los idiomas instalados como elementos de navegación." width="320px" :center="true"/>
-
-### Modo Dropdown
-
-Se renderiza como un botón desplegable compacto - ideal para encabezados y barras de navegación.
-
-```blade
-<livewire:lingua::language-selector mode="dropdown" />
-```
-
-<Screenshot src="/screenshots/selector-dropdown.png" alt="Selector de idioma en modo dropdown" caption="Modo dropdown - muestra el idioma actual con un icono de bandera." width="320px" :center="true"/>
-
-### Modo Modal
-
-Se renderiza como un botón que abre un modal completo de selección de idioma - ideal para cambios de idioma destacados en páginas de aterrizaje o flujos de incorporación.
-
-```blade
-<livewire:lingua::language-selector mode="modal" />
-```
-
-<Screenshot src="/screenshots/selector-modal.png" alt="Selector de idioma en modo modal" caption="Modo modal - superposición de selección de idioma a pantalla completa."/>
-
-## Referencia de props
-
-| Prop | Tipo | Por defecto | Descripción |
+| Prop | Tipo | Predeterminado | Descripción |
 |---|---|---|---|
-| `mode` | `string` | `config('lingua.selector.mode')` | `'sidebar'`, `'dropdown'` o `'modal'` |
-| `show-flags` | `bool` | `config('lingua.selector.show_flags')` | Mostrar iconos de banderas |
+| `locale` | string | locale actual | Locale seleccionado preseleccionado |
+| `size` | `sm` \| `md` \| `lg` | `md` | Tamaño del botón de activación |
+| `variant` | `ghost` \| `outline` \| `solid` | `ghost` | Estilo visual del botón |
+| `position` | `bottom-start` \| `bottom-end` \| `top-start` \| `top-end` | `bottom-start` | Posición del popover |
+| `arrow` | bool | `false` | Mostrar flecha indicadora |
+| `search` | bool | `true` | Mostrar campo de búsqueda en el popover |
+| `flag` | bool | `true` | Mostrar emoji de bandera junto al nombre |
 
 ```blade
-{{-- Sobreescribir el modo por instancia --}}
-<livewire:lingua::language-selector mode="dropdown" :show-flags="false" />
+{{-- Ejemplo personalizado --}}
+<x-lingua::select
+    size="sm"
+    variant="outline"
+    position="bottom-end"
+    :search="false"
+/>
 ```
 
-## Cómo funciona el cambio de idioma
+## Cómo funciona el cambio de locale
 
-Cuando un usuario hace clic en un idioma, el componente llama a `changeLocale($locale)`:
+<Badge type="tip" text="Cambiado en 2.0" /> Al seleccionar un idioma, el componente
+recarga la **página actual** — no el inicio. El destino se determina mediante
+`ManagesLocale::getRequestUri()` y se valida con una guardia de ruta local para
+prevenir redirecciones abiertas (ver
+[Seguridad — Protección contra redirecciones abiertas](/es/guide/security#proteccion-contra-redirecciones-abiertas)).
 
-1. Valida que el idioma existe en la tabla `languages` (ignora silenciosamente los idiomas desconocidos)
-2. Almacena el código de idioma en la sesión bajo `config('lingua.session_variable')`
-3. Llama a `app()->setLocale($locale)` para la solicitud actual
-4. Redirige a la URL actual (provoca una recarga completa de la página para que el nuevo idioma surta efecto en todos lados)
+Bajo el capó:
 
-En la siguiente solicitud, `LinguaMiddleware` lee la sesión y aplica el idioma antes de que se ejecuten tus controladores.
+1. `POST /lingua/locale` con `{locale: 'fr', redirect: '/la/ruta/actual'}`
+2. `LinguaMiddleware` guarda el nuevo locale en sesión
+3. Redirige a `/la/ruta/actual` con el nuevo locale activo
 
-## Iconos de banderas
+## Implementación con Popover API nativo
 
-Los iconos de banderas son provistos por el paquete [`outhebox/blade-flags`](https://github.com/MohmmedAshraf/blade-flags), que se instala automáticamente como dependencia de Lingua.
+<Badge type="tip" text="Nuevo en 2.0" /> `x-lingua::select` usa el
+**Popover API nativo del navegador** (`popover="manual"` + `showPopover()`/`hidePopover()`)
+en lugar de teleport o posicionamiento absoluto.
 
-Las banderas se emparejan por el código `regional` del idioma (p. ej. `en_US` → 🇺🇸, `fr_FR` → 🇫🇷). Si no hay código regional configurado, el componente de bandera recurre graciosamente a mostrar el código de dos letras.
+Esto soluciona el problema de Flux donde `overflow: hidden` y `transform` en un
+contenedor ancestro "atrapaban" el popover y lo renderizaban fuera de lugar. El API
+Popover pertenece a la capa superior del navegador — escapa de cualquier contexto de
+desbordamiento o transformación.
 
-Deshabilitar banderas globalmente:
+Sin teleport, sin portal DOM, sin dependencias de Flux para el posicionamiento.
+La implementación vive en `resources/views/components/select.blade.php`.
+
+## Incluir el selector en layouts de Blade
+
+```blade
+{{-- resources/views/layouts/app.blade.php --}}
+<nav>
+    <a href="/">{{ config('app.name') }}</a>
+    <x-lingua::select />
+</nav>
+```
+
+## Trait ManagesLocale
+
+El trait `Rivalex\Lingua\Traits\ManagesLocale` alimenta el Livewire o controlador
+que responde a los cambios de locale. Úsalo cuando necesites implementar tu propia
+lógica de cambio.
 
 ```php
-// config/lingua.php
-'selector' => ['show_flags' => false],
-```
+use Rivalex\Lingua\Traits\ManagesLocale;
 
-O por instancia:
+class LocaleSwitchController extends Controller
+{
+    use ManagesLocale;
 
-```blade
-<livewire:lingua::language-selector :show-flags="false" />
-```
-
-## Personalizar las vistas del selector
-
-Publica las vistas para sobreescribir el marcado:
-
-```bash
-php artisan vendor:publish --tag="lingua-views"
-```
-
-Las plantillas del selector están en:
-
-```
-resources/views/vendor/lingua/livewire/
-├── language-selector.blade.php
-└── selector/
-    ├── sidebar.blade.php
-    ├── dropdown.blade.php
-    └── modal.blade.php
-```
-
-::: tip Integrar con tu propia navegación
-Si usas los componentes de sidebar o navbar de Flux, el modo `sidebar` encaja naturalmente en `<flux:navlist>` o `<flux:sidebar>`. Publica la vista y adapta el marcado para que coincida con tu estructura de navegación.
-:::
-
-## Actualizar el selector tras cambios
-
-El selector escucha el evento Livewire `refreshLanguages`. Si agregas o eliminas un idioma desde la interfaz de administración (o programáticamente), el selector se re-renderiza automáticamente sin recargar la página.
-
-```js
-// Despachar desde cualquier componente Livewire o código Alpine.js:
-this.$dispatch('refreshLanguages')
-```
-
----
-
-## Modo headless
-
-El selector headless no genera CSS ni marcado del framework — HTML semántico puro con atributos `data-lingua-*` que puedes estilizar completamente con tu propio CSS, Tailwind o cualquier otro enfoque.
-
-Usa el modo headless cuando necesitas la lógica de cambio de idioma pero quieres control total sobre la salida visual.
-
-### Uso básico
-
-```blade
-<livewire:lingua::headless-language-selector />
-```
-
-La lista de idiomas siempre está presente en el DOM. La visibilidad es tu responsabilidad — usa CSS `display`, Alpine.js `x-show` o cualquier otro mecanismo. No se proporciona ningún botón desencadenador integrado por diseño.
-
-Habilita el modo headless globalmente a través de la config o la página de Configuración:
-
-```php
-// config/lingua.php
-'selector' => ['mode' => 'headless'],
-```
-
-### Slots con nombre
-
-#### Slot `$item`
-
-Reemplaza el marcado `<button>` predeterminado dentro de cada `<li>` de idioma. Recibe la instancia del modelo `Language`:
-
-```blade
-<livewire:lingua::headless-language-selector>
-    <x-slot:item="language">
-        {{ $language->native }} ({{ $language->code }})
-    </x-slot>
-</livewire:lingua::headless-language-selector>
-```
-
-#### Slot `$current`
-
-Reemplaza el renderizado del idioma **actualmente seleccionado** únicamente. Recurre a `$item` si no se proporciona:
-
-```blade
-<livewire:lingua::headless-language-selector>
-    <x-slot:current="language">
-        <strong>{{ $language->native }}</strong>
-    </x-slot>
-    <x-slot:item="language">
-        {{ $language->native }}
-    </x-slot>
-</livewire:lingua::headless-language-selector>
-```
-
-### API de selección CSS
-
-El componente expone atributos `data-lingua-*` en cada elemento para la selección con CSS y JavaScript:
-
-| Atributo | Elemento |
-|---|---|
-| `data-lingua-selector` | Elemento `<nav>` raíz |
-| `data-lingua-list` | La lista `<ul>` de idiomas |
-| `data-lingua-item` | Cada entrada `<li>` de idioma |
-| `data-lingua-active` | El `<li>` del idioma actualmente activo |
-| `data-lingua-button` | El `<button>` dentro de cada `<li>` |
-| `data-lingua-name` | `<span>` del nombre en inglés del idioma |
-| `data-lingua-native` | `<span>` del nombre nativo del idioma |
-| `data-lingua-code` | `<span>` del código ISO del idioma |
-
-### Ejemplos de estilo
-
-**CSS simple:**
-
-```css
-[data-lingua-selector] {
-    display: flex;
-    gap: 0.5rem;
-    list-style: none;
-}
-[data-lingua-item] {
-    cursor: pointer;
-}
-[data-lingua-active] {
-    font-weight: bold;
-    text-decoration: underline;
-}
-[data-lingua-button] {
-    background: none;
-    border: none;
-    padding: 0.25rem 0.5rem;
+    public function switch(Request $request): RedirectResponse
+    {
+        return $this->switchLocale($request);
+    }
 }
 ```
 
-**Tailwind CSS:**
+`getRequestUri()` recupera la URI actual, la valida como ruta local (no permite URLs
+absolutas ni dominios externos) y devuelve el destino de redirección seguro.
 
-```blade
-<livewire:lingua::headless-language-selector>
-    <x-slot:item="language">
-        <span class="px-3 py-1 rounded-full text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
-            {{ $language->native }}
-        </span>
-    </x-slot>
-    <x-slot:current="language">
-        <span class="px-3 py-1 rounded-full text-sm bg-red-100 dark:bg-red-900 font-semibold text-red-700 dark:text-red-300">
-            {{ $language->native }}
-        </span>
-    </x-slot>
-</livewire:lingua::headless-language-selector>
-```
+## Modo oscuro
 
-**Alternancia de visibilidad con Alpine.js:**
-
-```blade
-<div x-data="{ open: false }">
-    <button @click="open = !open">
-        {{ app()->getLocale() }}
-    </button>
-
-    <div x-show="open" @click.outside="open = false">
-        <livewire:lingua::headless-language-selector>
-            <x-slot:item="language">
-                <button class="block w-full px-4 py-2 text-left hover:bg-gray-100">
-                    {{ $language->native }}
-                </button>
-            </x-slot>
-        </livewire:lingua::headless-language-selector>
-    </div>
-</div>
-```
-
-### Referencia de props (actualizada)
-
-| Prop | Tipo | Defecto | Descripción |
-|---|---|---|---|
-| `mode` | `string` | `config('lingua.selector.mode')` | `'sidebar'`, `'dropdown'`, `'modal'`, o `'headless'` |
-| `show-flags` | `bool` | `config('lingua.selector.show_flags')` | Mostrar iconos de banderas |
-
-::: tip
-Cuando se pasa `mode="headless"` a `<livewire:lingua::language-selector />`, ese componente no renderiza nada. Usa directamente `<livewire:lingua::headless-language-selector />` para soporte completo de slots y atributos.
-:::
+El componente respeta el modo oscuro de Tailwind. Sin configuración necesaria —
+funciona si tu layout tiene `dark` en el elemento `<html>`.

@@ -1,117 +1,120 @@
 # Editor de Texto Rico
 
-O Lingua incorpora o [TipTap 3](https://tiptap.dev) como um editor de texto rico opcional para tipos de tradução HTML e Markdown. O editor correto é ativado automaticamente com base na coluna `type` da tradução.
+O Lingua incorpora o [TipTap](https://tiptap.dev) como editor de texto rico
+opcional para traduções HTML e Markdown. O editor correto é ativado
+automaticamente com base na coluna `type` da tradução.
+
+::: warning Somente driver banco de dados
+Tipos `html` e `markdown` estão disponíveis apenas no **driver de armazenamento
+database**. No modo `file`, todas as traduções são texto simples e o editor rico
+não é ativado. Veja [Drivers de Armazenamento](/pt/guide/storage).
+:::
 
 ## Tipos de tradução
 
 | Tipo | Editor | Descrição |
 |---|---|---|
-| `text` | `<textarea>` simples | Padrão para todas as traduções padrão |
-| `html` | TipTap WYSIWYG | Para conteúdo que deve renderizar com formatação HTML |
-| `markdown` | TipTap Markdown | Para conteúdo criado na sintaxe Markdown |
+| `text` | `<textarea>` simples | Padrão para todas as strings |
+| `html` | TipTap WYSIWYG | Conteúdo com formatação HTML |
+| `markdown` | TipTap Markdown | Conteúdo na sintaxe Markdown |
 
 ## Configurando a barra de ferramentas
 
-A barra de ferramentas do editor é controlada globalmente via `config/lingua.php`:
+Habilite ou desabilite botões individualmente em `config/lingua.php`:
 
 ```php
 'editor' => [
-    'headings'      => false,  // botões de título H1-H3
+    'headings'      => false,  // H1–H6
     'bold'          => true,
     'italic'        => true,
     'underline'     => true,
     'strikethrough' => false,
+    'subscript'     => true,
+    'superscript'   => true,
+    'blockquote'    => false,
+    'code-line'     => false,  // código inline
+    'code-block'    => false,  // bloco de código
     'bullet'        => true,   // lista não ordenada
     'ordered'       => true,   // lista ordenada
     'clear'         => true,   // limpar formatação
+    'code-mode'     => false,  // toggle de código bruto
 ],
 ```
-
-Habilite apenas as opções que seu conteúdo realmente precisa. Manter a barra de ferramentas mínima reduz a carga cognitiva dos tradutores.
 
 <Screenshot src="/screenshots/editor-toolbar.png" alt="Barra de ferramentas do editor" caption="A barra de ferramentas do editor HTML com as opções padrão ativas." />
 
 ## Alterando o tipo de uma tradução
 
-No modal de Edição (ícone de lápis, apenas locale padrão), selecione o tipo desejado no dropdown **Type**. O editor é atualizado imediatamente na linha sem recarregar a página.
+No modal de Edição (ícone de lápis, apenas locale padrão), selecione o tipo
+desejado no dropdown **Type**. O editor atualiza imediatamente — o valor
+armazenado não é alterado quando você muda o tipo, apenas o comportamento
+do editor.
 
 ::: tip Detecção automática
-Quando você executa `lingua:sync-to-database` pela primeira vez, o Lingua detecta automaticamente o tipo com base no conteúdo. Você pode sobrescrevê-lo manualmente a qualquer momento - o valor armazenado não é alterado quando você muda o tipo, apenas o comportamento do editor.
+Ao executar `lingua:sync-to-database`, o Lingua detecta automaticamente o tipo
+com base no conteúdo. Você pode sobrescrevê-lo manualmente a qualquer momento.
 :::
 
 ## Trabalhando com traduções HTML
 
-Traduções HTML são armazenadas como HTML bruto na coluna JSON `text`:
-
 ```json
-{"en": "<p>Welcome to <strong>Lingua</strong> - the translation manager for Laravel.</p>"}
+{"en": "<p>Bem-vindo à <strong>Lingua</strong>.</p>"}
 ```
 
-Para renderizá-las em Blade sem duplo escape:
+Para renderizar em Blade sem duplo escape:
 
 ```blade
-{{-- Sempre use {!! !!} para tipos de tradução HTML --}}
 {!! __('marketing.hero_body') !!}
 ```
 
 ::: warning XSS
-Use `{!! !!}` apenas para strings de tradução gerenciadas por usuários autorizados em um painel administrativo controlado. Nunca renderize input de usuário não confiável como HTML bruto.
+Use `{!! !!}` apenas para strings gerenciadas por usuários autorizados em painel
+administrativo controlado. Veja [Segurança — Proteção XSS](/pt/guide/security#protecao-xss).
+O `HtmlSanitizer` é executado ao salvar via UI, então conteúdo salvo pelo Lingua
+é seguro para renderização com `{!! !!}`.
 :::
 
 ## Trabalhando com traduções Markdown
 
-Traduções Markdown armazenam Markdown bruto:
-
 ```json
-{"en": "## Welcome!\n\nThank you for choosing **Lingua**.\n\n- Feature one\n- Feature two"}
+{"en": "## Bem-vindo!\n\nObrigado por escolher **Lingua**."}
 ```
 
-Para renderizar Markdown em Blade, use um parser Markdown. O Laravel inclui `Str::markdown()`:
+Para renderizar em Blade, use `Str::markdown()`:
 
 ```blade
 {!! Str::markdown(__('emails.welcome_body')) !!}
 ```
 
-Ou use um pacote dedicado como [league/commonmark](https://commonmark.thephpleague.com).
+Ou `league/commonmark` para parsing completo.
 
 ## O componente `x-lingua::editor`
 
-O editor é exposto como um componente Blade que você pode reutilizar fora da interface de gerenciamento do Lingua:
+O editor pode ser reutilizado fora das páginas de gerenciamento:
 
 ```blade
-{{-- Modo texto --}}
-<x-lingua::editor
-    wire:model="myField"
-    type="text"
-    placeholder="Enter text…"
-/>
+{{-- Texto simples --}}
+<x-lingua::editor wire:model="value" type="text" placeholder="Insira o texto…" />
 
-{{-- Modo HTML --}}
-<x-lingua::editor
-    wire:model="myField"
-    type="html"
-    label="Body content"
-    :required="true"
-/>
+{{-- HTML --}}
+<x-lingua::editor wire:model="value" type="html" label="Corpo" :required="true" />
 
-{{-- Modo Markdown --}}
-<x-lingua::editor
-    wire:model="myField"
-    type="markdown"
-    placeholder="Write in Markdown…"
-/>
+{{-- Markdown --}}
+<x-lingua::editor wire:model="value" type="markdown" placeholder="Escreva em Markdown…" />
 ```
 
 ### Props
 
-| Prop | Tipo | Descrição |
-|---|---|---|
-| `wire:model` | string | Propriedade Livewire para vincular |
-| `type` | string | `'text'`, `'html'` ou `'markdown'` |
-| `label` | string | Rótulo opcional acima do editor |
-| `placeholder` | string | Texto de placeholder |
-| `required` | bool | Exibe um badge de obrigatório quando `true` |
+| Prop | Tipo | Padrão | Descrição |
+|---|---|---|---|
+| `type` | string | `'text'` | `'text'`, `'html'` ou `'markdown'` |
+| `label` | string | `''` | Rótulo opcional acima do campo |
+| `placeholder` | string | `''` | Texto de placeholder |
+| `required` | bool | `false` | Exibe badge de obrigatório |
+| `wire:model` | — | — | Binding de model Livewire |
 
-::: tip
-O componente `x-lingua::editor` é um ótimo ponto de partida para qualquer formulário Livewire que precise de um campo de texto rico. Publique a view do componente para personalizar a barra de ferramentas ou o estilo.
-:::
+Publique as views para personalizar a barra de ferramentas ou o estilo:
+
+```bash
+php artisan vendor:publish --tag="lingua-views"
+```

@@ -3,8 +3,8 @@ layout: home
 
 hero:
   name: "LINGUA"
-  text: "Laravel 数据库驱动的翻译管理"
-  tagline: 安装语言、管理翻译、切换语言环境 - 全部通过精美的 Livewire 界面完成，无需重新部署。
+  text: "数据库驱动的 Laravel 翻译管理"
+  tagline: 零外部依赖。双存储驱动。完整导入/导出。安全加固。专为 PHP 8.3+ 和 Laravel 11–13 构建。
   image:
     light: /logoLinguaVertical-light.svg
     dark: /logoLinguaVertical-dark.svg
@@ -18,39 +18,39 @@ hero:
       link: https://github.com/rivalex/lingua
 
 features:
+  - icon: 🔒
+    title: 零外部依赖
+    details: Lingua 内置翻译加载器、语言注册表和捆绑数据集。无需 Spatie，无需 laravel-lang——无需任何额外同步。
+
   - icon: 🗄️
-    title: 数据库驱动的翻译
-    details: 所有翻译存储在数据库中，可即时编辑--无需文件部署。Spatie 的 laravel-translation-loader 负责加载层。
+    title: 双存储驱动
+    details: 从数据库运行翻译（实时 UI 编辑，无需部署），或从文件运行（版本控制，CI 友好）。一条命令即可切换。
+
+  - icon: 📤
+    title: 导入 / 导出
+    details: "在多种格式间迁移翻译：CSV、JSON、XLSX、ODS。支持双语、多语言或 json-native 布局。提交前可预览差异。"
+
+  - icon: 🛡️
+    title: 安全加固
+    details: "F1–F9 加固：XSS 过滤、路径遍历防护、SQL 注入封禁、供应商保护、认证门控、异常信息不泄露等。"
 
   - icon: ⚡
-    title: Livewire + Flux UI
-    details: 基于 Livewire 4 和 Flux 2 构建的响应式实时管理界面。每个操作--添加语言、编辑翻译、同步--都无需页面刷新。
-
-  - icon: 🔄
-    title: 双向同步
-    details: 通过一条命令将现有 PHP/JSON 语言文件导入数据库，或将所有内容导出回文件以便版本控制和部署。
+    title: 响应式 UI
+    details: 五个 Livewire 页面——语言、翻译、统计、设置和传输。每个操作都是实时的，无需部署即可修复错别字。
 
   - icon: 🌐
-    title: 70+ 种语言
-    details: 通过单条 Artisan 命令从 Laravel Lang 生态系统安装任意语言环境。语言文件、数据库记录和翻译会自动配置完成。
-
-  - icon: ✍️
-    title: 富文本支持
-    details: 每条翻译可以是纯文本、HTML 或 Markdown。正确的编辑器会根据翻译类型自动激活。
+    title: 内置 129+ 语言区域
+    details: "从内置注册表安装任意语言区域，无需联网下载。内置：26 个语言区域，5902 个字符串，与 Laravel 13.14 对齐。"
 
   - icon: ↔️
-    title: RTL / LTR 支持
-    details: 完全支持阿拉伯语、希伯来语、波斯语及其他 RTL 语言。Lingua 为每种语言存储并提供文本方向信息。
-
-  - icon: 📦
-    title: 扩展包翻译
-    details: 与您自己的字符串一起管理扩展包翻译（验证消息、分页等），内置防止意外删除的保护机制。
+    title: RTL / LTR 就绪
+    details: 完全支持阿拉伯语、希伯来语、波斯语等 RTL 语言。每种语言的方向元数据均已存储并可随时获取。
 
   - icon: 📊
-    title: 进度追踪
-    details: 每种语言显示完成百分比和缺失翻译数量，让您随时掌握需要翻译的内容。
+    title: 翻译覆盖率
+    details: 每种语言的完成度统计——总字符串数、已翻译数量和各分组缺失键数。随时掌握翻译进度。
 
   - icon: 🧪
-    title: 完整测试覆盖
-    details: 150+ 个 Pest 测试，覆盖所有 Artisan 命令、Livewire 组件、Blade 组件、辅助函数以及完整的 Facade API。
+    title: 783 个测试
+    details: PHP 8.3+ · Laravel 11–13 · Livewire 4.1+ · Flux 2.12+。测试套件涵盖命令、组件、驱动程序、导入/导出和完整 Facade API。
 ---

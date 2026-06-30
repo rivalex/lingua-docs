@@ -16,14 +16,14 @@ Browser request
     ▼
 ┌─────────────────────────────┐
 │        Your Controller      │
-│  __('auth.failed')          │  标准 Laravel 辅助函数
+│  __('auth.failed')          │  标准 Laravel 助手
 └───┬─────────────────────────┘
     │
     ▼
 ┌─────────────────────────────┐
-│       LinguaManager         │  自定义 TranslationLoaderManager
-│  1. DB loader (Spatie)      │  数据库在重叠时优先
-│  2. File loader (fallback)  │
+│       LinguaManager         │  扩展 Illuminate FileLoader
+│  DB translations merged over │  DB 在重叠时始终优先
+│  file translations (DB mode) │  （文件模式 = 纯 FileLoader）
 └───┬─────────────────────────┘
     │
     ▼
@@ -32,14 +32,19 @@ Translated string returned
 
 ## 翻译加载
 
-`LinguaManager` 继承自 Spatie 的 `TranslationLoaderManager`。在运行时，它合并两个来源：
+`LinguaManager` 扩展了 Laravel 自身的 `Illuminate\Translation\FileLoader`——**没有** Spatie 依赖。它通过装饰框架的加载器绑定来注册：
 
-1. **文件加载器** - 像普通 Laravel 一样从 `lang/` 读取
-2. **数据库加载器**（Spatie 的 `Db` 加载器）- 从 `language_lines` 读取
+```php
+$app->extend('translation.loader', function ($original, $app) {
+    return new LinguaManager($app, $original);
+});
+```
 
-当两个来源中存在相同的键时，**数据库中的值优先**。这允许您覆盖任何扩展包或基于文件的翻译，而无需修改源文件。
+在**数据库模式**下，对于每个 `(locale, group)`，它通过原始加载器加载基于文件的翻译，然后使用 `array_replace_recursive` 在其上合并数据库值。**数据库值始终优先**，因此您可以覆盖任何供应商或文件字符串而无需修改源文件。
 
-如果 `language_lines` 表尚不存在（例如在运行迁移之前），`LinguaManager` 会优雅地降级为仅文件模式。
+如果 `language_lines` 表尚不存在（例如在迁移运行之前），`QueryException` 会被捕获，`LinguaManager` 会优雅地回退到仅文件模式。
+
+在**文件模式**下，`LinguaManager` 的行为与标准 `FileLoader` 相同——不进行任何数据库查询。参见[存储驱动](/zh/guide/storage)。
 
 ## 中间件
 
@@ -58,23 +63,23 @@ session()->put(config('lingua.session_variable'), $locale);
 
 ## 服务提供者
 
-`LinguaServiceProvider` 在启动时执行三件事：
+`LinguaServiceProvider` 在启动时执行以下操作：
 
 1. **在 `lingua::` 前缀下注册 Blade 匿名组件**
 2. **在 `lingua::` 命名空间下注册 Livewire 组件**
-3. **将 IoC 容器中的 `translator` 和 `translation.loader` 单例替换**为 Lingua 的自定义实现
+3. **通过 `$app->extend(...)` 装饰 `translation.loader` 绑定**，用 `LinguaManager` 包装 Laravel 的加载器
 
-由于服务提供者替换了核心翻译器绑定，因此它必须在 Laravel 的 `TranslationServiceProvider` *之后*启动。Composer 的自动加载顺序会自动处理这一点。
+因为提供者*装饰*而不是*替换*核心加载器，它与 Laravel 的 `TranslationServiceProvider` 完美组合。Composer 的自动加载顺序自动处理启动顺序。
 
-## 数据库结构
+## 数据库架构
 
-使用两张数据表：
+使用三张表（`file` 驱动省略 `language_lines`）：
 
 ### `languages`
 
-| 字段 | 类型 | 说明 |
+| 列 | 类型 | 说明 |
 |---|---|---|
-| `id` | bigint（自增） | 主键 |
+| `id` | bigint | 主键 |
 | `code` | string | ISO 639-1 代码（`en`、`fr`、`pt_BR`） |
 | `regional` | string，可为空 | 完整区域代码（`en_US`、`pt_BR`） |
 | `type` | string | `'regional'` 或 `'standard'` |
@@ -84,38 +89,48 @@ session()->put(config('lingua.session_variable'), $locale);
 | `is_default` | boolean | 只有一行应为 `true` |
 | `sort` | integer | 显示顺序（自动分配） |
 
-### `language_lines`（Spatie）
+### `language_lines`
 
-| 字段 | 类型 | 说明 |
+| 列 | 类型 | 说明 |
 |---|---|---|
-| `id` | bigint（自增） | 主键 |
+| `id` | bigint | 主键 |
 | `group` | string | 翻译分组（`auth`、`validation`、`single`） |
 | `key` | string | 翻译键（`failed`、`required`） |
-| `text` | json | `{"en": "…", "fr": "…", "it": "…"}` |
+| `text` | json，**可为空** | `{"en": "…", "fr": "…"}` |
 | `type` | string | `'text'`、`'html'` 或 `'markdown'` |
-| `is_vendor` | boolean | 第三方扩展包字符串为 `true` |
-| `vendor` | string，可为空 | 扩展包名称（如 `spatie`、`laravel`） |
+| `is_vendor` | boolean | 第三方包字符串为 `true` |
+| `vendor` | string，可为空 | 供应商名称（例如 `laravel`） |
 
-JSON `text` 列在**单行中存储所有语言环境**。这种设计意味着：
-- 添加新语言环境不会改变数据库结构
-- 单次查询即可获取一个键的所有语言环境值
-- 缺失的语言环境只是在 JSON 对象中没有对应的键
+JSON `text` 列在**单行中存储所有语言区域**：
 
-## 数据填充器
+- 添加新语言区域永远不会改变架构
+- 单次查询即可获取一个键的所有语言区域值
+- 缺失的语言区域只是在 JSON 对象中没有对应的键
 
-`LinguaSeeder` 在 `lingua:install` 期间被调用一次。它：
+### `lingua_settings`
 
-1. 读取 `config('lingua.default_locale')`（默认为 `config('app.locale')`）
-2. 从 `laravel-lang/locales` 获取语言环境元数据
-3. 创建一个 `is_default = true` 的 `Language` 记录
-4. 调用 `lingua:add {locale}` 安装语言文件
-5. 调用 `lingua:sync-to-database` 导入所有字符串
+支持设置 UI 的键/值表（例如共享导航切换）。
+
+## 内置数据集
+
+Lingua 2.0 将所有语言区域数据随包一起发布：
+
+- **`LocaleRegistry`**（`Rivalex\Lingua\Locales\LocaleRegistry`）——129+ 个语言区域的元数据。`Lingua::info($locale)` 返回一个只读的 `LocaleInfo` 值对象（`->name`、`->native`、`->direction`、`->regional`、`->code`、`->type`），对于未知语言区域返回 `null`。
+- **内置翻译**——26 个语言区域 × 7 个分组，5902 个字符串，与 Laravel **v13.14.0** 对齐。`NotificationProjector` 推导通知字符串。`lingua:add` 从此数据集填充，无需网络调用。
+
+## 缓存架构
+
+在数据库模式下，Lingua 按 `(locale, group)` **精确**缓存翻译：
+
+- 键格式如 `lingua.trans.{locale}.{group}`
+- 在 `Translation` 保存/删除时，只运行受影响键的 `Cache::forget('lingua.trans.{locale}.{group}')`——任何同步路径中都**不**存在全局 `cache:clear`
+- 存储和前缀可通过 `cache.store` / `cache.prefix` 配置
 
 ## 模型
 
-| 模型 | 数据表 | 继承自 |
+| 模型 | 表 | 继承自 |
 |---|---|---|
 | `Language` | `languages` | `Illuminate\Database\Eloquent\Model` |
-| `Translation` | `language_lines` | Spatie 的 `LanguageLine` |
+| `Translation` | `language_lines` | `Illuminate\Database\Eloquent\Model` |
 
-`Translation` 继承了 Spatie 的 `setTranslation()` 和 `forgetTranslation()` 方法，并添加了 Lingua 专有的作用域、同步方法和统计辅助函数。
+`Translation` 提供 `getTranslationsForGroup()`、同步助手、统计助手和 `forgetTranslation()`——对供应商行会抛出 `VendorTranslationProtectedException`。`scopeOrdered()` 查询作用域替换了旧的 `scopeActive()`（保留委托以向后兼容）。
