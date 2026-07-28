@@ -47,6 +47,27 @@
 'nav' => ['enabled' => true],
 ```
 
+### فرض الوضع الداكن <Badge type="tip" text="جديد" /> {#appearance}
+
+يستخدم تنسيق CSS الخاص بـ Lingua متغيّر `dark:` قائم على فئة CSS، لذا
+فهو يتبع عادةً عنصر `<html class="dark">` الأب في تطبيقك. إذا كان
+تطبيقك لا يملك مفتاح وضع داكن (أو كانت حالته لا تطابق تفضيل نظام
+التشغيل الفعلي)، فقد يُعرض تنسيق Lingua بدون تنسيق.
+
+مفتاح **فرض الوضع الداكن** يجعل Lingua تعرض دائماً سمتها الداكنة، بغض
+النظر عن تطبيقك أو نظام الألوان في نظام التشغيل — مفيد عند تضمين
+Lingua في تطبيق مضيف بلا دعم للوضع الداكن، أو أثناء التطوير محلياً
+على نظام وضع فاتح.
+
+الافتراضي المكافئ في الإعداد:
+
+```php
+// config/lingua.php
+'dark_mode' => [
+    'force' => env('LINGUA_FORCE_DARK_MODE', false),
+],
+```
+
 ### محرك التخزين (للعرض فقط)
 
 يعرض المحرك النشط (`database` أو `file`) للإشارة — لا يمكن تغييره
@@ -79,10 +100,16 @@ $navEnabled = LinguaSetting::get(
     config('lingua.nav.enabled', true)
 );
 
+$darkModeForce = LinguaSetting::get(
+    LinguaSetting::KEY_DARK_MODE_FORCE,
+    config('lingua.dark_mode.force', false)
+);
+
 // الكتابة
 LinguaSetting::set(LinguaSetting::KEY_SELECTOR_MODE, 'modal');
 LinguaSetting::set(LinguaSetting::KEY_SHOW_FLAGS, false);
 LinguaSetting::set(LinguaSetting::KEY_NAV_ENABLED, false);
+LinguaSetting::set(LinguaSetting::KEY_DARK_MODE_FORCE, true);
 ```
 
 الثوابت المتاحة:
@@ -92,6 +119,7 @@ LinguaSetting::set(LinguaSetting::KEY_NAV_ENABLED, false);
 | `KEY_SELECTOR_MODE` | `selector.mode` | `string` |
 | `KEY_SHOW_FLAGS` | `selector.show_flags` | `bool` |
 | `KEY_NAV_ENABLED` | `nav.enabled` | `bool` |
+| `KEY_DARK_MODE_FORCE` | `dark_mode.force` | `bool` |
 
 ::: tip
 يمكنك إضافة مفاتيح مخصصة باستخدام `LinguaSetting::set('my.key', $value)`

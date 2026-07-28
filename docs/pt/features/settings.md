@@ -47,6 +47,25 @@ Statistics, Transfer e Settings — com a página atual destacada.
 'nav' => ['enabled' => true],
 ```
 
+## Aparência <Badge type="tip" text="Novidade" />
+
+O próprio CSS do Lingua usa uma variante `dark:` baseada em classe, então
+normalmente ele segue o `<html class="dark">` ancestral da aplicação
+hospedeira. Se sua aplicação hospedeira não tiver um alternador de modo
+escuro (ou se o estado dele não corresponder à preferência real do SO), o
+estilo do Lingua pode ser renderizado sem estilização.
+
+O toggle **Forçar modo escuro** faz o Lingua sempre renderizar seu tema
+escuro, independentemente da aplicação hospedeira ou do esquema de cores do
+SO — útil para incorporar o Lingua em uma aplicação hospedeira sem suporte a
+modo escuro, ou durante o desenvolvimento local em um sistema com modo claro.
+
+```php
+// Também configurável via arquivo
+// config/lingua.php
+'dark_mode' => ['force' => false],
+```
+
 ## Driver de armazenamento (somente leitura)
 
 O driver ativo (`database` ou `file`) é exibido como informação, mas **não pode
@@ -80,6 +99,7 @@ LinguaSetting::set(LinguaSetting::KEY_SELECTOR_MODE, 'dropdown');
 LinguaSetting::KEY_SELECTOR_MODE      // modo do widget seletor
 LinguaSetting::KEY_SELECTOR_SHOW_FLAGS // mostrar bandeiras
 LinguaSetting::KEY_NAV_ENABLED         // menu de navegação compartilhado
+LinguaSetting::KEY_DARK_MODE_FORCE     // forçar modo escuro
 ```
 
 | Constante | Chave DB | Tipo |
@@ -87,3 +107,4 @@ LinguaSetting::KEY_NAV_ENABLED         // menu de navegação compartilhado
 | `KEY_SELECTOR_MODE` | `selector.mode` | `string` |
 | `KEY_SELECTOR_SHOW_FLAGS` | `selector.show_flags` | `bool` |
 | `KEY_NAV_ENABLED` | `nav.enabled` | `bool` |
+| `KEY_DARK_MODE_FORCE` | `dark_mode.force` | `bool` |

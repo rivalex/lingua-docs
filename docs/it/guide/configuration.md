@@ -225,6 +225,40 @@ formattazione: `headings`, `bold`, `italic`, `underline`, `strikethrough`,
 
 ---
 
+## Aspetto <Badge type="tip" text="Novità" />
+
+```php
+'dark_mode' => [
+    'force' => env('LINGUA_FORCE_DARK_MODE', false),
+],
+```
+
+### `dark_mode.force` <Badge type="tip" text="Novità" />
+
+**Default:** `env('LINGUA_FORCE_DARK_MODE', false)`
+
+Il CSS di Lingua usa una variante `dark:` basata su classe
+(`&:where(.dark, .dark *)`), quindi normalmente segue l'ancestor
+`<html class="dark">` della tua app host — la stessa convenzione della
+strategia a classe predefinita di Tailwind. Se la tua app host non ha un
+toggle dark mode basato su classe (o il suo stato non corrisponde alla
+reale preferenza del sistema operativo/browser), lo stile di Lingua può
+apparire non stilizzato anche se il resto della pagina appare corretto.
+
+Imposta `force` a `true` per far sì che Lingua mostri sempre il proprio
+tema scuro, indipendentemente dall'app host o dal tema del sistema
+operativo. Utile quando integri Lingua in un'app host priva di toggle
+dark mode, o durante lo sviluppo locale su un sistema in modalità chiara.
+Può anche essere attivato in tempo reale dall'
+[interfaccia Impostazioni](/it/features/settings#aspetto), che ha
+priorità su questo valore di default in config.
+
+```ini
+LINGUA_FORCE_DARK_MODE=true
+```
+
+---
+
 ## Driver di archiviazione <Badge type="tip" text="Novità in 2.0" />
 
 ```php

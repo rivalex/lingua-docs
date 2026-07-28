@@ -42,6 +42,32 @@ Activa/desactiva el interruptor **Habilitar menú de navegación** en la tarjeta
 
 La opción de BD (interruptor de UI) tiene precedencia sobre la variable de entorno.
 
+## Apariencia <Badge type="tip" text="Nuevo" />
+
+El propio CSS de Lingua usa una variante `dark:` basada en clases, por lo
+que normalmente sigue al ancestro `<html class="dark">` de la aplicación
+anfitriona. Si tu aplicación anfitriona no tiene un interruptor de modo
+oscuro (o su estado no coincide con la preferencia real del sistema
+operativo), los estilos de Lingua pueden quedar sin aplicar.
+
+### Desde la UI de Configuración
+
+Activa/desactiva el interruptor **Forzar modo oscuro** en la tarjeta
+"Apariencia". Útil para integrar Lingua en una aplicación anfitriona sin
+soporte de modo oscuro, o mientras desarrollas localmente en un sistema
+en modo claro.
+
+### Desde la configuración
+
+```php
+// config/lingua.php
+'dark_mode' => [
+    'force' => env('LINGUA_FORCE_DARK_MODE', false),
+],
+```
+
+La opción de BD (interruptor de UI) tiene precedencia sobre la variable de entorno.
+
 ## Driver de almacenamiento
 
 La página muestra el driver activo en modo solo-lectura. Para cambiarlo:
@@ -58,6 +84,7 @@ Consulta [Drivers de almacenamiento](/es/guide/storage) para el flujo completo.
 | Constante | Clave DB | Tipo | Descripción |
 |---|---|---|---|
 | `LinguaSetting::KEY_NAV_ENABLED` | `lingua.nav.enabled` | bool | Mostrar/ocultar el menú de navegación compartido |
+| `LinguaSetting::KEY_DARK_MODE_FORCE` | `lingua.dark_mode.force` | bool | Forzar el tema oscuro de Lingua independientemente de la aplicación anfitriona |
 
 ## Acceso programático
 

@@ -39,6 +39,28 @@
 'nav' => ['enabled' => true],
 ```
 
+## Внешний вид <Badge type="tip" text="Новое" />
+
+Собственная CSS Lingua использует классовый вариант `dark:`, поэтому она
+обычно следует за предком `<html class="dark">` в хост-приложении. Если в
+вашем хост-приложении нет переключателя тёмной темы (или его состояние не
+совпадает с реальной настройкой ОС), стили Lingua могут отрендериться
+неоформленными.
+
+Переключатель **Force dark mode** заставляет Lingua всегда отображать
+тёмную тему независимо от хост-приложения или цветовой схемы ОС —
+удобно при встраивании Lingua в хост без поддержки тёмной темы, либо во
+время локальной разработки в системе со светлой темой.
+
+Эквивалентное значение по умолчанию в конфиге:
+
+```php
+// config/lingua.php
+'dark_mode' => [
+    'force' => env('LINGUA_FORCE_DARK_MODE', false),
+],
+```
+
 ## Драйвер хранилища (только чтение)
 
 Отображает текущий активный драйвер (`database` или `file`). Поле только для чтения —
@@ -60,6 +82,7 @@ $mode = LinguaSetting::get(
 LinguaSetting::set(LinguaSetting::KEY_SELECTOR_MODE, 'modal');
 LinguaSetting::set(LinguaSetting::KEY_SHOW_FLAGS, false);
 LinguaSetting::set(LinguaSetting::KEY_NAV_ENABLED, false);
+LinguaSetting::set(LinguaSetting::KEY_DARK_MODE_FORCE, true);
 ```
 
 Доступные константы:
@@ -69,3 +92,4 @@ LinguaSetting::set(LinguaSetting::KEY_NAV_ENABLED, false);
 | `LinguaSetting::KEY_SELECTOR_MODE` | `selector.mode` | `string` |
 | `LinguaSetting::KEY_SHOW_FLAGS` | `selector.show_flags` | `bool` |
 | `LinguaSetting::KEY_NAV_ENABLED` | `nav.enabled` | `bool` |
+| `LinguaSetting::KEY_DARK_MODE_FORCE` | `dark_mode.force` | `bool` |

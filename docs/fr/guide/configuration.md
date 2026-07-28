@@ -221,6 +221,41 @@ Contrôle la barre d'outils de texte riche pour les types de traduction HTML et 
 
 ---
 
+## Apparence <Badge type="tip" text="Nouveau dans la 2.0" />
+
+```php
+'dark_mode' => [
+    'force' => env('LINGUA_FORCE_DARK_MODE', false),
+],
+```
+
+### `dark_mode.force` <Badge type="tip" text="Nouveau dans la 2.0" />
+
+**Par défaut :** `env('LINGUA_FORCE_DARK_MODE', false)`
+
+Le CSS propre de Lingua utilise une variante `dark:` basée sur une classe
+(`&:where(.dark, .dark *)`), il suit donc normalement l'ascendant
+`<html class="dark">` de l'application hôte — la même convention que la
+stratégie de classe par défaut de Tailwind. Si votre application hôte n'a
+pas de bascule de mode sombre basée sur une classe (ou si son état ne
+correspond pas à la préférence OS/navigateur réelle), le style propre de
+Lingua peut s'afficher sans mise en forme, même si le reste de la page a
+un rendu correct.
+
+Définissez `force` à `true` pour que Lingua affiche toujours son thème
+sombre, quels que soient l'application hôte ou la préférence de couleur
+du système. Utile pour intégrer Lingua dans un hôte sans bascule de mode
+sombre, ou lors du développement en local sur un système en mode clair.
+Peut également être basculé en direct depuis
+[l'interface des paramètres](/fr/features/settings#forcer-le-mode-sombre),
+qui prend la priorité sur cette valeur de configuration par défaut.
+
+```ini
+LINGUA_FORCE_DARK_MODE=true
+```
+
+---
+
 ## Pilote de stockage <Badge type="tip" text="Nouveau dans la 2.0" />
 
 ```php

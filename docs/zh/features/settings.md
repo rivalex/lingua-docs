@@ -61,6 +61,23 @@
 
 对应配置键：`lingua.navigate`
 
+## 外观 {#appearance} <Badge type="tip" text="新增" />
+
+### 强制深色模式
+
+Lingua 自身的样式使用基于 class 的 `dark:` 变体，通常会跟随宿主应用的 `<html class="dark">` 祖先元素。如果宿主应用没有深色模式切换（或其状态与实际的操作系统偏好不一致），Lingua 的样式可能会渲染为无样式状态。
+
+**强制深色模式**开关会让 Lingua 始终渲染其深色主题，无论宿主应用或操作系统的配色方案如何——适用于将 Lingua 嵌入没有深色模式支持的宿主应用，或在浅色模式系统上进行本地开发时。
+
+对应配置键：`lingua.dark_mode.force`
+
+```php
+// config/lingua.php
+'dark_mode' => [
+    'force' => env('LINGUA_FORCE_DARK_MODE', false),
+],
+```
+
 ## 存储驱动（只读显示）
 
 设置页面显示当前活动的存储驱动（`database` 或 `file`），但**不**提供在 UI 中切换驱动的选项。要更改驱动，请使用：

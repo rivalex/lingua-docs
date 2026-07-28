@@ -31,6 +31,21 @@ Language names के बगल में country flag icons toggle करें
 
 यही toggle `config/lingua.php` में `nav.enabled` को correspond करता है।
 
+## Appearance <Badge type="tip" text="New" />
+
+Lingua का अपना CSS एक क्लास-आधारित `dark:` variant उपयोग करता है, इसलिए यह सामान्यतः host ऐप के `<html class="dark">` ancestor को follow करता है। यदि आपके host ऐप में dark-mode टॉगल नहीं है (या उसकी स्थिति असली OS preference से मेल नहीं खाती), तो Lingua की स्टाइलिंग बिना स्टाइल के रेंडर हो सकती है।
+
+**Force dark mode** toggle Lingua को हमेशा अपनी dark थीम रेंडर करने पर मजबूर करता है, चाहे host ऐप या OS का color scheme कुछ भी हो — यह किसी ऐसे host में Lingua embed करने के लिए काम आता है जिसमें dark-mode support न हो, या लोकल पर light-mode सिस्टम पर डेवलप करते समय।
+
+यही toggle `config/lingua.php` में `dark_mode.force` को correspond करता है:
+
+```php
+// config/lingua.php
+'dark_mode' => [
+    'force' => env('LINGUA_FORCE_DARK_MODE', false),
+],
+```
+
 ## Storage Driver (Read-only)
 
 Settings पेज active storage driver (`database` या `file`) दिखाता है — read-only। Driver बदलने के लिए `lingua:storage` command use करें। देखें [Storage Drivers](/hi/guide/storage)।

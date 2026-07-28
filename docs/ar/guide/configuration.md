@@ -221,6 +221,38 @@ Gate::define('manage-translations', fn (User $u) => $u->hasRole('admin'));
 
 ---
 
+## المظهر <Badge type="tip" text="جديد" />
+
+```php
+'dark_mode' => [
+    'force' => env('LINGUA_FORCE_DARK_MODE', false),
+],
+```
+
+### `dark_mode.force` <Badge type="tip" text="جديد" />
+
+**الافتراضي:** `env('LINGUA_FORCE_DARK_MODE', false)`
+
+يستخدم تنسيق CSS الخاص بـ Lingua متغيّر `dark:` قائم على فئة CSS
+(`&:where(.dark, .dark *)`)، لذا فهو يتبع عادةً عنصر `<html class="dark">`
+الأب في تطبيقك — بنفس اتفاقية استراتيجية الفئة الافتراضية في Tailwind.
+إذا كان تطبيقك لا يملك مفتاح وضع داكن قائم على الفئة (أو كانت حالته لا
+تطابق تفضيل نظام التشغيل/المتصفح الفعلي)، فقد يُعرض تنسيق Lingua الخاص
+بدون تنسيق حتى لو بدت بقية الصفحة سليمة.
+
+اضبط `force` على `true` لجعل Lingua تعرض دائماً سمتها الداكنة، بغض
+النظر عن تطبيقك أو نظام الألوان في نظام التشغيل. مفيد عند تضمين Lingua
+في تطبيق مضيف بلا مفتاح وضع داكن، أو أثناء التطوير محلياً على نظام
+وضع فاتح. يمكن أيضاً تبديله مباشرة من
+[واجهة الإعدادات](/ar/features/settings#appearance)، والتي لها الأولوية
+على هذا الافتراضي في الإعداد.
+
+```ini
+LINGUA_FORCE_DARK_MODE=true
+```
+
+---
+
 ## محرك التخزين <Badge type="tip" text="جديد في 2.0" />
 
 ```php

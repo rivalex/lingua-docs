@@ -60,6 +60,28 @@ documentazione completa.
 'selector' => ['mode' => 'dropdown'],
 ```
 
+## Aspetto <Badge type="tip" text="Novità" />
+
+Il CSS di Lingua usa una variante `dark:` basata su classe, quindi
+normalmente segue l'ancestor `<html class="dark">` della tua app host. Se
+l'app host non ha un toggle dark mode (o il suo stato non corrisponde alla
+reale preferenza del sistema operativo), lo stile di Lingua può apparire
+non stilizzato.
+
+Il toggle **Forza modalità scura** fa sì che Lingua mostri sempre il
+proprio tema scuro, indipendentemente dall'app host o dal sistema
+operativo — utile quando integri Lingua in un'app host priva di supporto
+dark mode, o durante lo sviluppo locale su un sistema in modalità chiara.
+
+Il default equivalente in config:
+
+```php
+// config/lingua.php
+'dark_mode' => ['force' => false],
+```
+
+Chiave nel DB: `LinguaSetting::KEY_DARK_MODE_FORCE` (`'dark_mode_force'`).
+
 ## Routing e navigazione
 
 | Impostazione | Chiave config | Chiave DB | Descrizione |
@@ -96,6 +118,7 @@ Costanti disponibili:
 | `LinguaSetting::KEY_SELECTOR_MODE` | `selector.mode` | `string` |
 | `LinguaSetting::KEY_SHOW_FLAGS` | `selector.show_flags` | `bool` |
 | `LinguaSetting::KEY_NAV_ENABLED` | `nav_enabled` | `bool` |
+| `LinguaSetting::KEY_DARK_MODE_FORCE` | `dark_mode_force` | `bool` |
 
 ## Sicurezza e accesso
 

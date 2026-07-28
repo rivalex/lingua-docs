@@ -201,6 +201,28 @@ Lingua 粘性工具栏的像素偏移量。如果您的应用有固定头部，�
 
 ---
 
+## 外观 {#appearance} <Badge type="tip" text="新增" />
+
+```php
+'dark_mode' => [
+    'force' => env('LINGUA_FORCE_DARK_MODE', false),
+],
+```
+
+### `dark_mode.force` <Badge type="tip" text="新增" />
+
+**默认值：** `env('LINGUA_FORCE_DARK_MODE', false)`
+
+Lingua 自身的 CSS 构建使用基于 class 的 `dark:` 变体（`&:where(.dark, .dark *)`），因此通常会跟随宿主应用的 `<html class="dark">` 祖先元素——这与 Tailwind 默认的 class 策略约定相同。如果宿主应用没有基于 class 的深色模式切换（或其状态与实际的操作系统/浏览器偏好不一致），即使页面其余部分显示正常，Lingua 自身的样式也可能渲染为无样式状态。
+
+将 `force` 设为 `true` 可使 Lingua 始终渲染其深色主题，无论宿主应用或操作系统的配色方案如何。适用于将 Lingua 嵌入没有深色模式切换的宿主应用，或在浅色模式系统上进行本地开发时。也可以从[设置 UI](/zh/features/settings#appearance)中实时切换，其优先级高于此配置默认值。
+
+```ini
+LINGUA_FORCE_DARK_MODE=true
+```
+
+---
+
 ## 存储驱动 <Badge type="tip" text="2.0 新增" />
 
 ```php

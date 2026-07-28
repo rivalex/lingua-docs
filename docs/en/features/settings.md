@@ -53,6 +53,27 @@ The equivalent config default:
 ],
 ```
 
+## Appearance <Badge type="tip" text="New" />
+
+Lingua's own CSS uses a class-based `dark:` variant, so it normally
+follows the host app's `<html class="dark">` ancestor. If your host app
+has no dark-mode toggle (or its state doesn't match the real OS
+preference), Lingua's styling can render unstyled.
+
+The **Force dark mode** toggle makes Lingua always render its dark theme,
+regardless of the host app or OS color scheme — handy for embedding
+Lingua in a host with no dark-mode support, or while developing locally
+on a light-mode system.
+
+The equivalent config default:
+
+```php
+// config/lingua.php
+'dark_mode' => [
+    'force' => env('LINGUA_FORCE_DARK_MODE', false),
+],
+```
+
 ## Storage driver <Badge type="tip" text="New in 2.0" />
 
 The page displays the active [storage driver](/en/guide/storage) — `database` or `file` — as **read-only** information.
@@ -92,3 +113,4 @@ Common constants:
 | `LinguaSetting::KEY_SELECTOR_MODE` | `selector.mode` | `string` |
 | `LinguaSetting::KEY_SHOW_FLAGS` | `selector.show_flags` | `bool` |
 | `LinguaSetting::KEY_NAV_ENABLED` | `nav.enabled` | `bool` |
+| `LinguaSetting::KEY_DARK_MODE_FORCE` | `dark_mode.force` | `bool` |

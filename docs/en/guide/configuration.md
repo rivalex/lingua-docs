@@ -221,6 +221,38 @@ Controls the rich-text toolbar for HTML and Markdown translation types
 
 ---
 
+## Appearance <Badge type="tip" text="New" />
+
+```php
+'dark_mode' => [
+    'force' => env('LINGUA_FORCE_DARK_MODE', false),
+],
+```
+
+### `dark_mode.force` <Badge type="tip" text="New" />
+
+**Default:** `env('LINGUA_FORCE_DARK_MODE', false)`
+
+Lingua's own CSS build uses a class-based `dark:` variant
+(`&:where(.dark, .dark *)`), so it normally follows the host app's
+`<html class="dark">` ancestor — the same convention as Tailwind's default
+class strategy. If your host app has no class-based dark toggle (or its
+state doesn't match the real OS/browser preference), Lingua's own styling
+can render unstyled even though the rest of the page looks fine.
+
+Set `force` to `true` to make Lingua always render its dark theme,
+regardless of the host app or OS color scheme. Useful when embedding
+Lingua in a host with no dark-mode toggle, or while developing locally on
+a light-mode system. Can also be toggled live from the
+[Settings UI](/en/features/settings#appearance), which takes precedence
+over this config default.
+
+```ini
+LINGUA_FORCE_DARK_MODE=true
+```
+
+---
+
 ## Storage driver <Badge type="tip" text="New in 2.0" />
 
 ```php

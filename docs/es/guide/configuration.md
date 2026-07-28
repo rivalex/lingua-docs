@@ -223,6 +223,41 @@ HTML y Markdown (solo driver de base de datos). Cada clave activa una opción de
 
 ---
 
+## Apariencia <Badge type="tip" text="Nuevo" />
+
+```php
+'dark_mode' => [
+    'force' => env('LINGUA_FORCE_DARK_MODE', false),
+],
+```
+
+### `dark_mode.force` <Badge type="tip" text="Nuevo" />
+
+**Por defecto:** `env('LINGUA_FORCE_DARK_MODE', false)`
+
+El propio CSS de Lingua usa una variante `dark:` basada en clases
+(`&:where(.dark, .dark *)`), por lo que normalmente sigue al ancestro
+`<html class="dark">` de la aplicación anfitriona — la misma convención
+que la estrategia de clases por defecto de Tailwind. Si tu aplicación
+anfitriona no tiene un interruptor de modo oscuro basado en clases (o su
+estado no coincide con la preferencia real del sistema operativo o del
+navegador), los propios estilos de Lingua pueden quedar sin aplicar
+aunque el resto de la página se vea bien.
+
+Establece `force` en `true` para que Lingua renderice siempre su tema
+oscuro, independientemente de la aplicación anfitriona o del esquema de
+color del sistema operativo. Útil al integrar Lingua en un anfitrión sin
+interruptor de modo oscuro, o mientras desarrollas localmente en un
+sistema en modo claro. También puede activarse en vivo desde la
+[interfaz de Configuración](/es/features/settings#apariencia), que tiene
+precedencia sobre este valor de configuración por defecto.
+
+```ini
+LINGUA_FORCE_DARK_MODE=true
+```
+
+---
+
 ## Driver de almacenamiento <Badge type="tip" text="Nuevo en 2.0" />
 
 ```php

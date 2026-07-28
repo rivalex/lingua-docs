@@ -46,6 +46,27 @@ Vous pouvez aussi contrôler ce paramètre via `config/lingua.php` :
 
 La valeur en base de données prend la priorité si présente.
 
+### Forcer le mode sombre <Badge type="tip" text="Nouveau dans la 2.0" />
+
+Le CSS propre de Lingua utilise une variante `dark:` basée sur une classe,
+il suit donc normalement l'ascendant `<html class="dark">` de
+l'application hôte. Si votre application hôte n'a pas de bascule de mode
+sombre (ou si son état ne correspond pas à la préférence OS réelle), le
+style de Lingua peut s'afficher sans mise en forme.
+
+Toggle l'affichage forcé du thème sombre de Lingua, indépendamment de
+l'application hôte ou de la préférence de couleur du système — pratique
+pour intégrer Lingua dans un hôte sans bascule de mode sombre, ou pendant
+le développement en local sur un système en mode clair.
+
+Vous pouvez aussi contrôler ce paramètre via `config/lingua.php` :
+
+```php
+'dark_mode' => ['force' => false],
+```
+
+La valeur en base de données prend la priorité si présente.
+
 ### Affichage du pilote de stockage <Badge type="tip" text="Nouveau dans la 2.0" />
 
 La page Paramètres affiche le **pilote de stockage actif** (`database` ou `file`) en
@@ -80,6 +101,7 @@ Constantes disponibles :
 | `LinguaSetting::KEY_SELECTOR_MODE` | `selector.mode` | `string` |
 | `LinguaSetting::KEY_SHOW_FLAGS` | `selector.show_flags` | `bool` |
 | `LinguaSetting::KEY_NAV_ENABLED` | `nav.enabled` | `bool` |
+| `LinguaSetting::KEY_DARK_MODE_FORCE` | `dark_mode.force` | `bool` |
 | `LinguaSetting::KEY_DEFAULT_LOCALE` | `default_locale` | `string` |
 
 ## Événements

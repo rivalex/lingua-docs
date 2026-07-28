@@ -201,6 +201,28 @@ HTML और Markdown अनुवाद प्रकारों के लि�
 
 ---
 
+## दिखावट <Badge type="tip" text="नया" />
+
+```php
+'dark_mode' => [
+    'force' => env('LINGUA_FORCE_DARK_MODE', false),
+],
+```
+
+### `dark_mode.force` <Badge type="tip" text="नया" />
+
+**डिफ़ॉल्ट:** `env('LINGUA_FORCE_DARK_MODE', false)`
+
+Lingua का अपना CSS build एक क्लास-आधारित `dark:` variant (`&:where(.dark, .dark *)`) उपयोग करता है, इसलिए यह सामान्यतः host ऐप के `<html class="dark">` ancestor का अनुसरण करता है — ठीक Tailwind की डिफ़ॉल्ट class strategy की तरह। यदि आपके host ऐप में क्लास-आधारित dark टॉगल नहीं है (या उसकी स्थिति असली OS/browser preference से मेल नहीं खाती), तो बाकी पेज ठीक दिखने के बावजूद Lingua की अपनी स्टाइलिंग बिना स्टाइल के रेंडर हो सकती है।
+
+`force` को `true` सेट करें ताकि Lingua हमेशा अपनी dark थीम रेंडर करे, चाहे host ऐप या OS का color scheme कुछ भी हो। यह तब उपयोगी है जब Lingua को ऐसे host में embed किया जाए जिसमें dark-mode टॉगल न हो, या लोकल पर light-mode सिस्टम पर डेवलप करते समय। इसे [Settings UI](/hi/features/settings#appearance) से भी लाइव टॉगल किया जा सकता है, जो इस config डिफ़ॉल्ट पर प्राथमिकता रखता है।
+
+```ini
+LINGUA_FORCE_DARK_MODE=true
+```
+
+---
+
 ## स्टोरेज ड्राइवर <Badge type="tip" text="2.0 में नया" />
 
 ```php
