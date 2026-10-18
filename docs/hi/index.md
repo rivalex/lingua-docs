@@ -4,7 +4,7 @@ layout: home
 hero:
   name: "LINGUA"
   text: "Laravel के लिए डेटाबेस-संचालित अनुवाद"
-  tagline: शून्य बाहरी निर्भरताएं। दो स्टोरेज ड्राइवर। पूर्ण आयात/निर्यात। सुरक्षा-दृढ़। PHP 8.3+ और Laravel 11–13 के लिए निर्मित।
+  tagline: शून्य बाहरी निर्भरताएं। दो स्टोरेज ड्राइवर। पूर्ण आयात/निर्यात। सुरक्षा-दृढ़। PHP 8.3+ और Laravel 12–13 के लिए निर्मित।
   image:
     light: /logoLinguaVertical-light.svg
     dark: /logoLinguaVertical-dark.svg
@@ -52,5 +52,5 @@ features:
 
   - icon: 🧪
     title: 783 टेस्ट
-    details: PHP 8.3+ · Laravel 11–13 · Livewire 4.1+ · Flux 2.12+। सूट में कमांड, कंपोनेंट, ड्राइवर, आयात/निर्यात, और पूर्ण facade API शामिल हैं।
+    details: PHP 8.3+ · Laravel 12–13 · Livewire 4.1+ · Flux 2.12+। सूट में कमांड, कंपोनेंट, ड्राइवर, आयात/निर्यात, और पूर्ण facade API शामिल हैं।
 ---

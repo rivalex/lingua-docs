@@ -132,3 +132,7 @@ php artisan migrate
 
 **file ड्राइवर पर स्विच करना कब सही है?**
 यदि आप CI वातावरण में काम करते हैं या अनुवाद version control में रखना चाहते हैं। देखें [Storage Drivers](/hi/guide/storage)।
+
+## 2.0 से 2.1 में अपग्रेड
+
+Lingua 2.1, Laravel **12 और 13** को सपोर्ट करता है। Laravel 11 का security support March 12, 2026 को समाप्त हो गया। जो applications अभी भी Laravel 11 पर हैं, वे Lingua 2.0.6 पर रहेंगे, जिसे Composer अपने-आप चुनता रहता है; Lingua अपडेट करने से पहले Laravel अपग्रेड करें। कोई अन्य breaking change नहीं है: किसी config, migration या API बदलाव की आवश्यकता नहीं है।

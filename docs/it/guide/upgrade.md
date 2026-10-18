@@ -159,3 +159,7 @@ Sì — è il nuovo driver `file`. Passa in qualsiasi momento con
 
 **Flux è ancora richiesto?**
 Sì. Lingua 2.0 richiede `livewire/flux ^2.12`. Flux **non** è stato rimosso.
+
+## Aggiornamento dalla 2.0 alla 2.1
+
+Lingua 2.1 supporta Laravel **12 e 13**. Il supporto di sicurezza per Laravel 11 è terminato il March 12, 2026. Le applicazioni ancora su Laravel 11 restano su Lingua 2.0.6, che Composer continua a selezionare automaticamente; aggiorna Laravel prima di aggiornare Lingua. Non ci sono altri breaking change: non serve alcuna modifica a configurazione, migrazioni o API.

@@ -150,6 +150,7 @@ In modalità database, Lingua memorizza in cache le traduzioni
   interessate — non esiste **alcun** `cache:clear` globale in nessun percorso
   di sincronizzazione
 - Store e prefisso sono configurabili tramite `cache.store` / `cache.prefix`
+- La cache è un'ottimizzazione, il database è la fonte di verità: se lo store della cache non è disponibile (ad esempio un timeout di Redis), le letture e la scrittura di ripristino dopo un miss ricadono sul database. L'eccezione viene segnalata e un circuit breaker con scope di richiesta salta lo store per il resto della richiesta. L'invalidazione (`forget`) **non** è protetta: un forget fallito emerge, così una voce obsoleta non può sopravvivere al ripristino dello store
 
 ## Modelli
 

@@ -4,7 +4,7 @@ layout: home
 hero:
   name: "LINGUA"
   text: "ترجمات مدفوعة بقاعدة البيانات لـ Laravel"
-  tagline: بدون اعتماديات خارجية. محركا تخزين. استيراد/تصدير كامل. تأمين شامل. مبني لـ PHP 8.3+ وLaravel 11–13.
+  tagline: بدون اعتماديات خارجية. محركا تخزين. استيراد/تصدير كامل. تأمين شامل. مبني لـ PHP 8.3+ وLaravel 12–13.
   image:
     light: /logoLinguaVertical-light.svg
     dark: /logoLinguaVertical-dark.svg
@@ -52,5 +52,5 @@ features:
 
   - icon: 🧪
     title: 783 اختباراً
-    details: PHP 8.3+ · Laravel 11–13 · Livewire 4.1+ · Flux 2.12+. تغطي الحزمة الأوامر والمكونات والمحركات والاستيراد/التصدير وواجهة برمجة التطبيقات الكاملة.
+    details: PHP 8.3+ · Laravel 12–13 · Livewire 4.1+ · Flux 2.12+. تغطي الحزمة الأوامر والمكونات والمحركات والاستيراد/التصدير وواجهة برمجة التطبيقات الكاملة.
 ---

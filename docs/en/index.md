@@ -4,7 +4,7 @@ layout: home
 hero:
   name: "LINGUA"
   text: "Database-driven translations for Laravel"
-  tagline: Zero external dependencies. Two storage drivers. Full import/export. Security-hardened. Built for PHP 8.3+ and Laravel 11–13.
+  tagline: Zero external dependencies. Two storage drivers. Full import/export. Security-hardened. Built for PHP 8.3+ and Laravel 12–13.
   image:
     light: /logoLinguaVertical-light.svg
     dark: /logoLinguaVertical-dark.svg
@@ -52,5 +52,5 @@ features:
 
   - icon: 🧪
     title: 783 tests
-    details: PHP 8.3+ · Laravel 11–13 · Livewire 4.1+ · Flux 2.12+. The suite covers commands, components, drivers, import/export, and the full facade API.
+    details: PHP 8.3+ · Laravel 12–13 · Livewire 4.1+ · Flux 2.12+. The suite covers commands, components, drivers, import/export, and the full facade API.
 ---

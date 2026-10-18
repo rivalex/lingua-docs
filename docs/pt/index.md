@@ -4,7 +4,7 @@ layout: home
 hero:
   name: "LINGUA"
   text: "Traduções gerenciadas por banco de dados para Laravel"
-  tagline: Zero dependências externas. Dois drivers de armazenamento. Import/export completo. Segurança reforçada. Desenvolvido para PHP 8.3+ e Laravel 11–13.
+  tagline: Zero dependências externas. Dois drivers de armazenamento. Import/export completo. Segurança reforçada. Desenvolvido para PHP 8.3+ e Laravel 12–13.
   image:
     light: /logoLinguaVertical-light.svg
     dark: /logoLinguaVertical-dark.svg
@@ -52,5 +52,5 @@ features:
 
   - icon: 🧪
     title: 783 testes
-    details: PHP 8.3+ · Laravel 11–13 · Livewire 4.1+ · Flux 2.12+. O conjunto cobre comandos, componentes, drivers, import/export e a API completa do facade.
+    details: PHP 8.3+ · Laravel 12–13 · Livewire 4.1+ · Flux 2.12+. O conjunto cobre comandos, componentes, drivers, import/export e a API completa do facade.
 ---

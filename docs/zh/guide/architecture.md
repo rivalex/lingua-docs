@@ -125,6 +125,7 @@ Lingua 2.0 将所有语言区域数据随包一起发布：
 - 键格式如 `lingua.trans.{locale}.{group}`
 - 在 `Translation` 保存/删除时，只运行受影响键的 `Cache::forget('lingua.trans.{locale}.{group}')`——任何同步路径中都**不**存在全局 `cache:clear`
 - 存储和前缀可通过 `cache.store` / `cache.prefix` 配置
+- 缓存是一种优化，数据库才是事实来源：如果缓存存储不可用（例如 Redis 超时），读取以及未命中后的回写会回退到数据库。异常会被上报，并且请求范围内的断路器会在本次请求剩余时间内跳过该存储。失效操作（`forget`）**不**受保护：`forget` 失败会被抛出，从而确保存储恢复后不会残留过期条目
 
 ## 模型
 

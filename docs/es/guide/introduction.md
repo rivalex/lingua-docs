@@ -85,7 +85,7 @@ respaldado por la misma interfaz.
 | Dependencia | Versión |
 |---|---|
 | PHP | **8.3+** |
-| Laravel | **11 \| 12 \| 13** |
+| Laravel | **12 \| 13** |
 | Livewire | **4.1+** |
 | Livewire Flux | **2.12+** |
 

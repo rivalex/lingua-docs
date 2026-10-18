@@ -4,7 +4,7 @@ layout: home
 hero:
   name: "LINGUA"
   text: "Traductions pilotées par base de données pour Laravel"
-  tagline: Zéro dépendance externe. Deux pilotes de stockage. Import/export complet. Sécurité renforcée. Conçu pour PHP 8.3+ et Laravel 11–13.
+  tagline: Zéro dépendance externe. Deux pilotes de stockage. Import/export complet. Sécurité renforcée. Conçu pour PHP 8.3+ et Laravel 12–13.
   image:
     light: /logoLinguaVertical-light.svg
     dark: /logoLinguaVertical-dark.svg
@@ -52,5 +52,5 @@ features:
 
   - icon: 🧪
     title: 783 tests
-    details: PHP 8.3+ · Laravel 11–13 · Livewire 4.1+ · Flux 2.12+. La suite couvre les commandes, composants, pilotes, import/export et l'API façade complète.
+    details: PHP 8.3+ · Laravel 12–13 · Livewire 4.1+ · Flux 2.12+. La suite couvre les commandes, composants, pilotes, import/export et l'API façade complète.
 ---

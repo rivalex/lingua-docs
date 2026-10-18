@@ -146,6 +146,7 @@ por `(locale, grupo)`:
   `Cache::forget('lingua.trans.{locale}.{grupo}')` para las claves afectadas —
   **no** hay ningún `cache:clear` global en ninguna ruta de sincronización
 - El almacén y el prefijo son configurables mediante `cache.store` / `cache.prefix`
+- La caché es una optimización, la base de datos es la fuente de verdad: si el almacén de caché no está disponible (por ejemplo, un timeout de Redis), las lecturas y la escritura de respaldo tras un fallo recurren a la base de datos. La excepción se notifica, y un cortacircuitos con alcance de petición omite el almacén durante el resto de la petición. La invalidación (`forget`) **no** está protegida: un `forget` fallido se propaga, de modo que una entrada obsoleta nunca puede sobrevivir a la recuperación del almacén
 
 ## Modelos
 

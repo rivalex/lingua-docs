@@ -4,7 +4,7 @@ layout: home
 hero:
   name: "LINGUA"
   text: "数据库驱动的 Laravel 翻译管理"
-  tagline: 零外部依赖。双存储驱动。完整导入/导出。安全加固。专为 PHP 8.3+ 和 Laravel 11–13 构建。
+  tagline: 零外部依赖。双存储驱动。完整导入/导出。安全加固。专为 PHP 8.3+ 和 Laravel 12–13 构建。
   image:
     light: /logoLinguaVertical-light.svg
     dark: /logoLinguaVertical-dark.svg
@@ -52,5 +52,5 @@ features:
 
   - icon: 🧪
     title: 783 个测试
-    details: PHP 8.3+ · Laravel 11–13 · Livewire 4.1+ · Flux 2.12+。测试套件涵盖命令、组件、驱动程序、导入/导出和完整 Facade API。
+    details: PHP 8.3+ · Laravel 12–13 · Livewire 4.1+ · Flux 2.12+。测试套件涵盖命令、组件、驱动程序、导入/导出和完整 Facade API。
 ---

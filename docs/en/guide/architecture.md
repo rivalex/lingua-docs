@@ -147,6 +147,12 @@ In database mode, Lingua caches translations **surgically** per
   for the affected keys runs — there is **no** global `cache:clear` in any
   sync path
 - Store and prefix are configurable via `cache.store` / `cache.prefix`
+- The cache is an optimisation, the database is the source of truth: if the cache
+  store is unavailable (for example a Redis timeout), reads and the write-back
+  after a miss fall back to the database. The exception is reported, and a
+  request-scoped circuit breaker skips the store for the rest of the request.
+  Invalidation (`forget`) is **not** guarded: a failed forget surfaces, so a stale
+  entry can never survive a store recovery
 
 ## Models
 

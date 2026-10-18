@@ -84,7 +84,7 @@ carregador padrão do Laravel, apoiado pela mesma interface.
 | Dependência | Versão |
 |---|---|
 | PHP | **8.3+** |
-| Laravel | **11 \| 12 \| 13** |
+| Laravel | **12 \| 13** |
 | Livewire | **4.1+** |
 | Livewire Flux | **2.12+** |
 

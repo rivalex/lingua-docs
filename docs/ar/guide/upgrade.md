@@ -159,3 +159,7 @@ Spatie\TranslationLoader\TranslationServiceProvider::class,
 
 **هل Flux لا يزال مطلوباً؟**
 نعم. يتطلب Lingua 2.0 `livewire/flux ^2.12`. لم يُزَل Flux.
+
+## الترقية من 2.0 إلى 2.1
+
+يدعم Lingua 2.1 الإصدارين **12 و 13** من Laravel. انتهى الدعم الأمني لـ Laravel 11 في March 12, 2026. التطبيقات التي ما زالت على Laravel 11 تبقى على Lingua 2.0.6، وهو الإصدار الذي يواصل Composer اختياره تلقائياً؛ قم بترقية Laravel قبل تحديث Lingua. لا توجد تغييرات كاسرة أخرى: لا يلزم أي تغيير في الإعدادات أو الهجرات أو واجهة البرمجة.

@@ -148,6 +148,7 @@ por `(locale, group)`:
   para as chaves afetadas é executado — **não** há `cache:clear` global em
   nenhum caminho de sincronização
 - Store e prefixo são configuráveis via `cache.store` / `cache.prefix`
+- O cache é uma otimização, o banco de dados é a fonte da verdade: se o store de cache estiver indisponível (por exemplo, um timeout do Redis), as leituras e a gravação de volta após um miss recorrem ao banco de dados. A exceção é reportada, e um circuit breaker com escopo de requisição ignora o store pelo resto da requisição. A invalidação (`forget`) **não** é protegida: um forget com falha aparece, para que uma entrada obsoleta nunca sobreviva à recuperação do store
 
 ## Models
 

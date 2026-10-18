@@ -118,6 +118,8 @@ Lingua translations को **सर्जिकल रूप से** प्र�
 
 **Read पर:** `rememberForever` — explicit flush तक cache में रहता है।
 
+Cache एक optimisation है, database source of truth है: यदि cache store उपलब्ध नहीं है (उदाहरण के लिए Redis timeout), तो reads और miss के बाद का write-back database पर fallback करते हैं। Exception report होता है, और एक request-scoped circuit breaker बाकी request के लिए store को छोड़ देता है। Invalidation (`forget`) **guarded** नहीं है: विफल forget सामने आता है, ताकि store recovery के बाद कोई stale entry बची न रहे।
+
 यह global `cache:clear` की आवश्यकता को समाप्त करता है। हर translation edit surgical है।
 
 ## Models

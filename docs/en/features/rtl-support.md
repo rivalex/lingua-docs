@@ -1,6 +1,6 @@
 # RTL / LTR Support
 
-Lingua stores the text direction (`ltr` or `rtl`) for every installed language and exposes it via `Lingua::getDirection()` (PHP 8.3+, Laravel 11/12/13). Setting up proper RTL support requires a small, one-time change to your Blade layout.
+Lingua stores the text direction (`ltr` or `rtl`) for every installed language and exposes it via `Lingua::getDirection()` (PHP 8.3+, Laravel 12/13). Setting up proper RTL support requires a small, one-time change to your Blade layout.
 
 ## Supported RTL languages (examples)
 

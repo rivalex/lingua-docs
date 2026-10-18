@@ -147,6 +147,7 @@ En mode base de données, Lingua met en cache les traductions **chirurgicalement
   pour les clés affectées s'exécute — il n'y a **pas** de `cache:clear` global dans aucun
   chemin de synchronisation
 - Le magasin et le préfixe sont configurables via `cache.store` / `cache.prefix`
+- Le cache est une optimisation, la base de données fait foi : si le magasin de cache est indisponible (par exemple un timeout Redis), les lectures et l'écriture de rattrapage après un miss se replient sur la base de données. L'exception est signalée, et un disjoncteur à portée de requête ignore le magasin pour le reste de la requête. L'invalidation (`forget`) n'est **pas** protégée : un `forget` en échec remonte, afin qu'une entrée périmée ne puisse jamais survivre à la reprise du magasin
 
 ## Modèles
 
