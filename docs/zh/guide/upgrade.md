@@ -143,4 +143,4 @@ Spatie\TranslationLoader\TranslationServiceProvider::class,
 
 ## 从 2.0 升级到 2.1
 
-Lingua 2.1 支持 Laravel **12 和 13**。Laravel 11 的安全支持已于 March 12, 2026 结束。仍在使用 Laravel 11 的应用会保持在 Lingua 2.0.6 上，Composer 会自动选择该版本；请先升级 Laravel 再更新 Lingua。没有其他破坏性变更：不需要修改配置、迁移或 API。
+Lingua 2.1 支持 Laravel **12 和 13**。Laravel 11 的安全支持已于 March 12, 2026 结束。仍在使用 Laravel 11 的应用会保持在 Lingua 2.0.5 上，Composer 会自动选择该版本；请先升级 Laravel 再更新 Lingua。没有其他破坏性变更：不需要修改配置、迁移或 API。

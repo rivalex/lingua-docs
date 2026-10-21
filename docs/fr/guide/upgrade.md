@@ -162,4 +162,4 @@ Oui. Lingua 2.0 requiert `livewire/flux ^2.12`. Flux n'a **pas** été supprimé
 
 ## Mise à niveau de la 2.0 vers la 2.1
 
-Lingua 2.1 prend en charge Laravel **12 et 13**. Laravel 11 a atteint la fin de son support de sécurité le March 12, 2026. Les applications encore sous Laravel 11 restent sur Lingua 2.0.6, que Composer continue de sélectionner automatiquement ; mettez Laravel à niveau avant de mettre à jour Lingua. Il n'y a pas d'autre rupture : aucun changement de configuration, de migration ou d'API n'est nécessaire.
+Lingua 2.1 prend en charge Laravel **12 et 13**. Laravel 11 a atteint la fin de son support de sécurité le March 12, 2026. Les applications encore sous Laravel 11 restent sur Lingua 2.0.5, que Composer continue de sélectionner automatiquement ; mettez Laravel à niveau avant de mettre à jour Lingua. Il n'y a pas d'autre rupture : aucun changement de configuration, de migration ou d'API n'est nécessaire.
