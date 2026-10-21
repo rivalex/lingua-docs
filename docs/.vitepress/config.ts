@@ -25,7 +25,7 @@ export default defineConfig({
           {
             text: '2.x',
             items: [
-              { text: 'Changelog', link: 'https://github.com/rivalex/lingua/blob/main/CHANGELOG.md' },
+              { text: 'Changelog', link: 'https://github.com/rivalex/lingua/blob/master/CHANGELOG.md' },
               { text: 'Contributing', link: 'https://github.com/rivalex/lingua/blob/main/.github/CONTRIBUTING.md' },
             ],
           },
@@ -109,7 +109,7 @@ export default defineConfig({
           {
             text: '2.x',
             items: [
-              { text: '更新日志', link: 'https://github.com/rivalex/lingua/blob/main/CHANGELOG.md' },
+              { text: '更新日志', link: 'https://github.com/rivalex/lingua/blob/master/CHANGELOG.md' },
               { text: '贡献', link: 'https://github.com/rivalex/lingua/blob/main/.github/CONTRIBUTING.md' },
             ],
           },
@@ -208,7 +208,7 @@ export default defineConfig({
           {
             text: '2.x',
             items: [
-              { text: 'परिवर्तन लॉग', link: 'https://github.com/rivalex/lingua/blob/main/CHANGELOG.md' },
+              { text: 'परिवर्तन लॉग', link: 'https://github.com/rivalex/lingua/blob/master/CHANGELOG.md' },
               { text: 'योगदान', link: 'https://github.com/rivalex/lingua/blob/main/.github/CONTRIBUTING.md' },
             ],
           },
@@ -307,7 +307,7 @@ export default defineConfig({
           {
             text: '2.x',
             items: [
-              { text: 'Registro de cambios', link: 'https://github.com/rivalex/lingua/blob/main/CHANGELOG.md' },
+              { text: 'Registro de cambios', link: 'https://github.com/rivalex/lingua/blob/master/CHANGELOG.md' },
               { text: 'Contribuir', link: 'https://github.com/rivalex/lingua/blob/main/.github/CONTRIBUTING.md' },
             ],
           },
@@ -407,7 +407,7 @@ export default defineConfig({
           {
             text: '2.x',
             items: [
-              { text: 'سجل التغييرات', link: 'https://github.com/rivalex/lingua/blob/main/CHANGELOG.md' },
+              { text: 'سجل التغييرات', link: 'https://github.com/rivalex/lingua/blob/master/CHANGELOG.md' },
               { text: 'المساهمة', link: 'https://github.com/rivalex/lingua/blob/main/.github/CONTRIBUTING.md' },
             ],
           },
@@ -506,7 +506,7 @@ export default defineConfig({
           {
             text: '2.x',
             items: [
-              { text: 'Journal des modifications', link: 'https://github.com/rivalex/lingua/blob/main/CHANGELOG.md' },
+              { text: 'Journal des modifications', link: 'https://github.com/rivalex/lingua/blob/master/CHANGELOG.md' },
               { text: 'Contribuer', link: 'https://github.com/rivalex/lingua/blob/main/.github/CONTRIBUTING.md' },
             ],
           },
@@ -605,7 +605,7 @@ export default defineConfig({
           {
             text: '2.x',
             items: [
-              { text: 'Registro de alterações', link: 'https://github.com/rivalex/lingua/blob/main/CHANGELOG.md' },
+              { text: 'Registro de alterações', link: 'https://github.com/rivalex/lingua/blob/master/CHANGELOG.md' },
               { text: 'Contribuir', link: 'https://github.com/rivalex/lingua/blob/main/.github/CONTRIBUTING.md' },
             ],
           },
@@ -704,7 +704,7 @@ export default defineConfig({
           {
             text: '2.x',
             items: [
-              { text: 'История изменений', link: 'https://github.com/rivalex/lingua/blob/main/CHANGELOG.md' },
+              { text: 'История изменений', link: 'https://github.com/rivalex/lingua/blob/master/CHANGELOG.md' },
               { text: 'Участие в разработке', link: 'https://github.com/rivalex/lingua/blob/main/.github/CONTRIBUTING.md' },
             ],
           },
@@ -803,7 +803,7 @@ export default defineConfig({
           {
             text: '2.x',
             items: [
-              { text: 'Changelog', link: 'https://github.com/rivalex/lingua/blob/main/CHANGELOG.md' },
+              { text: 'Changelog', link: 'https://github.com/rivalex/lingua/blob/master/CHANGELOG.md' },
               { text: 'Contribuire', link: 'https://github.com/rivalex/lingua/blob/main/.github/CONTRIBUTING.md' },
             ],
           },
